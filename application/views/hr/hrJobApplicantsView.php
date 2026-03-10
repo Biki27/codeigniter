@@ -454,7 +454,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </script>
 
     <?php } ?>
-    
+
     <!-- Main Content -->
     <div class="main-content">
         <div class="page-container">
@@ -573,12 +573,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <!-- Review & Status -->
+                    <!-- Review & Status -->
                     <div class="status-section">
-                        <h2 class="section-title">Review & Statusview-btn</h2>
+                        <h2 class="section-title">Review & Status</h2>
 
                         <?= form_open('Employee/viewJobApplicants') ?>
 
-                        <input type="hidden" name="applicant_id" id="applicant_id">
+                        <input type="hidden" name="applicant_id" id="review_applicant_id">
 
                         <div class="form-group">
                             <label>Status</label>
@@ -588,33 +589,53 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <option value="pending">Pending</option>
                                 <option value="selected">Selected</option>
                                 <option value="rejected">Rejected</option>
-
                             </select>
 
                         </div>
 
                         <div class="form-group">
-
                             <label>Comment</label>
-                             <textarea name="comment" placeholder="Add your comments about the candidate..."></textarea>
-
+                            <textarea name="comment" placeholder="Add your comments about the candidate..."></textarea>
                         </div>
 
                         <button type="submit" class="submit-btn">
-
                             Submit Review
-
                         </button>
 
                         <?= form_close() ?>
-                        <a href="https://your-interview-link.com/invite?applicant=APP001" class="invite-btn"
-                            target="_blank" rel="noopener noreferrer">
+
+                    </div>
+
+
+                    <!-- Interview Invite -->
+                    <div class="status-section">
+                        <h2 class="section-title">Send Interview Invite</h2>
+
+                        <?= form_open('Employee/sendInterviewInvite') ?>
+
+                        <input type="hidden" name="applicant_id" id="invite_applicant_id">
+
+                        <div class="form-group">
+                            <label>Interview Date</label>
+                            <input type="date" name="interview_date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Interview Time</label>
+                            <input type="time" name="interview_time" required>
+                        </div>
+
+                        <button type="submit" class="invite-btn">
                             Send Interview Invite
-                        </a>
+                        </button>
+
+                        <?= form_close() ?>
+
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Footer -->
@@ -664,7 +685,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             button.addEventListener('click', function () {
 
                 // store applicant id in hidden input for review form
-                document.getElementById("applicant_id").value = this.dataset.id;
+                document.getElementById("review_applicant_id").value = this.dataset.id;
+                document.getElementById("invite_applicant_id").value = this.dataset.id;
 
                 document.getElementById("app_id").innerText = "APP" + this.dataset.id;
                 document.getElementById("app_name").innerText = this.dataset.name;

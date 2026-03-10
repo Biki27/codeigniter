@@ -1,5 +1,5 @@
 <?php
- 
+
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -136,31 +136,31 @@ class Employee extends CI_Controller
     /**
      * HR & ADMIN: View Employee Directory
      */
-   public function viewEmployee()
-{
-    $access = $this->session->userdata('accesslevel');
-    if ($this->session->userdata('status') == 'active' && ($access == 'ADMIN' || $access == 'HR')) {
-        
-        $this->load->model('EmployeeModel');
-        $postdata = $this->security->xss_clean($this->input->post());
+    public function viewEmployee()
+    {
+        $access = $this->session->userdata('accesslevel');
+        if ($this->session->userdata('status') == 'active' && ($access == 'ADMIN' || $access == 'HR')) {
 
-        if (!empty($postdata['query'])) {
-            $data['employees'] = $this->EmployeeModel->get_employee_with_search($postdata['query'], $postdata['status'] ?? '');
-        } else {
-            $data['employees'] = $this->EmployeeModel->getallemployee_with_joins(); 
-        }
+            $this->load->model('EmployeeModel');
+            $postdata = $this->security->xss_clean($this->input->post());
 
-        if ($access == 'HR') {
-            $this->load->view('hr/hrHeaderView');
-            $this->load->view('hr/hrEmployeeDirectoryView', $data);
+            if (!empty($postdata['query'])) {
+                $data['employees'] = $this->EmployeeModel->get_employee_with_search($postdata['query'], $postdata['status'] ?? '');
+            } else {
+                $data['employees'] = $this->EmployeeModel->getallemployee_with_joins();
+            }
+
+            if ($access == 'HR') {
+                $this->load->view('hr/hrHeaderView');
+                $this->load->view('hr/hrEmployeeDirectoryView', $data);
+            } else {
+                $this->load->view('employee/adminHeaderView');
+                $this->load->view('employee/adminEmployeesView', $data);
+            }
         } else {
-            $this->load->view('employee/adminHeaderView');
-            $this->load->view('employee/adminEmployeesView', $data);
+            redirect('Employee/Login');
         }
-    } else {
-        redirect('Employee/Login');
     }
-}
 
 
     // HR & ADMIN: View Recruitment / Job Applicants
@@ -216,7 +216,7 @@ class Employee extends CI_Controller
                     redirect('Employee/viewJobApplicants');
                 }
             }
-            
+
             $list = $this->jobApplicationModel->get_all_applicants();
 
             $data['applicants'] = $list;
@@ -243,7 +243,7 @@ class Employee extends CI_Controller
             $this->session->has_userdata('branch') &&
             $this->session->has_userdata('status') &&
             $this->session->userdata('status') == 'active' &&
-            $this->session->userdata('accesslevel') == 'ADMIN'|| $this->session->userdata('accesslevel') == 'HR'
+            $this->session->userdata('accesslevel') == 'ADMIN' || $this->session->userdata('accesslevel') == 'HR'
         ) {
             $postd = $this->input->post();
             $postdata = $this->security->xss_clean($postd);
@@ -318,10 +318,10 @@ class Employee extends CI_Controller
                 $this->load->view('hr/hrAttendenceView', $data);
                 return;
             }
-            $data['atten'] = $list;    
+            $data['atten'] = $list;
             $this->load->view('employee/adminHeaderView');
             $this->load->view('employee/adminAttendanceView', $data);
-             
+
 
         } else {
             $this->session->sess_destroy();
@@ -488,7 +488,7 @@ class Employee extends CI_Controller
             $this->session->has_userdata('branch') &&
             $this->session->has_userdata('status') &&
             $this->session->userdata('status') == 'active' &&
-            $this->session->userdata('accesslevel') == 'ADMIN'|| $this->session->userdata('accesslevel') == 'HR'
+            $this->session->userdata('accesslevel') == 'ADMIN' || $this->session->userdata('accesslevel') == 'HR'
         ) {
 
             $this->load->model('EmployeeModel');
@@ -521,7 +521,7 @@ class Employee extends CI_Controller
             echo 'INVALID ACCESS';
         }
     }
-   
+
 
     public function addEmployee()
     {
@@ -873,19 +873,19 @@ class Employee extends CI_Controller
      * HR Attendance Monitoring
      */
     public function hrAttendance()
-{
-    if ($this->session->userdata('accesslevel') == 'HR') {
-        $this->load->model('AttendanceModel');
-        // Get all logs to show HR the history
-        $data['atten'] = $this->AttendanceModel->get_attendance_of_all_employee();
-        
-        $this->load->view('hr/hrHeaderView');
-        // Reusing the Admin Attendance View for data consistency
-        $this->load->view('employee/adminAttendanceView', $data);
-    } else {
-        redirect('Employee/Login');
+    {
+        if ($this->session->userdata('accesslevel') == 'HR') {
+            $this->load->model('AttendanceModel');
+            // Get all logs to show HR the history
+            $data['atten'] = $this->AttendanceModel->get_attendance_of_all_employee();
+
+            $this->load->view('hr/hrHeaderView');
+            // Reusing the Admin Attendance View for data consistency
+            $this->load->view('employee/adminAttendanceView', $data);
+        } else {
+            redirect('Employee/Login');
+        }
     }
-}
 
 
 
@@ -1007,6 +1007,56 @@ class Employee extends CI_Controller
         } else {
             echo json_encode(['error' => 'Employee not found']);
         }
+    }
+    public function sendInterviewInvite()
+    {
+        $applicant_id = $this->input->post('applicant_id');
+        $interview_date = $this->input->post('interview_date');
+        $interview_time = $this->input->post('interview_time');
+
+        // get applicant details
+        $applicant = $this->EmployeeModel->getApplicantById($applicant_id);
+
+        // save interview date and time
+        $data = [
+            'interview_date' => $interview_date,
+            'interview_time' => $interview_time
+        ];
+        
+
+        $this->EmployeeModel->updateInterview($applicant_id, $data);
+
+        // send email
+        $this->load->library('email');
+
+        $this->email->from('satyajitmanna35@gmail.com', 'Supropriyo Enterprise');
+        $this->email->to($applicant->sejoba_email);
+        $this->email->subject('Interview Invitation');
+
+        $message = "
+        Dear {$applicant->sejoba_name}, <br><br>
+
+        Congratulations! You have been shortlisted for the position of <b>{$applicant->sejoba_position}</b>.<br><br>
+
+        Interview Details:<br>
+        Date: {$interview_date}<br>
+        Time: {$interview_time}<br><br>
+
+        Please be available on time.<br><br>
+
+        Best Regards,<br>
+        Supropriyo Enterprise
+    ";
+
+        $this->email->message($message);
+
+        if ($this->email->send()) {
+            $this->session->set_flashdata('msg', 'Interview invitation sent successfully');
+        } else {
+            $this->session->set_flashdata('msg', 'Email sending failed');
+        }
+
+        redirect('Employee/viewJobApplicants');
     }
 }
 

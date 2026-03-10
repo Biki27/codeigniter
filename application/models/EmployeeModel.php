@@ -6,15 +6,15 @@ class EmployeeModel extends CI_Model
 {
     /// Get user by email or employee ID for authentication 
     //ADDED on 2024-06-15 by BIKI
-    
-// public function get_user_by_identity($identity) {
+
+    // public function get_user_by_identity($identity) {
 //     $this->db->group_start();
 //     $this->db->where('seemp_email', $identity);
 //     $this->db->or_where('seemp_id', $identity);
 //     $this->db->group_end();
 //     $query = $this->db->get('seemployee');
-    
-//     return ($query->num_rows() == 1) ? $query->row() : false;
+
+    //     return ($query->num_rows() == 1) ? $query->row() : false;
 // }
 
     function getallemployee_with_joins()
@@ -206,7 +206,7 @@ class EmployeeModel extends CI_Model
     }
 
 
-//    function update_log_current_state($empid = '', $action = 'login')
+    //    function update_log_current_state($empid = '', $action = 'login')
 //     {
 //         if (
 //             empty(trim($empid)) || empty(trim($action))
@@ -214,88 +214,86 @@ class EmployeeModel extends CI_Model
 //             return ['code' => 1];
 //         } else {
 
-//             $this->db->trans_begin();
+    //             $this->db->trans_begin();
 
-//             $condition = array(
+    //             $condition = array(
 //                 'seemp_logempid =' => $empid,
 //                 'seemp_logdate =' => date('Y-m-d'),
 //             );
 
-//             $data = array(
+    //             $data = array(
 //                 'seemp_logempid' => $empid,
 //                 'seemp_logdate' => date('Y-m-d'),
 //             );
 
-//             $isupdated = $this->db->from('seemployeeloginlog')->where($condition)->get()->result();
+    //             $isupdated = $this->db->from('seemployeeloginlog')->where($condition)->get()->result();
 
-//             if (count($isupdated) <= 0 && $action == 'login') {
+    //             if (count($isupdated) <= 0 && $action == 'login') {
 
-//                 $data += ['seemp_logintime' => date('Y-m-d H:i:s')];
+    //                 $data += ['seemp_logintime' => date('Y-m-d H:i:s')];
 //                 $this->db->insert('seemployeeloginlog', $data);
 //                 $this->db->trans_complete();
 //                 return ['code' => 0];
 
-//             }else if (count($isupdated) == 1 && $action == 'logout') {
+    //             }else if (count($isupdated) == 1 && $action == 'logout') {
 
-//                 $this->db->where([
+    //                 $this->db->where([
 //                     'seemp_logempid' => $empid,
 //                     'seemp_logdate' => date('Y-m-d')
 //                 ]);
 
-//                 $this->db->update('seemployeeloginlog', [
+    //                 $this->db->update('seemployeeloginlog', [
 //                     'seemp_logouttime' => date('Y-m-d H:i:s')
 //                 ]);
 
-//                 $this->db->trans_complete();
+    //                 $this->db->trans_complete();
 //                 return ['code' => 0];
 //             }
 
-//         }
+    //         }
 //     }
-function update_log_current_state($empid = '', $action = 'login')
-{
-    if (empty(trim($empid)) || empty(trim($action))) {
-        return ['code' => 1];
-    }
-
-    $today = date('Y-m-d');
-    $now = date('Y-m-d H:i:s');
-
-    // Check if a log entry already exists for this employee today
-    $this->db->where([
-        'seemp_logempid' => $empid,
-        'seemp_logdate'  => $today
-    ]);
-    $existing_log = $this->db->get('seemployeeloginlog')->row();
-
-    if ($action == 'login') {
-        // ONLY insert if no log exists for today. 
-        // If it exists, we do nothing to keep the very first login time.
-        if (!$existing_log) {
-            $data = [
-                'seemp_logempid'  => $empid,
-                'seemp_logdate'   => $today,
-                'seemp_logintime' => $now
-            ];
-            $this->db->insert('seemployeeloginlog', $data);
-            return ['code' => 0, 'message' => 'Login recorded'];
+    function update_log_current_state($empid = '', $action = 'login')
+    {
+        if (empty(trim($empid)) || empty(trim($action))) {
+            return ['code' => 1];
         }
-        return ['code' => 0, 'message' => 'Login already exists for today'];
-    } 
-    
-    else if ($action == 'logout') {
-        // Update the logout time for today's entry
-        if ($existing_log) {
-            $this->db->where([
-                'seemp_logempid' => $empid,
-                'seemp_logdate'  => $today
-            ]);
-            $this->db->update('seemployeeloginlog', ['seemp_logouttime' => $now]);
-            return ['code' => 0, 'message' => 'Logout recorded'];
+
+        $today = date('Y-m-d');
+        $now = date('Y-m-d H:i:s');
+
+        // Check if a log entry already exists for this employee today
+        $this->db->where([
+            'seemp_logempid' => $empid,
+            'seemp_logdate' => $today
+        ]);
+        $existing_log = $this->db->get('seemployeeloginlog')->row();
+
+        if ($action == 'login') {
+            // ONLY insert if no log exists for today. 
+            // If it exists, we do nothing to keep the very first login time.
+            if (!$existing_log) {
+                $data = [
+                    'seemp_logempid' => $empid,
+                    'seemp_logdate' => $today,
+                    'seemp_logintime' => $now
+                ];
+                $this->db->insert('seemployeeloginlog', $data);
+                return ['code' => 0, 'message' => 'Login recorded'];
+            }
+            return ['code' => 0, 'message' => 'Login already exists for today'];
+        } else if ($action == 'logout') {
+            // Update the logout time for today's entry
+            if ($existing_log) {
+                $this->db->where([
+                    'seemp_logempid' => $empid,
+                    'seemp_logdate' => $today
+                ]);
+                $this->db->update('seemployeeloginlog', ['seemp_logouttime' => $now]);
+                return ['code' => 0, 'message' => 'Logout recorded'];
+            }
+            return ['code' => 1, 'message' => 'No login record found to logout'];
         }
-        return ['code' => 1, 'message' => 'No login record found to logout'];
     }
-}
 
     function get_all_loginlog_for_thisempid()
     {
@@ -439,7 +437,17 @@ function update_log_current_state($empid = '', $action = 'login')
 
         return $query->result();
     }
-
+    public function getApplicantById($id)
+    {
+        return $this->db->where('sejoba_id', $id)
+            ->get('sejobapplicant')
+            ->row();
+    }
+    public function updateInterview($id, $data)
+    {
+        $this->db->where('sejoba_id', $id);
+        return $this->db->update('sejobapplicant', $data);
+    }
 }
 
 ?>
