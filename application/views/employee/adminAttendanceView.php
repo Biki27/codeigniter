@@ -886,7 +886,7 @@
 
                 <div class="time-section">
                     <div class="time-row">
-                        <span class="time-label">Admin's :</span>
+                        <span class="time-label">Admin's : <?= $this->session->userdata("empname") ?></span>
 
                     </div>
                     <div class="time-row">

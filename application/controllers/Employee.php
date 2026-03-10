@@ -1,5 +1,5 @@
 <?php
- 
+
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -42,24 +42,26 @@ class Employee extends CI_Controller
                 );
                 $this->session->set_userdata($sdata);
 
-                if (
-                    trim($this->session->userdata('lastlogin')) == '' ||
-                    trim($this->session->userdata('lastlogin')) != date('Y-m-d')
-                ) {
+                // 1. Update the Main Employee Table (Last Login Date) if it's a new day
+                if (trim($info[0]->seemp_lastlogin) != date('Y-m-d')) {
                     $this->EmployeeModel->update_employee_table_with_today(
                         $info[0]->seemp_id,
                         $info[0]->seemp_email,
                         $info[0]->seseq_id,
                         $info[0]->seemp_status
                     );
-
-                    $this->EmployeeModel->update_log_current_state($info[0]->seemp_id);
                 }
+
+                // 2. ALWAYS call the Log update. 
+                // The Model will be responsible for not overwriting the first login time.
+                $this->EmployeeModel->update_log_current_state($info[0]->seemp_id, 'login');
+
                 redirect('Employee/Dashboard');
             } else {
                 $this->session->sess_destroy();
                 $this->load->view('employee/employeeLoginView', array('error' => 'Login details not found.'));
             }
+
         }
     }
     function Dashboard()
@@ -136,53 +138,31 @@ class Employee extends CI_Controller
     /**
      * HR & ADMIN: View Employee Directory
      */
-   public function viewEmployee()
-{
-    $access = $this->session->userdata('accesslevel');
-    if ($this->session->userdata('status') == 'active' && ($access == 'ADMIN' || $access == 'HR')) {
-        
-        $this->load->model('EmployeeModel');
-        $postdata = $this->security->xss_clean($this->input->post());
+    public function viewEmployee()
+    {
+        $access = $this->session->userdata('accesslevel');
+        if ($this->session->userdata('status') == 'active' && ($access == 'ADMIN' || $access == 'HR')) {
 
-        if (!empty($postdata['query'])) {
-            $data['employees'] = $this->EmployeeModel->get_employee_with_search($postdata['query'], $postdata['status'] ?? '');
-        } else {
-            $data['employees'] = $this->EmployeeModel->getallemployee_with_joins(); 
-        }
+            $this->load->model('EmployeeModel');
+            $postdata = $this->security->xss_clean($this->input->post());
 
-        if ($access == 'HR') {
-            $this->load->view('hr/hrHeaderView');
-            $this->load->view('hr/hrEmployeeDirectoryView', $data);
+            if (!empty($postdata['query'])) {
+                $data['employees'] = $this->EmployeeModel->get_employee_with_search($postdata['query'], $postdata['status'] ?? '');
+            } else {
+                $data['employees'] = $this->EmployeeModel->getallemployee_with_joins();
+            }
+
+            if ($access == 'HR') {
+                $this->load->view('hr/hrHeaderView');
+                $this->load->view('hr/hrEmployeeDirectoryView', $data);
+            } else {
+                $this->load->view('employee/adminHeaderView');
+                $this->load->view('employee/adminEmployeesView', $data);
+            }
         } else {
-            $this->load->view('employee/adminHeaderView');
-            $this->load->view('employee/adminEmployeesView', $data);
+            redirect('Employee/Login');
         }
-    } else {
-        redirect('Employee/Login');
     }
-}
-
-
-    // HR & ADMIN: View Recruitment / Job Applicants
-
-    // function viewJobApplicants()
-    // {
-    //     $access = $this->session->userdata('accesslevel');
-    //     if ($this->session->userdata('status') == 'active' && ($access == 'ADMIN' || $access == 'HR')) {
-
-    //         $this->load->model('jobApplicationModel');
-    //         $data['applicants'] = $this->jobApplicationModel->get_all_applicants();
-
-    //         $header = ($access == 'HR') ? 'hr/hrHeaderView' : 'employee/adminHeaderView';
-
-    //         $this->load->view($header);
-    //         // Reusing existing admin view for applicants
-    //         $this->load->view('employee/adminJobApplicationsView', $data);
-    //     } else {
-    //         redirect('Employee/Login');
-    //     }
-    // }
-    //
     function viewJobApplicants()
     {
         if (
@@ -216,7 +196,7 @@ class Employee extends CI_Controller
                     redirect('Employee/viewJobApplicants');
                 }
             }
-            
+
             $list = $this->jobApplicationModel->get_all_applicants();
 
             $data['applicants'] = $list;
@@ -243,7 +223,7 @@ class Employee extends CI_Controller
             $this->session->has_userdata('branch') &&
             $this->session->has_userdata('status') &&
             $this->session->userdata('status') == 'active' &&
-            $this->session->userdata('accesslevel') == 'ADMIN'|| $this->session->userdata('accesslevel') == 'HR'
+            $this->session->userdata('accesslevel') == 'ADMIN' || $this->session->userdata('accesslevel') == 'HR'
         ) {
             $postd = $this->input->post();
             $postdata = $this->security->xss_clean($postd);
@@ -318,16 +298,40 @@ class Employee extends CI_Controller
                 $this->load->view('hr/hrAttendenceView', $data);
                 return;
             }
-            $data['atten'] = $list;    
+            $data['atten'] = $list;
             $this->load->view('employee/adminHeaderView');
             $this->load->view('employee/adminAttendanceView', $data);
-             
+
 
         } else {
             $this->session->sess_destroy();
             echo 'INVALID ACCESS';
         }
     }
+    // Admin view fetch job applicants details
+    public function  getApplicantDetails($id)
+{
+    // Authorization Check
+    if (!$this->session->has_userdata('empid')) {
+        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+        return;
+    }
+
+    $this->load->model('jobApplicationModel');
+    
+    // Querying directly for a selected applicant
+    $this->db->where('sejoba_id', $id);
+    $this->db->where('sejoba_state', 'selected'); 
+    $query = $this->db->get('sejobapplicant');
+    $applicant = $query->row();
+
+    if ($applicant) {
+        echo json_encode(['success' => true, 'data' => $applicant]);
+    } else {
+        // Provide a clear message if the ID exists but hasn't been "Selected" yet
+        echo json_encode(['success' => false, 'message' => 'Applicant not found or not in "Selected" state.']);
+    }
+}
 
 
     // AdminviewProjects
@@ -488,7 +492,7 @@ class Employee extends CI_Controller
             $this->session->has_userdata('branch') &&
             $this->session->has_userdata('status') &&
             $this->session->userdata('status') == 'active' &&
-            $this->session->userdata('accesslevel') == 'ADMIN'|| $this->session->userdata('accesslevel') == 'HR'
+            $this->session->userdata('accesslevel') == 'ADMIN' || $this->session->userdata('accesslevel') == 'HR'
         ) {
 
             $this->load->model('EmployeeModel');
@@ -521,59 +525,80 @@ class Employee extends CI_Controller
             echo 'INVALID ACCESS';
         }
     }
-   
+    //changed 10/11/2024
+    // added cv and photo fields to employee details 
+
 
     public function addEmployee()
     {
-        if (!$this->session->has_userdata('empid')) {
-            echo 'Unauthorized Access';
-            return;
-        }
-
-        $post = $this->input->post();
-        $data = $this->security->xss_clean($post);
-
+        $this->load->library('upload');
         $this->load->model('EmployeeModel');
 
-        $employee = [
-            'seemp_id' => $data['empId'],
-            'seemp_branch' => strtoupper($data['branch']),
-            'seemp_email' => $data['email'],
-            'seemp_pass' => password_hash($data['password'], PASSWORD_DEFAULT),
-            'seemp_status' => strtolower($data['status']),
-            'seemp_acesslevel' => strtoupper($data['accessLevel'])
+        // 1. Prepare Upload Configuration
+        $config['upload_path'] = './uploads/';
+        $config['allowed_types'] = 'gif|jpg|png|jpeg|pdf|doc|docx';
+        $config['max_size'] = 5120; // 5MB
+        $config['encrypt_name'] = TRUE; // Security: rename files to random strings
 
+        $this->upload->initialize($config);
+
+        // 2. Handle Photo Upload
+        $photo_name = '';
+        if (!empty($_FILES['photo']['name'])) {
+            if ($this->upload->do_upload('photo')) {
+                $data = $this->upload->data();
+                $photo_name = $data['file_name'];
+            }
+        }
+
+        //  Handle CV Upload
+        $cv_name = '';
+        if (!empty($_FILES['cv']['name'])) {
+            if ($this->upload->do_upload('cv')) {
+                $data = $this->upload->data();
+                $cv_name = $data['file_name'];
+            }
+        }
+
+        // Collect all form data
+        $formData = $this->input->post();
+
+        // Prepare data for 'seemployee' table
+        $employee = [
+            'seemp_id' => $formData['empid'],
+            'seemp_branch' => $formData['branch'],
+            'seemp_email' => $formData['email'],
+            'seemp_pass' => password_hash($formData['password'], PASSWORD_DEFAULT),
+            'seemp_status' => strtolower($formData['status']),
+            'seemp_acesslevel' => $formData['accessLevel']
         ];
 
+        // Prepare data for 'seempdetails' table
         $details = [
-
-            'seempd_empid' => $data['empId'],
-            'seempd_name' => $data['empName'],
-            'seempd_phone' => $data['phone'],
-            'seempd_designation' => $data['designation'],
-            'seempd_salary' => $data['salary'],
-            'seempd_project' => $data['project'],
-            'seempd_experience' => $data['experience'],
-            'seempd_jobaid' => $data['applicantId'],
-            'seempd_dob' => $data['dob'],
-            'seempd_joiningdate' => $data['joiningDate'],
-            'seempd_increment' => $data['increment'],
-            'seempd_address_permanent' => $data['permAddress'],
-            'seempd_address_current' => $data['currentAddress'],
-            'seempd_aadhar' => $data['aadhar'],
-            'seempd_pan' => $data['pan']
+            'seempd_empid' => $formData['empid'],
+            'seempd_name' => $formData['empName'],
+            'seempd_phone' => $formData['phone'],
+            'seempd_designation' => $formData['designation'],
+            'seempd_salary' => $formData['salary'],
+            'seempd_project' => $formData['project'],
+            'seempd_experience' => $formData['experience'],
+            'seempd_dob' => $formData['dob'],
+            'seempd_joiningdate' => $formData['joiningDate'],
+            'seempd_increment' => $formData['increment'],
+            'seempd_address_permanent' => $formData['permAddress'],
+            'seempd_address_current' => $formData['currentAddress'],
+            'seempd_aadhar' => $formData['aadhar'],
+            'seempd_pan' => $formData['pan'],
+            'seempd_img' => $photo_name, // Saved filename
+            'seempd_cv' => $cv_name      // Saved filename
         ];
 
         $result = $this->EmployeeModel->register_employee($employee, $details);
-
         if ($result['code'] == 0) {
-
             redirect('Employee/viewEmployee');
-
         } else {
-
-            echo "Error adding employee";
-
+            $this->session->set_flashdata('msg', 'Error adding employee: ' . $result['message']);
+            redirect('Employee/RegisterEmployee');
         }
     }
 
@@ -873,19 +898,19 @@ class Employee extends CI_Controller
      * HR Attendance Monitoring
      */
     public function hrAttendance()
-{
-    if ($this->session->userdata('accesslevel') == 'HR') {
-        $this->load->model('AttendanceModel');
-        // Get all logs to show HR the history
-        $data['atten'] = $this->AttendanceModel->get_attendance_of_all_employee();
-        
-        $this->load->view('hr/hrHeaderView');
-        // Reusing the Admin Attendance View for data consistency
-        $this->load->view('employee/adminAttendanceView', $data);
-    } else {
-        redirect('Employee/Login');
+    {
+        if ($this->session->userdata('accesslevel') == 'HR') {
+            $this->load->model('AttendanceModel');
+            // Get all logs to show HR the history
+            $data['atten'] = $this->AttendanceModel->get_attendance_of_all_employee();
+
+            $this->load->view('hr/hrHeaderView');
+            // Reusing the Admin Attendance View for data consistency
+            $this->load->view('employee/adminAttendanceView', $data);
+        } else {
+            redirect('Employee/Login');
+        }
     }
-}
 
 
 
@@ -938,29 +963,74 @@ class Employee extends CI_Controller
     }
 
     //  Update Employee Functionality
-    public function updateEmployee($empid = '')
-    {
-        if (!$this->session->has_userdata('empid') || $this->session->userdata('accesslevel') != 'ADMIN') {
-            redirect('login');
-            return;
-        }
-        $this->load->model('EmployeeModel'); // FIX
+    public function updateEmployee($empid)
+{
+    $this->load->library('upload');
+    $this->load->model('EmployeeModel');
 
-        if ($this->input->post()) {
-            $post = $this->input->post();
-            $data = $this->security->xss_clean($post);
+    // 1. Fetch current data to keep existing files if no new ones are uploaded
+    $current = $this->EmployeeModel->get_employee_full_details($empid);
+    if (empty($current)) {
+        show_error('Employee not found');
+    }
+    $old_photo = $current[0]->seempd_img;
+    $old_cv = $current[0]->seempd_cv;
 
-            $result = $this->EmployeeModel->update_employee($empid, $data);
+    // 2. Configure Upload
+    $config['upload_path']   = './uploads/';
+    $config['allowed_types'] = 'gif|jpg|png|jpeg|pdf|doc|docx';
+    $config['max_size']      = 5120;
+    $config['encrypt_name']  = TRUE;
+    $this->upload->initialize($config);
 
-            if ($result['code'] == 0) {
-                $this->session->set_flashdata('success', 'Employee updated successfully');
-            } else {
-                $this->session->set_flashdata('error', 'Failed to update employee');
-            }
-
-            redirect('Employee/viewEmployee');
+    // 3. Process Photo
+    $photo_name = $old_photo;
+    if (!empty($_FILES['photo']['name'])) {
+        if ($this->upload->do_upload('photo')) {
+            $photo_name = $this->upload->data('file_name');
         }
     }
+
+    // 4. Process CV
+    $cv_name = $old_cv;
+    if (!empty($_FILES['cv']['name'])) {
+        if ($this->upload->do_upload('cv')) {
+            $cv_name = $this->upload->data('file_name');
+        }
+    }
+
+    // 5. Prepare data matching the Model's expected keys
+    $updateData = [
+        'empName'        => $this->input->post('empName'),
+        'email'          => $this->input->post('email'),
+        'branch'         => $this->input->post('branch'),
+        'status'         => $this->input->post('status'),
+        'designation'    => $this->input->post('designation'),
+        'phone'          => $this->input->post('phone'),
+        'salary'         => $this->input->post('salary'),
+        'experience'     => $this->input->post('experience'),
+        'dob'            => $this->input->post('dob'),
+        'joiningDate'    => $this->input->post('joiningDate'),
+        'permAddress'    => $this->input->post('permAddress'),
+        'currentAddress' => $this->input->post('currentAddress'),
+        'aadhar'         => $this->input->post('aadhar'),
+        'pan'            => $this->input->post('pan'),
+        'accessLevel'    => $this->input->post('accessLevel'),
+        'project'        => $this->input->post('project'),
+        'increment'      => $this->input->post('increment'),
+        'photo'          => $photo_name, // Must match Model key
+        'cv'             => $cv_name     // Must match Model key
+    ];
+
+    $result = $this->EmployeeModel->update_employee($empid, $updateData);
+
+    if ($result['code'] == 0) {
+        $this->session->set_flashdata('msg', 'Employee Updated Successfully');
+        redirect('Employee/viewEmployee'); // Redirect to list view
+    } else {
+        echo "Update failed: " . $result['message'];
+    }
+}
 
     /**
      * Reset Employee Functionality

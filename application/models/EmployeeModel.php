@@ -6,15 +6,15 @@ class EmployeeModel extends CI_Model
 {
     /// Get user by email or employee ID for authentication 
     //ADDED on 2024-06-15 by BIKI
-    
-// public function get_user_by_identity($identity) {
+
+    // public function get_user_by_identity($identity) {
 //     $this->db->group_start();
 //     $this->db->where('seemp_email', $identity);
 //     $this->db->or_where('seemp_id', $identity);
 //     $this->db->group_end();
 //     $query = $this->db->get('seemployee');
-    
-//     return ($query->num_rows() == 1) ? $query->row() : false;
+
+    //     return ($query->num_rows() == 1) ? $query->row() : false;
 // }
 
     function getallemployee_with_joins()
@@ -205,97 +205,51 @@ class EmployeeModel extends CI_Model
         }
     }
 
+    function update_log_current_state($empid = '', $action = 'login')
+    {
+        if (empty(trim($empid)) || empty(trim($action))) {
+            return ['code' => 1];
+        }
 
-//    function update_log_current_state($empid = '', $action = 'login')
-//     {
-//         if (
-//             empty(trim($empid)) || empty(trim($action))
-//         ) {
-//             return ['code' => 1];
-//         } else {
+        $today = date('Y-m-d');
+        $now = date('Y-m-d H:i:s');
 
-//             $this->db->trans_begin();
+        // Check if an entry already exists for this employee for TODAY
+        $this->db->where([
+            'seemp_logempid' => $empid,
+            'seemp_logdate' => $today
+        ]);
+        $existing_log = $this->db->get('seemployeeloginlog')->row();
 
-//             $condition = array(
-//                 'seemp_logempid =' => $empid,
-//                 'seemp_logdate =' => date('Y-m-d'),
-//             );
-
-//             $data = array(
-//                 'seemp_logempid' => $empid,
-//                 'seemp_logdate' => date('Y-m-d'),
-//             );
-
-//             $isupdated = $this->db->from('seemployeeloginlog')->where($condition)->get()->result();
-
-//             if (count($isupdated) <= 0 && $action == 'login') {
-
-//                 $data += ['seemp_logintime' => date('Y-m-d H:i:s')];
-//                 $this->db->insert('seemployeeloginlog', $data);
-//                 $this->db->trans_complete();
-//                 return ['code' => 0];
-
-//             }else if (count($isupdated) == 1 && $action == 'logout') {
-
-//                 $this->db->where([
-//                     'seemp_logempid' => $empid,
-//                     'seemp_logdate' => date('Y-m-d')
-//                 ]);
-
-//                 $this->db->update('seemployeeloginlog', [
-//                     'seemp_logouttime' => date('Y-m-d H:i:s')
-//                 ]);
-
-//                 $this->db->trans_complete();
-//                 return ['code' => 0];
-//             }
-
-//         }
-//     }
-function update_log_current_state($empid = '', $action = 'login')
-{
-    if (empty(trim($empid)) || empty(trim($action))) {
+        if ($action == 'login') {
+            // ONLY insert if NO record exists for today.
+            // This prevents the login time from being changed on second login.
+            if (!$existing_log) {
+                $data = [
+                    'seemp_logempid' => $empid,
+                    'seemp_logdate' => $today,
+                    'seemp_logintime' => $now
+                ];
+                $this->db->insert('seemployeeloginlog', $data);
+                return ['code' => 0];
+            }
+            // If it exists, do nothing (keep original login time)
+            return ['code' => 0];
+        } else if ($action == 'logout') {
+            // Find today's record and update the logout time
+            if ($existing_log) {
+                $this->db->where([
+                    'seemp_logempid' => $empid,
+                    'seemp_logdate' => $today
+                ]);
+                $this->db->update('seemployeeloginlog', [
+                    'seemp_logouttime' => $now
+                ]);
+                return ['code' => 0];
+            }
+        }
         return ['code' => 1];
     }
-
-    $today = date('Y-m-d');
-    $now = date('Y-m-d H:i:s');
-
-    // Check if a log entry already exists for this employee today
-    $this->db->where([
-        'seemp_logempid' => $empid,
-        'seemp_logdate'  => $today
-    ]);
-    $existing_log = $this->db->get('seemployeeloginlog')->row();
-
-    if ($action == 'login') {
-        // ONLY insert if no log exists for today. 
-        // If it exists, we do nothing to keep the very first login time.
-        if (!$existing_log) {
-            $data = [
-                'seemp_logempid'  => $empid,
-                'seemp_logdate'   => $today,
-                'seemp_logintime' => $now
-            ];
-            $this->db->insert('seemployeeloginlog', $data);
-            return ['code' => 0, 'message' => 'Login recorded'];
-        }
-        return ['code' => 0, 'message' => 'Login already exists for today'];
-    } 
-    
-    else if ($action == 'logout') {
-        // Update the logout time for today's entry
-        if ($existing_log) {
-            $this->db->where([
-                'seemp_logempid' => $empid,
-                'seemp_logdate'  => $today
-            ]);
-            $this->db->update('seemployeeloginlog', ['seemp_logouttime' => $now]);
-            return ['code' => 0, 'message' => 'Logout recorded'];
-        }
-        return ['code' => 1, 'message' => 'No login record found to logout'];
-    }
-}
 
     function get_all_loginlog_for_thisempid()
     {
@@ -342,61 +296,61 @@ function update_log_current_state($empid = '', $action = 'login')
 
     }
 
-    /**
-     * Update Employee Information
-     */
+    //  for update employee from admin panel
     public function update_employee($empid = '', $data = array())
-    {
-        if (empty($empid) || empty($data)) {
-            return ['code' => 1, 'message' => 'Invalid parameters'];
-        }
-
-        $this->db->trans_start();
-
-        // Update main employee table
-        $employee_data = [
-            'seemp_email' => $data['email'] ?? null,
-            'seemp_branch' => strtoupper($data['branch'] ?? ''),
-            'seemp_status' => strtolower($data['status'] ?? 'active'),
-            'seemp_acesslevel' => strtoupper($data['accessLevel'] ?? 'EMPL')
-        ];
-
-        if (!empty($data['password'])) {
-            $employee_data['seemp_pass'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        }
-
-        $this->db->where('seemp_id', $empid);
-        $this->db->update('seemployee', $employee_data);
-
-        // Update employee details table
-        $details_data = [
-            'seempd_name' => $data['empName'] ?? null,
-            'seempd_phone' => $data['phone'] ?? null,
-            'seempd_designation' => $data['designation'] ?? null,
-            'seempd_salary' => $data['salary'] ?? null,
-            'seempd_project' => $data['project'] ?? null,
-            'seempd_experience' => $data['experience'] ?? null,
-            'seempd_dob' => $data['dob'] ?? null,
-            'seempd_joiningdate' => $data['joiningDate'] ?? null,
-            'seempd_increment' => $data['increment'] ?? null,
-            'seempd_address_permanent' => $data['permAddress'] ?? null,
-            'seempd_address_current' => $data['currentAddress'] ?? null,
-            'seempd_aadhar' => $data['aadhar'] ?? null,
-            'seempd_pan' => $data['pan'] ?? null
-        ];
-
-        $this->db->where('seempd_empid', $empid);
-        $this->db->update('seempdetails', $details_data);
-
-        $this->db->trans_complete();
-
-        if ($this->db->trans_status() === FALSE) {
-            return ['code' => 1, 'message' => 'Database transaction failed'];
-        } else {
-            return ['code' => 0, 'message' => 'Employee updated successfully'];
-        }
+{
+    if (empty($empid) || empty($data)) {
+        return ['code' => 1, 'message' => 'Invalid parameters'];
     }
 
+    $this->db->trans_start();
+
+    // 1. Update main table (seemployee)
+    $employee_data = [
+        'seemp_email'      => $data['email'],
+        'seemp_branch'     => strtoupper($data['branch']),
+        'seemp_status'     => strtolower($data['status']),
+        'seemp_acesslevel' => strtoupper($data['accessLevel'])
+    ];
+
+    // Password logic: only update if user typed a new one
+    $new_pass = $this->input->post('password');
+    if (!empty($new_pass)) {
+        $employee_data['seemp_pass'] = password_hash($new_pass, PASSWORD_DEFAULT);
+    }
+
+    $this->db->where('seemp_id', $empid);
+    $this->db->update('seemployee', $employee_data);
+
+    // 2. Update details table (seempdetails)
+    $details_data = [
+        'seempd_name'              => $data['empName'],
+        'seempd_phone'             => $data['phone'],
+        'seempd_designation'       => $data['designation'],
+        'seempd_salary'            => $data['salary'],
+        'seempd_project'           => $data['project'],
+        'seempd_experience'        => $data['experience'],
+        'seempd_dob'               => $data['dob'],
+        'seempd_joiningdate'       => $data['joiningDate'],
+        'seempd_increment'         => $data['increment'],
+        'seempd_address_permanent' => $data['permAddress'],
+        'seempd_address_current'   => $data['currentAddress'],
+        'seempd_aadhar'            => $data['aadhar'],
+        'seempd_pan'               => $data['pan'],
+        'seempd_img'               => $data['photo'], // Files updated here
+        'seempd_cv'                => $data['cv']      // Files updated here
+    ];
+
+    $this->db->where('seempd_empid', $empid);
+    $this->db->update('seempdetails', $details_data);
+
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === FALSE) {
+        return ['code' => 1, 'message' => 'Database Transaction Failed'];
+    }
+    return ['code' => 0, 'message' => 'Success'];
+}
     /**
      * Reset Employee Password
      */
