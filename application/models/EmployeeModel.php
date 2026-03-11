@@ -47,78 +47,104 @@ class EmployeeModel extends CI_Model
         return $res;
     }
 
-    function get_employee_with_search($query = '', $status = '')
-    {
-        if (trim($query) != '') {
-            if (trim($status) != '') {
-                $res = $this->db
-                    ->from('seemployee')
-                    ->group_start()
-                    ->like('seemployee.seseq_id', $query)
-                    ->or_like('seemployee.seemp_id', $query)
-                    ->or_like('seemployee.seemp_email', $query)
-                    ->or_like('seempdetails.seempd_name', $query)
-                    ->or_like('seempdetails.seempd_phone', $query)
-                    ->or_like('seempdetails.seempd_designation', $query)
-                    ->group_end()
-                    ->join('seempdetails', 'seemployee.seemp_id = seempdetails.seempd_empid', 'left')
-                    ->join('sejobapplicant', 'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id', 'left')
-                    ->get()
-                    ->result();
+    // function get_employee_with_search($query = '', $status = '')
+    // {
+    //     if (trim($query) != '') {
+    //         if (trim($status) != '') {
+    //             $res = $this->db
+    //                 ->from('seemployee')
+    //                 ->group_start()
+    //                 ->like('seemployee.seseq_id', $query)
+    //                 ->or_like('seemployee.seemp_id', $query)
+    //                 ->or_like('seemployee.seemp_email', $query)
+    //                 ->or_like('seempdetails.seempd_name', $query)
+    //                 ->or_like('seempdetails.seempd_phone', $query)
+    //                 ->or_like('seempdetails.seempd_designation', $query)
+    //                 ->group_end()
+    //                 ->join('seempdetails', 'seemployee.seemp_id = seempdetails.seempd_empid', 'left')
+    //                 ->join('sejobapplicant', 'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id', 'left')
+    //                 ->get()
+    //                 ->result();
 
-            } else {
+    //         } else {
 
-                $res = $this->db
-                    ->from('seemployee')
-                    ->group_start()
-                    ->like('seemployee.seseq_id', $query)
-                    ->or_like('seemployee.seemp_id', $query)
-                    ->or_like('seemployee.seemp_email', $query)
-                    ->or_like('sejobapplicant.sejoba_name', $query)
-                    ->or_like('sejobapplicant.sejoba_phone', $query)
-                    ->or_like('sejobapplicant.sejoba_position', $query)
-                    ->group_end()
-                    ->join(
-                        'seempdetails',
-                        'seemployee.seemp_id = seempdetails.seempd_empid',
-                        'left'
-                    )
-                    ->join(
-                        'sejobapplicant',
-                        'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id',
-                        'left'
-                    )
-                    ->get()
-                    ->result();
+    //             $res = $this->db
+    //                 ->from('seemployee')
+    //                 ->group_start()
+    //                 ->like('seemployee.seseq_id', $query)
+    //                 ->or_like('seemployee.seemp_id', $query)
+    //                 ->or_like('seemployee.seemp_email', $query)
+    //                 ->or_like('sejobapplicant.sejoba_name', $query)
+    //                 ->or_like('sejobapplicant.sejoba_phone', $query)
+    //                 ->or_like('sejobapplicant.sejoba_position', $query)
+    //                 ->group_end()
+    //                 ->join(
+    //                     'seempdetails',
+    //                     'seemployee.seemp_id = seempdetails.seempd_empid',
+    //                     'left'
+    //                 )
+    //                 ->join(
+    //                     'sejobapplicant',
+    //                     'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id',
+    //                     'left'
+    //                 )
+    //                 ->get()
+    //                 ->result();
 
-            }
+    //         }
 
-        } else {
-            if (trim($status) != '') {
-                $res = $this->db
-                    ->from('seemployee')
-                    ->where('seemp_status', $status)
-                    ->join(
-                        'seempdetails',
-                        'seemployee.seemp_id = seempdetails.seempd_empid',
-                        'left'
-                    )
-                    ->join(
-                        'sejobapplicant',
-                        'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id',
-                        'left'
-                    )
-                    ->get()
-                    ->result();
-            } else {
-                $res = $this->getallemployee_with_joins();
-            }
-        }
+    //     } else {
+    //         if (trim($status) != '') {
+    //             $res = $this->db
+    //                 ->from('seemployee')
+    //                 ->where('seemp_status', $status)
+    //                 ->join(
+    //                     'seempdetails',
+    //                     'seemployee.seemp_id = seempdetails.seempd_empid',
+    //                     'left'
+    //                 )
+    //                 ->join(
+    //                     'sejobapplicant',
+    //                     'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id',
+    //                     'left'
+    //                 )
+    //                 ->get()
+    //                 ->result();
+    //         } else {
+    //             $res = $this->getallemployee_with_joins();
+    //         }
+    //     }
 
-        return $res;
+    //     return $res;
+    // }
+
+ function get_employee_with_search($query = '', $status = '')
+{
+    // Always start with the main table and include necessary joins
+    $this->db->from('seemployee');
+    $this->db->join('seempdetails', 'seemployee.seemp_id = seempdetails.seempd_empid', 'left');
+    $this->db->join('sejobapplicant', 'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id', 'left');
+
+    // If there is a text query, apply 'LIKE' filters
+    if (trim($query) != '') {
+        $this->db->group_start();
+        $this->db->like('seemployee.seseq_id', $query);
+        $this->db->or_like('seemployee.seemp_id', $query);
+        $this->db->or_like('seemployee.seemp_email', $query);
+        $this->db->or_like('seempdetails.seempd_name', $query);
+        $this->db->or_like('seempdetails.seempd_phone', $query);
+        $this->db->or_like('seempdetails.seempd_designation', $query);
+        $this->db->group_end();
     }
 
+    // If there is a status filter, apply the 'WHERE' clause
+    if (trim($status) != '') {
+        $this->db->where('seemployee.seemp_status', $status);
+    }
 
+    // Execute and return results
+    return $this->db->get()->result();
+}
     function check_if_employee_exist($username = '', $pass = '')
     {
         if (trim($username) == '' || trim($pass) == '') {

@@ -228,7 +228,7 @@
 
         .form-group {
             position: relative;
-        }       
+        }
 
         .form-label {
             font-weight: 600;
@@ -355,6 +355,11 @@
                 width: 100%;
             }
         }
+
+        /*  Utility class to hide elements when needed */
+        .d-none {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -459,21 +464,19 @@
 
                 <!-- Action Buttons - NOW INSIDE FORM -->
                 <div class="action-buttons">
-
-                    <button type="submit" formaction="<?= base_url('index.php/Employee/addProject') ?>"
+                    <button type="submit" id="addBtn" formaction="<?= base_url('index.php/Employee/addProject') ?>"
                         class="btn btn-primary">
                         <i class="fas fa-plus me-2"></i>Add Project
                     </button>
 
-                    <button type="submit" formaction="<?= base_url('index.php/Employee/updateProject') ?>"
-                        class="btn btn-success">
+                    <button type="submit" id="updateBtn"
+                        formaction="<?= base_url('index.php/Employee/updateProject') ?>" class="btn btn-success d-none">
                         <i class="fas fa-edit me-2"></i>Update Project
                     </button>
 
                     <button type="button" class="btn btn-secondary" onclick="resetForm()">
                         <i class="fas fa-undo me-2"></i>Reset
                     </button>
-
                 </div>
             </form> <!-- ✅ FORM TAG ENDS HERE -->
         </div>
@@ -489,6 +492,10 @@
             document.getElementById('projectId').value = '';
             document.getElementById('startDate').valueAsDate = new Date();
             document.getElementById('deadlineDate').valueAsDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
+
+            // Show Add button and hide Update button
+            document.getElementById("addBtn").classList.remove("d-none");
+            document.getElementById("updateBtn").classList.add("d-none");
         }
 
         function fetchProject() {
@@ -529,6 +536,9 @@
                     document.getElementById("status").value = data.seproj_status;
 
                 });
+                // Show Update button and hide Add button
+                document.getElementById("addBtn").classList.add("d-none");
+                document.getElementById("updateBtn").classList.remove("d-none");
         }
 
         function addProject(event) {
@@ -545,26 +555,7 @@
             resetForm();
         }
 
-        // function updateProject(event) {
-
-        //     event.preventDefault();
-
-        //     let projectId = document.getElementById("projectId").value;
-
-        //     if (!projectId) {
-        //         alert("⚠️ Please fetch project first");
-        //         return;
-        //     }
-
-        //     projectId = projectId.replace(/[^0-9]/g, "");
-
-        //     const form = document.getElementById("projectForm");
-
-        //     form.action = "<?= base_url('index.php/Employee/updateProject') ?>";
-
-        //     form.submit();
-
-        // }
+        
         function logout() {
             if (confirm('Logout from Admin Dashboard?')) {
                 window.location.href = 'login.html';

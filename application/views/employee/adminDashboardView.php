@@ -1,9 +1,5 @@
 <?php
-// This code is Written by :
-// PAPPU BISWAS 
-// Suropriyo Eterprise
-// Howrah
-
+ 
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <!DOCTYPE html>

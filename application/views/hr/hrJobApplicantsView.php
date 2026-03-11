@@ -788,18 +788,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 document.getElementById("app_status").innerText = status || 'Not specified';
                 document.getElementById("app_experience").innerText = experience || 'Not specified';
 
-                // Handle resume display
+                // Handle resume link
                 if (resume && resume !== '') {
-                    // Add base URL and resume folder for proper download
+                
                     const baseUrl = '<?= base_url(); ?>';
-                    const fullResumePath = baseUrl + 'resume/' + resume;
-                    document.getElementById("app_resume").innerHTML = 
-                        "<a href='" + fullResumePath + "' target='_blank' download style='color: #4f46e5; text-decoration: none; padding: 8px 15px; background: #f0f9ff; border-radius: 4px; display: inline-block;'> Download Resume</a>";
+
+                    // 2. Clean the path: remove './' if it exists at the start of the string
+                    const cleanPath = resume.replace(/^\.\//, '');
+
+                    // 3. Construct the final URL. 
+                    let fullResumePath;
+                    if (cleanPath.startsWith('resume/')) {
+                        fullResumePath = baseUrl + cleanPath+'.pdf';
+                    } else {
+                        fullResumePath = baseUrl + 'resume/' + cleanPath+'.pdf';
+                    }
+
+                    document.getElementById("app_resume").innerHTML =
+                        "<a href='" + fullResumePath + "' target='_blank' download style='color: #4f46e5; text-decoration: none; padding: 10px 20px; background: #f0f9ff; border: 1px solid #3b82f6; border-radius: 8px; display: inline-block; font-weight: 600;'> <i class='fas fa-file-download'></i> Download Resume</a>";
                 } else {
-                    document.getElementById("app_resume").innerHTML = 
+                    document.getElementById("app_resume").innerHTML =
                         "<span style='color: #6b7280; font-style: italic;'>No resume uploaded</span>";
                 }
-
                 // Fill hidden interview form fields
                 document.getElementById("invite_applicant_id").value = id;
                 document.getElementById("invite_email").value = email;
@@ -811,9 +821,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 document.getElementById("review_applicant_id").value = id;
 
                 // Scroll down to candidate information section
-                document.querySelector('.candidate-info').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
+                document.querySelector('.candidate-info').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
                 });
 
             });

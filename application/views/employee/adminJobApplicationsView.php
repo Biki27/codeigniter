@@ -683,7 +683,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     const cleanPath = rawPath.replace(/^\.\//, '');
 
                     // Construct the final URL using CodeIgniter's base_url
-                    const fileUrl = "<?= base_url() ?>" + cleanPath;
+                    const fileUrl = "<?= base_url() ?>" + cleanPath+'.pdf';
 
                     resumeElement.innerHTML = `
                 <a href="${fileUrl}" target="_blank" style="color: #461bb9; font-weight: 600; text-decoration: none;">

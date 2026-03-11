@@ -1,8 +1,9 @@
-<?php 
+<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,7 +114,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     .welcome h1 {
       font-size: 2.5rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #fff, rgba(255,255,255,0.8));
+      background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -138,7 +139,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       font-weight: 700;
       font-size: 2rem;
       margin-bottom: 30px;
-      background: linear-gradient(135deg, #fff, rgba(255,255,255,0.8));
+      background: linear-gradient(135deg, #fff, rgba(255, 255, 255, 0.8));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -282,12 +283,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         width: 100%;
         transform: translateX(-100%);
       }
+
       .main-content {
         margin-left: 0;
       }
+
       .footer {
         left: 0;
       }
+
       .table-responsive {
         font-size: 0.85rem;
       }
@@ -298,27 +302,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body>
   <!-- Main Content -->
   <div class="main-content">
-        <!-- Employees Section -->
+    <!-- Employees Section -->
     <div id="employees" class="section active">
       <h2 class="text-white mb-4">Employee Management</h2>
-      
+
       <!-- Search Box -->
-       <?= form_open('Employee/viewEmployee') ?>
+      <?= form_open('Employee/viewEmployee') ?>
       <div class="search-box">
         <div class="row align-items-center">
           <div class="col-md-6">
-            <input name="query" type="text" class="form-control" id="searchInput" placeholder="Search employees by name, ID, or designation...">
+            <input name="query" type="text" class="form-control" id="searchInput"
+              placeholder="Search employees by name, ID, or designation...">
           </div>
           <div class="col-md-3">
             <select name="status" class="form-control" id="statusFilter">
               <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="active" <?= ($this->input->post('status') == 'active') ? 'selected' : '' ?>>Active</option>
+              <option value="inactive" <?= ($this->input->post('status') == 'inactive') ? 'selected' : '' ?>>Inactive
+              </option>
             </select>
           </div>
           <div class="col-md-3">
             <button class="btn btn-view w-100" type="submit">
-              <i ></i>Search
+              <i></i>Search
             </button>
           </div>
         </div>
@@ -341,39 +347,41 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           </thead>
           <tbody id="employeesTableBody">
 
-          <?php foreach ($employees as $emp) { ?>
-            
-            <tr>
-              <td><span class="emp-id"><?= $emp->seemp_id ?></span></td>
-              <td>
-                <div>
-                  <strong><?= $emp->seempd_name  ?></strong><br>
-                </div>
-              </td>
-              <td><strong><?= $emp->seempd_designation  ?></strong></td>
-              <td><?= $emp->seemp_email?></td>
-              <td><span class="status-badge <?= $emp->seemp_status == 'active' ? 'text-bg-primary' : 'text-bg-warning' ?>"><?= $emp->seemp_status?></span></td>
-              <td style="display:flex">
+            <?php foreach ($employees as $emp) { ?>
 
-                <?= form_open('Employee/viewEmployeeDetails')?>
-                <input type="hidden" name="empid" value="<?= $emp->seemp_id ?>"/>
-                
-                <button type='submit' class="btn btn-view btn-action btn-sm" >
-                  <i class="fas fa-eye"></i>
-                </button>
-                <?= form_close()?>
+              <tr>
+                <td><span class="emp-id"><?= $emp->seemp_id ?></span></td>
+                <td>
+                  <div>
+                    <strong><?= $emp->seempd_name ?></strong><br>
+                  </div>
+                </td>
+                <td><strong><?= $emp->seempd_designation ?></strong></td>
+                <td><?= $emp->seemp_email ?></td>
+                <td><span
+                    class="status-badge <?= $emp->seemp_status == 'active' ? 'text-bg-primary' : 'text-bg-warning' ?>"><?= $emp->seemp_status ?></span>
+                </td>
+                <td style="display:flex">
 
-                <?= form_open('Employee/RegisterEmployee')?>
-                <input type="hidden" name="empid" value="<?= $emp->seemp_id ?>">
-                <button type="submit" class="btn btn-edit btn-action btn-sm">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <?= form_close()?>
-              </td>
-            </tr>
+                  <?= form_open('Employee/viewEmployeeDetails') ?>
+                  <input type="hidden" name="empid" value="<?= $emp->seemp_id ?>" />
 
-          <?php  } ?>
-          
+                  <button type='submit' class="btn btn-view btn-action btn-sm">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <?= form_close() ?>
+
+                  <?= form_open('Employee/RegisterEmployee') ?>
+                  <input type="hidden" name="empid" value="<?= $emp->seemp_id ?>">
+                  <button type="submit" class="btn btn-edit btn-action btn-sm">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <?= form_close() ?>
+                </td>
+              </tr>
+
+            <?php } ?>
+
           </tbody>
         </table>
       </div>
@@ -382,5 +390,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <div class="footer">
       © 2026 Suropriyo Enterprise. All rights reserved.
     </div>
-  </body>
+</body>
+
 </html>
