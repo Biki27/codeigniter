@@ -95,44 +95,49 @@ class Employee extends CI_Controller
         }
     }
 
-    function AdminDashboard()
-    {
-        if (
-            $this->session->has_userdata('empid') &&
-            $this->session->has_userdata('email') &&
-            $this->session->has_userdata('accesslevel') &&
-            $this->session->has_userdata('branch') &&
-            $this->session->has_userdata('status') &&
-            $this->session->userdata('status') == 'active' &&
-            $this->session->userdata('accesslevel') == 'ADMIN'
-        ) {
-            $this->load->model('EmployeeDetailsModel');
-            $this->load->model('jobApplicationModel');
-            $this->load->model('ProjectsModel');
+   function AdminDashboard()
+{
+    if (
+        $this->session->has_userdata('empid') &&
+        $this->session->has_userdata('email') &&
+        $this->session->has_userdata('branch') &&
+        $this->session->userdata('status') == 'active' &&
+        $this->session->userdata('accesslevel') == 'ADMIN'
+    ) {
+        $this->load->model('EmployeeDetailsModel');
+        $this->load->model('jobApplicationModel');
+        $this->load->model('ProjectsModel');
 
-            $empdetails = $this->EmployeeDetailsModel->get_this_employee_details();
+        $empdetails = $this->EmployeeDetailsModel->get_this_employee_details();
+        
+        // CHECK: Does this employee have a linked job application ID?
+        if (!empty($empdetails) && !empty($empdetails[0]->seempd_jobaid)) {
             $emp_appliction_details = $this->jobApplicationModel->get_applicant_info($empdetails[0]->seempd_jobaid);
-
-            $this->session->set_userdata('empname', $emp_appliction_details[0]->sejoba_name);
-            $this->session->set_userdata('empapid', $emp_appliction_details[0]->sejoba_id);
-
-            $pendingproj = count($this->ProjectsModel->getPendingProjects());
-            $completedproj = count($this->ProjectsModel->getCompletedProjects());
-            $runningproj = count($this->ProjectsModel->getRunningProjects());
-
-            $data = array(
-                'projpending' => $pendingproj,
-                'projrunning' => $runningproj,
-                'projcompleted' => $completedproj,
-            );
-
-            $this->load->view('employee/adminHeaderView');
-            $this->load->view('employee/adminDashboardView', $data);
+            
+            // CHECK: Was an application actually found in the database?
+            if (!empty($emp_appliction_details)) {
+                $this->session->set_userdata('empname', $emp_appliction_details[0]->sejoba_name);
+                $this->session->set_userdata('empapid', $emp_appliction_details[0]->sejoba_id);
+            } else {
+                $this->session->set_userdata('empname', 'Administrator'); // Fallback name
+            }
         } else {
-            $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->session->set_userdata('empname', 'Administrator'); // Fallback name
         }
+
+        $data = array(
+            'projpending' => count($this->ProjectsModel->getPendingProjects()),
+            'projrunning' => count($this->ProjectsModel->getRunningProjects()),
+            'projcompleted' => count($this->ProjectsModel->getCompletedProjects()),
+        );
+
+        $this->load->view('employee/adminHeaderView');
+        $this->load->view('employee/adminDashboardView', $data);
+    } else {
+        $this->session->sess_destroy();
+        redirect('Employee/Login');
     }
+}
 
     // AdminEmployee
     /**

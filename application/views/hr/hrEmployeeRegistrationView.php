@@ -512,7 +512,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <label class="form-label">Employee Name <span class="required">*</span></label>
                         <input type="text" class="form-control" id="empName" name="empName"
                             value="<?= isset($emp) ? $emp->seempd_name : '' ?>" required>
-                    </div> 
+                    </div>
                     <!-- Employee ID -->
 
                     <div class="form-group">
@@ -540,7 +540,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <label class="form-label">Email <span class="required">*</span></label>
                         <input type="email" class="form-control" id="email" name="email"
                             value="<?= isset($emp) ? $emp->seemp_email : '' ?>" required>
-                    </div>  
+                    </div>
                     <!-- Phone -->
 
                     <div class="form-group">
@@ -684,36 +684,51 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
 
         // Optimized AJAX Fetch Applicant logic
+       //trim APP ID and validate before sending request
         async function fetchApplicant() {
-            const appId = document.getElementById('applicantIdSearch').value.trim();
+            let appId = document.getElementById('applicantIdSearch').value.trim();
+            //remove APP from the beginning of the ID if user entered it
+            if (appId.toUpperCase().startsWith('APP')) {
+                appId = appId.substring(3);
+            }
+
             if (!appId) {
                 alert('⚠️ Please enter an Applicant ID');
                 return;
             }
 
             try {
-                // Adjust this URL to match your real route for fetching applicant JSON
-                const response = await fetch('<?= site_url("Employee/get_applicant_data/") ?>' + appId);
+                const response = await fetch('<?= site_url("Employee/getApplicantDetails/") ?>' + appId);
                 const result = await response.json();
 
                 if (result.success) {
                     const data = result.data;
+
+                    // Mapping database columns to Form IDs
                     document.getElementById('empName').value = data.sejoba_name || '';
                     document.getElementById('email').value = data.sejoba_email || '';
                     document.getElementById('phone').value = data.sejoba_phone || '';
                     document.getElementById('designation').value = data.sejoba_position || '';
                     document.getElementById('experience').value = data.sejoba_experience || '';
-                    // Populate other fields as needed based on your table 'sejobapplicant'
-                    alert('✅ Data fetched for ' + data.sejoba_name);
+                    document.getElementById('salary').value = data.sejoba_exp_salary || '';
+
+                    // Optional: Map address if available in applicant table
+                    if (data.sejoba_address) {
+                        document.getElementById('currentAddress').value = data.sejoba_address;
+                        document.getElementById('permAddress').value = data.sejoba_address;
+                    }
+
+                    alert('✅ Selected Applicant data loaded successfully!');
                 } else {
-                    alert('❌ ' + (result.message || 'Applicant not found'));
+                    // This will trigger if applicant state is 'applied' or 'rejected' instead of 'selected'
+                    alert('❌ ' + result.message);
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
                 alert('❌ Error connecting to server');
             }
         }
-
-    </script>
+     </script>
 </body>
+
 </html>

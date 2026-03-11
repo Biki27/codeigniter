@@ -1,8 +1,5 @@
 <?php
-// This code is Written by :
-// PAPPU BISWAS
-// Suropriyo Enterprise
-// Howrah
+ 
 // fixed By SM
 
 defined('BASEPATH') OR exit('No direct script access allowed');

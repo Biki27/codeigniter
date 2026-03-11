@@ -150,8 +150,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <div class="table-container">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h5 class="fw-bold mb-0">Leave Request Actions</h5>
-                            <a href="<?= base_url('index.php/Employee/leaveRequests') ?>"
-                                class="btn btn-sm btn-outline-primary rounded-pill px-3">Manage All</a>
+                            <!-- <a href="<?= base_url('index.php/Employee/leaveRequests') ?>"
+                                class="btn btn-sm btn-outline-primary rounded-pill px-3">Manage All</a> -->
                         </div>
                         <div class="table-responsive">
                             <table class="table align-middle table-hover">

@@ -454,7 +454,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </script>
 
     <?php } ?>
-    
+
     <!-- Main Content -->
     <div class="main-content">
         <div class="page-container">
@@ -596,7 +596,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <div class="form-group">
 
                             <label>Comment</label>
-                             <textarea name="comment" placeholder="Add your comments about the candidate..."></textarea>
+                            <textarea name="comment" placeholder="Add your comments about the candidate..."></textarea>
 
                         </div>
 
@@ -660,25 +660,40 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         // View button functionality
         document.querySelectorAll('.view-btn').forEach(button => {
-
             button.addEventListener('click', function () {
+                // 1. Fill the text details
+                document.getElementById('app_id').innerText = "APP" + this.dataset.id;
+                document.getElementById('app_name').innerText = this.dataset.name;
+                document.getElementById('app_email').innerText = this.dataset.email;
+                document.getElementById('app_phone').innerText = this.dataset.phone;
+                document.getElementById('app_position').innerText = this.dataset.position;
+                document.getElementById('app_salary').innerText = this.dataset.salary;
+                document.getElementById('app_status').innerText = this.dataset.status;
+                document.getElementById('app_experience').innerText = this.dataset.exp;
 
-                // store applicant id in hidden input for review form
-                document.getElementById("applicant_id").value = this.dataset.id;
+                // Hidden input for the form submission
+                document.getElementById('applicant_id').value = this.dataset.id;
 
-                document.getElementById("app_id").innerText = "APP" + this.dataset.id;
-                document.getElementById("app_name").innerText = this.dataset.name;
-                document.getElementById("app_email").innerText = this.dataset.email;
-                document.getElementById("app_phone").innerText = this.dataset.phone;
-                document.getElementById("app_position").innerText = this.dataset.position;
-                document.getElementById("app_salary").innerText = this.dataset.salary;
-                document.getElementById("app_status").innerText = this.dataset.status;
-                document.getElementById("app_experience").innerText = this.dataset.exp;
-                document.getElementById("app_resume").innerHTML =
-                    "<a href='" + this.dataset.resume + "' target='_blank'>Download Resume</a>";
+                // 2. Handle the Resume Download
+                const rawPath = this.dataset.resume; // e.g., "./resume/filename.pdf"
+                const resumeElement = document.getElementById("app_resume");
 
+                if (rawPath && rawPath !== "") {
+                    // Clean the path: remove './' if it exists at the start
+                    const cleanPath = rawPath.replace(/^\.\//, '');
+
+                    // Construct the final URL using CodeIgniter's base_url
+                    const fileUrl = "<?= base_url() ?>" + cleanPath;
+
+                    resumeElement.innerHTML = `
+                <a href="${fileUrl}" target="_blank" style="color: #461bb9; font-weight: 600; text-decoration: none;">
+                    <i class="fas fa-file-download me-2"></i>Download Resume
+                </a>
+            `;
+                } else {
+                    resumeElement.innerText = "No Resume Uploaded";
+                }
             });
-
         });
     </script>
 </body>

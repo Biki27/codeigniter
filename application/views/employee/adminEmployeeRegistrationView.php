@@ -684,8 +684,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
 
         // Optimized AJAX Fetch Applicant logic
+        //trim APP ID and validate before sending request
         async function fetchApplicant() {
-            const appId = document.getElementById('applicantIdSearch').value.trim();
+            let appId = document.getElementById('applicantIdSearch').value.trim();
+            //remove APP from the beginning of the ID if user entered it
+            if (appId.toUpperCase().startsWith('APP')) {
+                appId = appId.substring(3);
+            }
+
             if (!appId) {
                 alert('⚠️ Please enter an Applicant ID');
                 return;
@@ -722,7 +728,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 alert('❌ Error connecting to server');
             }
         }
-    </script>
+   
+   </script>
 </body>
 
 </html>
