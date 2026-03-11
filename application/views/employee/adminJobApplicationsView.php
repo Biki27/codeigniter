@@ -606,11 +606,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                         </button>
 
-                        <?= form_close() ?>
+                        <!-- <?= form_close() ?>
                         <a href="https://your-interview-link.com/invite?applicant=APP001" class="invite-btn"
                             target="_blank" rel="noopener noreferrer">
                             Send Interview Invite
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>

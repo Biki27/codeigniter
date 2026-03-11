@@ -427,7 +427,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <!-- Main Content -->
     <div class="main-content">
         <div class="welcome">
-            <h1>Welcome, Admin!</h1>
+            <h1>Welcome, <?= $this->session->userdata("empname") ?>!</h1>
             <p>Projects Management Dashboard</p>
         </div>
 

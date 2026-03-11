@@ -303,40 +303,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 fileInfo.textContent = '';
             }
         }
-
-        // Form submission
-        // form.addEventListener('submit', async (e) => {
-        //     e.preventDefault();
-
-        //     if (!fileInput.files[0]) {
-        //         alert('Please upload your resume.');
-        //         return;
-        //     }
-
-        //     const formData = new FormData(form);
-        //     const submitBtn = form.querySelector('.submit-btn');
-        //     const originalText = submitBtn.textContent;
-
-        //     submitBtn.textContent = 'Submitting...';
-        //     submitBtn.disabled = true;
-
-        //     try {
-        //         // Replace with your endpoint: Formspree, Netlify Forms, etc.
-        //         // await fetch('https://formspree.io/f/YOUR_ENDPOINT', {
-        //         //     method: 'POST',
-        //         //     body: formData
-        //         // });
-
-        //         alert('Application submitted successfully.');
-        //         form.reset();
-        //         fileInfo.textContent = '';
-        //     } catch (error) {
-        //         alert('Submission failed. Please try again.');
-        //     } finally {
-        //         submitBtn.textContent = originalText;
-        //         submitBtn.disabled = false;
-        //     }
-        // });
     </script>
 </body>
 

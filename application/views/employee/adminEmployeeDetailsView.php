@@ -404,16 +404,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                 <!-- Right: Photo Section -->
                 <div class="photo-section">
-                    <img src="<?= base_url() ?>imgs/<?= $info->seempd_img	?>" 
-                         alt="Employee Photo" class="emp-photo">
+                    <?php 
+                        $profile_pic = (!empty($info->seempd_img)) 
+                                       ? base_url('uploads/' . $info->seempd_img) 
+                                       : 'https://via.placeholder.com/180x180/461bb9/ffffff?text=👤';
+                    ?>
+                    <img src="<?= $profile_pic ?>" alt="Employee Photo" class="emp-photo">
 
                     <?= form_open('Employee/RegisterEmployee') ?>
-                        <input type="hidden" value="<?= $info->seemp_id ?>" />
-                        <button class="edit-btn" >
-                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        <input type="hidden" name="empid" value="<?= $info->seemp_id ?>" />
+                        <button type="submit" class="edit-btn">
+                            <i class="fas fa-user-edit me-2"></i>Edit Profile
                         </button>
                     <?= form_close() ?>
-
                 </div>
             </div>
         </div>

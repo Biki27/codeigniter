@@ -26,7 +26,7 @@ class jobApplicationModel extends CI_Model
             'sejoba_experience' => $apdata['experience'],
             'sejoba_exp_salary' => $apdata['salary'],
             'sejoba_coverletter' => $apdata['coverletter'],
-            // 'sejoba_state' => $apdata['state'],
+            'sejoba_state' => 'applied', // Default status set to 'applied'
             // 'sejoba_comment' => $apdata['comment'],
         );
 
@@ -68,8 +68,48 @@ class jobApplicationModel extends CI_Model
         return $this->db->update('sejobapplicant',$data);
     }
 
+    // Step 2: Add interview scheduling function
+    function schedule_interview($applicant_id = '', $interview_data = array())
+    {
+        if (empty($applicant_id) || empty($interview_data)) {
+            return ['code' => 1, 'message' => 'Invalid parameters'];
+        }
+
+        $this->db->trans_start();
+
+        // Update applicant with interview details and status
+        $update_data = array(
+            'sejoba_state' => 'interview_scheduled',
+            'sejoba_interview_date' => $interview_data['date'] ?? null,
+            'sejoba_interview_time' => $interview_data['time'] ?? null,
+            'sejoba_interview_location' => $interview_data['location'] ?? null,
+            'sejoba_interview_scheduled_by' => $interview_data['scheduled_by'] ?? null,
+            'sejoba_interview_scheduled_at' => date('Y-m-d H:i:s')
+        );
+
+        $this->db->where('sejoba_id', $applicant_id);
+        $this->db->update('sejobapplicant', $update_data);
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            return ['code' => 1, 'message' => 'Failed to schedule interview'];
+        } else {
+            return ['code' => 0, 'message' => 'Interview scheduled successfully'];
+        }
+    }
+
+    // Step 5: Add function to get scheduled interviews
+    function get_interview_scheduled_applicants()
+    {
+        return $this->db
+            ->where('sejoba_state', 'interview_scheduled')
+            ->order_by('sejoba_interview_date', 'ASC')
+            ->order_by('sejoba_interview_time', 'ASC')
+            ->get('sejobapplicant')
+            ->result();
+    }
 
 }
-
 
 ?>

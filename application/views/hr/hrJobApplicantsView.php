@@ -443,6 +443,59 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 margin-bottom: 8px;
             }
         }
+
+        /* Interview Section */
+        .interview-section {
+            background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        /* grid layout */
+        .interview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* input wrapper */
+        .input-wrapper {
+            position: relative;
+        }
+
+        /* input style */
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 2px solid rgba(203, 213, 225, 0.6);
+            font-size: 15px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* invite button */
+        .invite-btn {
+            margin-top: 20px;
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .invite-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+        }
     </style>
 </head>
 
@@ -607,26 +660,57 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
 
-                    <!-- Interview Invite -->
-                    <div class="status-section">
-                        <h2 class="section-title">Send Interview Invite</h2>
+                    <div class="status-section interview-section">
 
-                        <?= form_open('Employee/sendInterviewInvite') ?>
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-check"></i> Schedule Interview
+                        </h2>
 
+                        <?= form_open('Employee/sendInterviewInvite', ['id' => 'interviewForm']) ?>
+                        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>"
+                            value="<?= $this->security->get_csrf_hash() ?>">
                         <input type="hidden" name="applicant_id" id="invite_applicant_id">
+                        <input type="hidden" name="email" id="invite_email">
+                        <input type="hidden" name="name" id="invite_name">
+                        <input type="hidden" name="position" id="invite_position">
+                        <input type="hidden" name="phone" id="invite_phone">
 
-                        <div class="form-group">
-                            <label>Interview Date</label>
-                            <input type="date" name="interview_date" required>
+                        <div class="interview-grid">
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-calendar-alt"></i> Interview Date
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="date" name="interview_date" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-clock"></i> Interview Time
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="time" name="interview_time" required>
+                                </div>
+                            </div>
+
                         </div>
 
+                        <!-- NEW LOCATION FIELD -->
+
                         <div class="form-group">
-                            <label>Interview Time</label>
-                            <input type="time" name="interview_time" required>
+                            <label>
+                                <i class="fas fa-map-marker-alt"></i> Interview Location
+                            </label>
+
+                            <div class="input-wrapper">
+                                <input type="text" name="location" placeholder="Interview Office Address" required>
+                            </div>
                         </div>
 
                         <button type="submit" class="invite-btn">
-                            Send Interview Invite
+                            <i class="fas fa-paper-plane"></i> Send Interview Invitation
                         </button>
 
                         <?= form_close() ?>
@@ -684,23 +768,109 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
             button.addEventListener('click', function () {
 
-                // store applicant id in hidden input for review form
-                document.getElementById("review_applicant_id").value = this.dataset.id;
-                document.getElementById("invite_applicant_id").value = this.dataset.id;
+                let id = this.dataset.id;
+                let name = this.dataset.name;
+                let email = this.dataset.email;
+                let phone = this.dataset.phone;
+                let position = this.dataset.position;
+                let salary = this.dataset.salary;
+                let status = this.dataset.status;
+                let experience = this.dataset.exp;
+                let resume = this.dataset.resume;
 
-                document.getElementById("app_id").innerText = "APP" + this.dataset.id;
-                document.getElementById("app_name").innerText = this.dataset.name;
-                document.getElementById("app_email").innerText = this.dataset.email;
-                document.getElementById("app_phone").innerText = this.dataset.phone;
-                document.getElementById("app_position").innerText = this.dataset.position;
-                document.getElementById("app_salary").innerText = this.dataset.salary;
-                document.getElementById("app_status").innerText = this.dataset.status;
-                document.getElementById("app_experience").innerText = this.dataset.exp;
-                document.getElementById("app_resume").innerHTML =
-                    "<a href='" + this.dataset.resume + "' target='_blank'>Download Resume</a>";
+                // Fill Candidate Info section
+                document.getElementById("app_id").innerText = "APP" + id;
+                document.getElementById("app_name").innerText = name;
+                document.getElementById("app_email").innerText = email;
+                document.getElementById("app_phone").innerText = phone;
+                document.getElementById("app_position").innerText = position;
+                document.getElementById("app_salary").innerText = salary || 'Not specified';
+                document.getElementById("app_status").innerText = status || 'Not specified';
+                document.getElementById("app_experience").innerText = experience || 'Not specified';
+
+                // Handle resume display
+                if (resume && resume !== '') {
+                    // Add base URL and resume folder for proper download
+                    const baseUrl = '<?= base_url(); ?>';
+                    const fullResumePath = baseUrl + 'resume/' + resume;
+                    document.getElementById("app_resume").innerHTML = 
+                        "<a href='" + fullResumePath + "' target='_blank' download style='color: #4f46e5; text-decoration: none; padding: 8px 15px; background: #f0f9ff; border-radius: 4px; display: inline-block;'> Download Resume</a>";
+                } else {
+                    document.getElementById("app_resume").innerHTML = 
+                        "<span style='color: #6b7280; font-style: italic;'>No resume uploaded</span>";
+                }
+
+                // Fill hidden interview form fields
+                document.getElementById("invite_applicant_id").value = id;
+                document.getElementById("invite_email").value = email;
+                document.getElementById("invite_name").value = name;
+                document.getElementById("invite_position").value = position;
+                document.getElementById("invite_phone").value = phone;
+
+                // Also fill review form
+                document.getElementById("review_applicant_id").value = id;
+
+                // Scroll down to candidate information section
+                document.querySelector('.candidate-info').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
 
             });
 
+        });
+
+        // Form validation before submission
+        document.getElementById('interviewForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // Always prevent default first
+
+            // Check if applicant is selected
+            const applicantId = document.getElementById("invite_applicant_id").value;
+            const applicantName = document.getElementById("invite_name").value;
+
+            if (!applicantId || applicantId === '' || !applicantName || applicantName === '') {
+                alert('Please first select an applicant by clicking the "View" button before scheduling an interview.');
+                return false;
+            }
+
+            // Check if interview date is filled
+            const interviewDate = document.querySelector('input[name="interview_date"]').value;
+            if (!interviewDate) {
+                alert('Please enter interview date');
+                document.querySelector('input[name="interview_date"]').focus();
+                return false;
+            }
+
+            // Check if interview time is filled
+            const interviewTime = document.querySelector('input[name="interview_time"]').value;
+            if (!interviewTime) {
+                alert('Please enter interview time');
+                document.querySelector('input[name="interview_time"]').focus();
+                return false;
+            }
+
+            // Check if interview location is filled
+            const interviewLocation = document.querySelector('input[name="location"]').value;
+            if (!interviewLocation || interviewLocation.trim() === '') {
+                alert('Please enter interview location');
+                document.querySelector('input[name="location"]').focus();
+                return false;
+            }
+
+            // Confirm before sending
+            const confirmSend = confirm('Are you sure you want to send the interview invitation?\n\n' +
+                'Applicant: ' + applicantName + '\n' +
+                'Date: ' + interviewDate + '\n' +
+                'Time: ' + interviewTime + '\n' +
+                'Location: ' + interviewLocation + '\n\n' +
+                'Click OK to send or Cancel to go back.');
+
+            if (!confirmSend) {
+                return false;
+            }
+
+            // If all validations pass, submit the form
+            this.submit();
         });
     </script>
 </body>
