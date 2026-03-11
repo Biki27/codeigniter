@@ -118,32 +118,35 @@ class EmployeeModel extends CI_Model
     //     return $res;
     // }
 
- function get_employee_with_search($query = '', $status = '')
+function get_employee_with_search($query = '', $status = '')
 {
-    // Always start with the main table and include necessary joins
+    // 1. Explicitly select all from main table and joined tables
+    $this->db->select('seemployee.*, seempdetails.*, sejobapplicant.sejoba_name, sejobapplicant.sejoba_phone');
     $this->db->from('seemployee');
+    
+    // 2. Apply Joins
     $this->db->join('seempdetails', 'seemployee.seemp_id = seempdetails.seempd_empid', 'left');
     $this->db->join('sejobapplicant', 'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id', 'left');
 
-    // If there is a text query, apply 'LIKE' filters
-    if (trim($query) != '') {
+    // 3. Handle Text Query (If not empty)
+    if (!empty(trim($query))) {
         $this->db->group_start();
-        $this->db->like('seemployee.seseq_id', $query);
-        $this->db->or_like('seemployee.seemp_id', $query);
+        $this->db->like('seemployee.seemp_id', $query);
         $this->db->or_like('seemployee.seemp_email', $query);
         $this->db->or_like('seempdetails.seempd_name', $query);
-        $this->db->or_like('seempdetails.seempd_phone', $query);
         $this->db->or_like('seempdetails.seempd_designation', $query);
         $this->db->group_end();
     }
 
-    // If there is a status filter, apply the 'WHERE' clause
-    if (trim($status) != '') {
+    // 4. Handle Status Filter (IMPORTANT: Use the table prefix)
+    if (!empty(trim($status))) {
         $this->db->where('seemployee.seemp_status', $status);
     }
 
-    // Execute and return results
-    return $this->db->get()->result();
+    // 5. Execute
+    $result = $this->db->get()->result();
+    
+    return $result;
 }
     function check_if_employee_exist($username = '', $pass = '')
     {

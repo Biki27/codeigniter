@@ -785,177 +785,202 @@
         }
 
         /* Responsive Search Container */
-.search-form-wrapper {
-    display: flex;
-    flex-wrap: wrap;       /* Crucial: allows items to drop to next line */
-    gap: 15px;             /* Space between items */
-    align-items: flex-end; /* Keeps button aligned with inputs */
-    margin-top: 25px;
-    margin-bottom: 25px;
-    width: 100%;
-}
+        .search-form-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            /* Crucial: allows items to drop to next line */
+            gap: 15px;
+            /* Space between items */
+            align-items: flex-end;
+            /* Keeps button aligned with inputs */
+            margin-top: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
 
-.search-group {
-    flex: 1;               /* Items grow to fill space */
-    min-width: 200px;      /* Prevents items from getting too tiny */
-}
+        .search-group {
+            flex: 1;
+            /* Items grow to fill space */
+            min-width: 200px;
+            /* Prevents items from getting too tiny */
+        }
 
-/* Specific fix for the button group so it doesn't look weird when stretched */
-.search-group:last-child {
-    flex: 0.5; 
-    min-width: 150px;
-}
+        /* Specific fix for the button group so it doesn't look weird when stretched */
+        .search-group:last-child {
+            flex: 0.5;
+            min-width: 150px;
+        }
 
-/* Ensure inputs take full width of their container */
-.search-bar {
-    width: 100% !important;
-    margin: 5px 0 0 0 !important; /* Reset any weird margins */
-}
+        /* Ensure inputs take full width of their container */
+        .search-bar {
+            width: 100% !important;
+            margin: 5px 0 0 0 !important;
+            /* Reset any weird margins */
+        }
 
-.search-btn {
-    width: 100%;
-    height: 48px; /* Matches the height of the date inputs */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border-radius: 8px !important;
-}
+        .search-btn {
+            width: 100%;
+            height: 48px;
+            /* Matches the height of the date inputs */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 8px !important;
+        }
 
-/* Mobile Adjustments */
-@media (max-width: 576px) {
-    .search-group {
-        flex: 1 1 100%;    /* Forces each input to take 100% width on small phones */
-    }
-    
-    .search-form-wrapper {
-        gap: 10px;
-    }
-}
+        /* Mobile Adjustments */
+        @media (max-width: 576px) {
+            .search-group {
+                flex: 1 1 100%;
+                /* Forces each input to take 100% width on small phones */
+            }
 
-/* 1. Force footer to bottom of viewport */
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
-    background: radial-gradient(circle at 0% 50%, #461bb9 20%, #973ce0 50%, #6b37e4 100%);
-    font-family: 'Inter', sans-serif;
-}
+            .search-form-wrapper {
+                gap: 10px;
+            }
+        }
 
-/* 2. Main content expands to push footer down */
-.main-content {
-    flex: 1 0 auto; /* This pushes the footer to the bottom */
-    margin-left: 260px;
-    padding: 30px;
-    transition: all 0.3s ease;
-}
+        /* 1. Force footer to bottom of viewport */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            background: radial-gradient(circle at 0% 50%, #461bb9 20%, #973ce0 50%, #6b37e4 100%);
+            font-family: 'Inter', sans-serif;
+        }
 
-/* 3. Modern Glassmorphism Footer */
-.footer {
-    flex-shrink: 0;
-    margin-left: 0px; /* Aligns with sidebar */
-    padding: 20px;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.8);
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
+        /* 2. Main content expands to push footer down */
+        .main-content {
+            flex: 1 0 auto;
+            /* This pushes the footer to the bottom */
+            margin-left: 260px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
 
-/* 4. Responsive adjustments for Footer + Content */
-@media (max-width: 992px) {
-    .main-content, .footer {
-        margin-left: 0 !important;
-        width: 100%;
-    }
-    
-    .footer {
-        padding: 15px;
-        font-size: 0.85rem;
-        /* Ensure footer doesn't hide behind mobile navigation bars */
-        margin-bottom: 0; 
-    }
-}
+        /* 3. Modern Glassmorphism Footer */
+        .footer {
+            flex-shrink: 0;
+            margin-left: 0px;
+            /* Aligns with sidebar */
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
 
-/* 1. Sidebar Toggle Logic */
-.sidebar {
-    transition: all 0.3s ease-in-out;
-}
+        /* 4. Responsive adjustments for Footer + Content */
+        @media (max-width: 992px) {
 
-/* 2. Main Content Adjustment */
-.main-content {
-    margin-left: 260px;
-    transition: margin-left 0.3s ease;
-    width: calc(100% - 260px);
-}
+            .main-content,
+            .footer {
+                margin-left: 0 !important;
+                width: 100%;
+            }
 
-/* 3. The Responsive Magic */
-@media (max-width: 1100px) {
-    .dual-containers {
-        flex-direction: column; /* Stack Clock and Calendar */
-    }
-    .left-container, .right-container {
-        width: 100%;
-        flex: none;
-    }
-}
+            .footer {
+                padding: 15px;
+                font-size: 0.85rem;
+                /* Ensure footer doesn't hide behind mobile navigation bars */
+                margin-bottom: 0;
+            }
+        }
 
-@media (max-width: 992px) {
-    .sidebar {
-        transform: translateX(-100%); /* Hide sidebar by default */
-        width: 260px;
-    }
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: 20px;
-    }
-    .sidebar.active {
-        transform: translateX(0); /* Show when toggled */
-    }
-    .footer {
-        left: 0;
-    }
-}
+        /* 1. Sidebar Toggle Logic */
+        .sidebar {
+            transition: all 0.3s ease-in-out;
+        }
 
-/* 4. Search Form Responsiveness */
-.search-group-container {
-    display: flex;
-    flex-wrap: wrap; /* Allows wrapping on mobile */
-    gap: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 20px;
-    border-radius: 20px;
-    align-items: flex-end;
-}
+        /* 2. Main Content Adjustment */
+        .main-content {
+            margin-left: 260px;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 260px);
+        }
 
-.search-item {
-    flex: 1;
-    min-width: 200px; /* Forces wrapping if space is less than 200px */
-}
+        /* 3. The Responsive Magic */
+        @media (max-width: 1100px) {
+            .dual-containers {
+                flex-direction: column;
+                /* Stack Clock and Calendar */
+            }
 
-.search-bar {
-    width: 100%;
-    border-radius: 10px !important; /* Overriding the 0 radius for mobile elegance */
-}
+            .left-container,
+            .right-container {
+                width: 100%;
+                flex: none;
+            }
+        }
 
-.search-btn {
-    width: 100%;
-    border-radius: 10px !important;
-    height: 48px;
-}
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                /* Hide sidebar by default */
+                width: 260px;
+            }
 
-/* 5. Table Responsiveness */
-.table-section {
-    overflow-x: auto; /* Adds horizontal scroll to table only if needed */
-}
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
 
-.table-custom {
-    min-width: 600px; /* Prevents columns from squishing too much */
-}
+            .sidebar.active {
+                transform: translateX(0);
+                /* Show when toggled */
+            }
+
+            .footer {
+                left: 0;
+            }
+        }
+
+        /* 4. Search Form Responsiveness */
+        .search-group-container {
+            display: flex;
+            flex-wrap: wrap;
+            /* Allows wrapping on mobile */
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+            align-items: flex-end;
+        }
+
+        .search-item {
+            flex: 1;
+            min-width: 200px;
+            /* Forces wrapping if space is less than 200px */
+        }
+
+        .search-bar {
+            width: 100%;
+            border-radius: 10px !important;
+            /* Overriding the 0 radius for mobile elegance */
+        }
+
+        .search-btn {
+            width: 100%;
+            border-radius: 10px !important;
+            height: 48px;
+        }
+
+        /* 5. Table Responsiveness */
+        .table-section {
+            overflow-x: auto;
+            /* Adds horizontal scroll to table only if needed */
+        }
+
+        .table-custom {
+            min-width: 600px;
+            /* Prevents columns from squishing too much */
+        }
     </style>
 
 </head>
@@ -979,11 +1004,13 @@ body {
                     </div>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
-
+                <!-- daynamic -->
                 <div class="time-section">
                     <div class="time-row">
-                        <span class="time-label">Admin's : <?= $this->session->userdata("empname") ?></span>
-
+                        <span class="time-label">
+                            <?= ($this->session->userdata("accesslevel") == 'HR') ? "HR's" : "Admin's" ?> :
+                            <?= $this->session->userdata("empname") ?>
+                        </span>
                     </div>
                     <div class="time-row">
                         <span class="time-label"> Login Time:</span>
@@ -994,10 +1021,11 @@ body {
                     <div class="time-row">
                         <span class="time-label"> Logout Time:</span>
                         <span class="time-value logout-time">
-                            <?= isset($todayAttendance->seemp_logouttime) ? date("h:i A", strtotime($todayAttendance->seemp_logouttime)) : '--:--' ?>
+                            <?= (isset($todayAttendance->seemp_logouttime) && $todayAttendance->seemp_logouttime != '0000-00-00 00:00:00')
+                                ? date("h:i A", strtotime($todayAttendance->seemp_logouttime))
+                                : '--:--' ?>
                         </span>
                     </div>
-
                 </div>
             </div>
 
@@ -1051,34 +1079,32 @@ body {
 
             </div>
 
-
-
         </div>
 
         <?= form_open('Employee/viewAttendance') ?>
 
-<div class="search-form-wrapper">
-    <div class="search-group">
-        <label for="searchempid" class="text-white"><b>Employee ID</b></label>
-        <input type="text" name="searchempid" class="search-bar" placeholder="Enter ID">
-    </div>
+        <div class="search-form-wrapper">
+            <div class="search-group">
+                <label for="searchempid" class="text-white"><b>Employee ID</b></label>
+                <input type="text" name="searchempid" class="search-bar" placeholder="Enter ID">
+            </div>
 
-    <div class="search-group">
-        <label for="startdate" class="text-white"><b>Start Date</b></label>
-        <input type="date" name="startdate" class="search-bar">
-    </div>
+            <div class="search-group">
+                <label for="startdate" class="text-white"><b>Start Date</b></label>
+                <input type="date" name="startdate" class="search-bar">
+            </div>
 
-    <div class="search-group">
-        <label for="enddate" class="text-white"><b>End Date</b></label>
-        <input type="date" name="enddate" class="search-bar">
-    </div>
+            <div class="search-group">
+                <label for="enddate" class="text-white"><b>End Date</b></label>
+                <input type="date" name="enddate" class="search-bar">
+            </div>
 
-    <div class="search-group">
-        <button type="submit" class="search-btn">
-            <i class="fas fa-search"></i> Search
-        </button>
-    </div>
-</div>
+            <div class="search-group">
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
 
         <?= form_close() ?>
 
@@ -1090,19 +1116,35 @@ body {
                     <tr>
                         <th><i class="fas fa-calendar-day me-2"></i>Date</th>
                         <th><i class="fas fa-id-badge me-2"></i>Employee ID</th>
+                        <th><i class="fas fa-user me-2"></i>Employee Name</th>
                         <th><i class="fas fa-clock me-2"></i>Login Time</th>
                         <th><i class="fas fa-clock me-3"></i>Logout Time</th>
                     </tr>
                 </thead>
                 <tbody id="attendanceTable">
-                    <?php foreach ($atten as $att) { ?>
+                    <?php if (!empty($atten)): ?>
+                        <?php foreach ($atten as $att): ?>
+                            <tr>
+                                <td><?= date("d-M-Y", strtotime($att->seemp_logdate)) ?></td>
+                                <td><span class="emp-id"><?= $att->seemp_logempid ?></span></td>
+                                <td><strong><?= $att->seempd_name ?? 'Unknown Employee' ?></strong></td>
+                                <td class="login-time">
+                                    <i class="fas fa-sign-in-alt me-1"></i>
+                                    <?= date("h:i A", strtotime($att->seemp_logintime)) ?>
+                                </td>
+                                <td class="logout-time">
+                                    <i class="fas fa-sign-out-alt me-1"></i>
+                                    <?= ($att->seemp_logouttime && $att->seemp_logouttime != '0000-00-00 00:00:00')
+                                        ? date("h:i A", strtotime($att->seemp_logouttime))
+                                        : '<span class="text-muted">Not Logged Out</span>' ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
                         <tr>
-                            <td><?= $att->seemp_logdate ?></td>
-                            <td><?= $att->seemp_logempid ?></td>
-                            <td class="login-time"><?= $att->seemp_logintime ?></td>
-                            <td class="logout-time"><?= $att->seemp_logouttime ?></td>
+                            <td colspan="5" class="text-center p-4">No attendance records found.</td>
                         </tr>
-                    <?php } ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -1188,7 +1230,7 @@ body {
 
         function prevMonth() { alert('Previous month functionality'); }
         function nextMonth() { alert('Next month functionality'); }
-        
+
 
         // Initialize luxury clock
         showTodayDate();

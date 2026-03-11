@@ -95,49 +95,49 @@ class Employee extends CI_Controller
         }
     }
 
-   function AdminDashboard()
-{
-    if (
-        $this->session->has_userdata('empid') &&
-        $this->session->has_userdata('email') &&
-        $this->session->has_userdata('branch') &&
-        $this->session->userdata('status') == 'active' &&
-        $this->session->userdata('accesslevel') == 'ADMIN'
-    ) {
-        $this->load->model('EmployeeDetailsModel');
-        $this->load->model('jobApplicationModel');
-        $this->load->model('ProjectsModel');
+    function AdminDashboard()
+    {
+        if (
+            $this->session->has_userdata('empid') &&
+            $this->session->has_userdata('email') &&
+            $this->session->has_userdata('branch') &&
+            $this->session->userdata('status') == 'active' &&
+            $this->session->userdata('accesslevel') == 'ADMIN'
+        ) {
+            $this->load->model('EmployeeDetailsModel');
+            $this->load->model('jobApplicationModel');
+            $this->load->model('ProjectsModel');
 
-        $empdetails = $this->EmployeeDetailsModel->get_this_employee_details();
-        
-        // CHECK: Does this employee have a linked job application ID?
-        if (!empty($empdetails) && !empty($empdetails[0]->seempd_jobaid)) {
-            $emp_appliction_details = $this->jobApplicationModel->get_applicant_info($empdetails[0]->seempd_jobaid);
-            
-            // CHECK: Was an application actually found in the database?
-            if (!empty($emp_appliction_details)) {
-                $this->session->set_userdata('empname', $emp_appliction_details[0]->sejoba_name);
-                $this->session->set_userdata('empapid', $emp_appliction_details[0]->sejoba_id);
+            $empdetails = $this->EmployeeDetailsModel->get_this_employee_details();
+
+            // CHECK: Does this employee have a linked job application ID?
+            if (!empty($empdetails) && !empty($empdetails[0]->seempd_jobaid)) {
+                $emp_appliction_details = $this->jobApplicationModel->get_applicant_info($empdetails[0]->seempd_jobaid);
+
+                // CHECK: Was an application actually found in the database?
+                if (!empty($emp_appliction_details)) {
+                    $this->session->set_userdata('empname', $emp_appliction_details[0]->sejoba_name);
+                    $this->session->set_userdata('empapid', $emp_appliction_details[0]->sejoba_id);
+                } else {
+                    $this->session->set_userdata('empname', 'Administrator'); // Fallback name
+                }
             } else {
                 $this->session->set_userdata('empname', 'Administrator'); // Fallback name
             }
+
+            $data = array(
+                'projpending' => count($this->ProjectsModel->getPendingProjects()),
+                'projrunning' => count($this->ProjectsModel->getRunningProjects()),
+                'projcompleted' => count($this->ProjectsModel->getCompletedProjects()),
+            );
+
+            $this->load->view('employee/adminHeaderView');
+            $this->load->view('employee/adminDashboardView', $data);
         } else {
-            $this->session->set_userdata('empname', 'Administrator'); // Fallback name
+            $this->session->sess_destroy();
+            redirect('Employee/Login');
         }
-
-        $data = array(
-            'projpending' => count($this->ProjectsModel->getPendingProjects()),
-            'projrunning' => count($this->ProjectsModel->getRunningProjects()),
-            'projcompleted' => count($this->ProjectsModel->getCompletedProjects()),
-        );
-
-        $this->load->view('employee/adminHeaderView');
-        $this->load->view('employee/adminDashboardView', $data);
-    } else {
-        $this->session->sess_destroy();
-        redirect('Employee/Login');
     }
-}
 
     // AdminEmployee
     /**
@@ -258,60 +258,41 @@ class Employee extends CI_Controller
     // AdminAttendence and also hr attendance
     function viewAttendance()
     {
-        if (
-            $this->session->has_userdata('empid') &&
-            $this->session->has_userdata('email') &&
-            $this->session->has_userdata('accesslevel') &&
-            $this->session->has_userdata('branch') &&
-            $this->session->has_userdata('status') &&
-            $this->session->userdata('status') == 'active' &&
-            $this->session->userdata('accesslevel') == 'ADMIN' || $this->session->userdata('accesslevel') == 'HR'
+        $access = $this->session->userdata('accesslevel');
+        // Ensure both ADMIN and HR can access
+        if ($this->session->userdata('status') == 'active' && ($access == 'ADMIN' || $access == 'HR')) {
 
-        ) {
             $this->load->model('AttendanceModel');
+            $this->load->model('EmployeeModel');
+
+            $empid_session = $this->session->userdata('empid');
+
+            // 1. ALWAYS fetch today's attendance for the logged-in user for the top card
+            $data['todayAttendance'] = $this->AttendanceModel->get_today_login_logout($empid_session);
+
             $postd = $this->input->post();
-            $empid = $this->session->userdata('empid'); 
-            $todayAttendance = $this->AttendanceModel->get_today_login_logout($empid);
-            $data['todayAttendance'] = $todayAttendance;
-
-            $list = $this->AttendanceModel->get_attendance_of_all_employee();
-
             if ($postd) {
                 $postdata = $this->security->xss_clean($postd);
-
-                $empid = trim($postdata['searchempid'] ?? '');
-                $start = trim($postdata['startdate'] ?? '');
-                $end = trim($postdata['enddate'] ?? '');
-
-                if ($empid == '' && $start == '' && $end == '') {
-                    $data['alert'] = 'Please enter at least one search value.';
-                } else if ($empid != '' && $start == '' && $end == '') {
-                    $list = $this->AttendanceModel->find_attendance_for_employee_id($empid);
-                } else if ($empid == '' && $start != '' && $end == '') {
-                    $list = $this->AttendanceModel->find_from_startdate($start);
-                } else if ($empid == '' && $start == '' && $end != '') {
-                    $list = $this->AttendanceModel->find_until_enddate($end);
-                } else if ($empid == '' && $start != '' && $end != '') {
-                    $list = $this->AttendanceModel->find_by_daterange($start, $end);
-                } else {
-                    $list = $this->AttendanceModel->find_empid_with_daterange($empid, $start, $end);
-                }
+                $s_id = trim($postdata['searchempid'] ?? '');
+                $start = $postdata['startdate'] ?? '';
+                $end = $postdata['enddate'] ?? '';
+                // Search logic
+                $list = $this->AttendanceModel->find_empid_with_daterange($s_id, $start, $end);
+            } else {
+                // 2. DEFAULT: Load all attendance logs for the table on initial load
+                $list = $this->AttendanceModel->get_attendance_of_all_employee();
             }
-            // for hr attendance view
-            if ($this->session->userdata('accesslevel') == 'HR') {
-                
-                $this->load->view('hr/hrHeaderView');
-                $this->load->view('hr/hrAttendenceView', $data);
-                return;
-            }
+
             $data['atten'] = $list;
-            $this->load->view('employee/adminHeaderView');
-            $this->load->view('employee/adminAttendanceView', $data);
 
+            // 3. Load the correct header based on role
+            $header = ($access == 'HR') ? 'hr/hrHeaderView' : 'employee/adminHeaderView';
+            $this->load->view($header);
+            $this->load->view('employee/adminAttendanceView', $data);
 
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            redirect('Employee/Login');
         }
     }
     // Admin view fetch job applicants details
@@ -595,8 +576,8 @@ class Employee extends CI_Controller
             'seempd_address_current' => $formData['currentAddress'],
             'seempd_aadhar' => $formData['aadhar'],
             'seempd_pan' => $formData['pan'],
-            'seempd_img' => $photo_name, 
-            'seempd_cv' => $cv_name      
+            'seempd_img' => $photo_name,
+            'seempd_cv' => $cv_name
         ];
 
         $result = $this->EmployeeModel->register_employee($employee, $details);
@@ -821,9 +802,12 @@ class Employee extends CI_Controller
     // HR Dashboard
     function HRDashboard()
     {
-        // Security check for HR access level
         if ($this->session->userdata('accesslevel') == 'HR' && $this->session->userdata('status') == 'active') {
+            $this->load->model('AttendanceModel');
+            $empid = $this->session->userdata('empid');
 
+            // Fetch specific record for the logged-in HR's clock-in status
+            $data['todayAttendance'] = $this->AttendanceModel->get_today_login_logout($empid);
             // 1. Fetch Quick Statistics from Database
             $data['total_staff'] = $this->db->count_all('seemployee');
             $data['pending_count'] = $this->db->where('seemrq_status', 'pending')->count_all_results('seemprequests');
@@ -833,7 +817,7 @@ class Employee extends CI_Controller
             // 2. Fetch Today's Attendance with Login/Logout Times
             $this->load->model('AttendanceModel');
             $today = date('Y-m-d');
-            
+
             $this->db->select('l.*, d.seempd_name, d.seempd_designation');
             $this->db->from('seemployeeloginlog l');
             $this->db->join('seempdetails d', 'l.seemp_logempid = d.seempd_empid', 'left');
