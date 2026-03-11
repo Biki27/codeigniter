@@ -69,7 +69,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="card" style="width: 18rem;">
                 <img src="<?= base_url(); ?>assets/t1.png" class="card-img-top" alt="...">
                 <div class="card-body">
-                    <h5 class="card-title">Founder & CEO</h5>
+                    <h5 class="card-title">Founder </h5>
                     <p class="card-text">Leads AI Innovation Suite delivery with 10+ years enterprise experience,
                         specializing in
                         autonomous agents and rapid deployment from Howrah.</p>

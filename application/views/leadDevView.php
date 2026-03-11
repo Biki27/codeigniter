@@ -258,7 +258,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <span class="skill-tag">TypeScript</span>
                         <span class="skill-tag">AWS</span>
                     </div>
-                    <a href="<?= base_url() ?>index.php/Contactus" class="btn btn-light btn-lg px-5 py-3 fw-bold">
+                    <a href="<?= base_url() ?>index.php/welcome/Contactus#contactform" class="btn btn-light btn-lg px-5 py-3 fw-bold">
                         <i class="fas fa-code me-2"></i>Hire Expert
                     </a>
                 </div>
