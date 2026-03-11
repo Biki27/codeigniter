@@ -389,7 +389,7 @@
         .footer {
             position: fixed;
             bottom: 0;
-            left: 260px;
+            left: 0px;
             right: 0;
             text-align: center;
             color: rgba(255, 255, 255, 0.85);
@@ -737,84 +737,7 @@
             }
         }
 
-        /* 
-        .search-container {
-            position: relative;
-            display: flex;
-            max-width: 1000px;
 
-            background: #fff;
-            border-radius: 50px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .search-container:focus-within {
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-        }
-
-        .search-bar {
-            flex: 1;
-            padding: 16px 20px 16px 20px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            font-family: inherit;
-            background: transparent;
-            color: #1e293b;
-        }
-
-        .search-bar::placeholder {
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .search-btn {
-            padding: 16px 20px;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border: none;
-            cursor: pointer;
-            color: white;
-            font-size: 18px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-        }
-
-        .search-btn:hover {
-            background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-        }
-
-        .search-btn:active {
-            transform: scale(0.98);
-        } */
-
-        /* RESPONSIVE */
-        /* @media (max-width: 768px) {
-            .search-container {
-                max-width: 100%;
-                margin: 0 20px;
-            }
-
-            .search-bar {
-                padding: 14px 16px;
-                font-size: 15px;
-            }
-
-            .search-btn {
-                width: 55px;
-                padding: 14px 16px;
-            }
-        } */
 
         .search-container {
             display: flex;
@@ -860,6 +783,179 @@
         .search-btn:hover {
             background: #0056b3;
         }
+
+        /* Responsive Search Container */
+.search-form-wrapper {
+    display: flex;
+    flex-wrap: wrap;       /* Crucial: allows items to drop to next line */
+    gap: 15px;             /* Space between items */
+    align-items: flex-end; /* Keeps button aligned with inputs */
+    margin-top: 25px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+.search-group {
+    flex: 1;               /* Items grow to fill space */
+    min-width: 200px;      /* Prevents items from getting too tiny */
+}
+
+/* Specific fix for the button group so it doesn't look weird when stretched */
+.search-group:last-child {
+    flex: 0.5; 
+    min-width: 150px;
+}
+
+/* Ensure inputs take full width of their container */
+.search-bar {
+    width: 100% !important;
+    margin: 5px 0 0 0 !important; /* Reset any weird margins */
+}
+
+.search-btn {
+    width: 100%;
+    height: 48px; /* Matches the height of the date inputs */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px !important;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 576px) {
+    .search-group {
+        flex: 1 1 100%;    /* Forces each input to take 100% width on small phones */
+    }
+    
+    .search-form-wrapper {
+        gap: 10px;
+    }
+}
+
+/* 1. Force footer to bottom of viewport */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background: radial-gradient(circle at 0% 50%, #461bb9 20%, #973ce0 50%, #6b37e4 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+/* 2. Main content expands to push footer down */
+.main-content {
+    flex: 1 0 auto; /* This pushes the footer to the bottom */
+    margin-left: 260px;
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+/* 3. Modern Glassmorphism Footer */
+.footer {
+    flex-shrink: 0;
+    margin-left: 0px; /* Aligns with sidebar */
+    padding: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+/* 4. Responsive adjustments for Footer + Content */
+@media (max-width: 992px) {
+    .main-content, .footer {
+        margin-left: 0 !important;
+        width: 100%;
+    }
+    
+    .footer {
+        padding: 15px;
+        font-size: 0.85rem;
+        /* Ensure footer doesn't hide behind mobile navigation bars */
+        margin-bottom: 0; 
+    }
+}
+
+/* 1. Sidebar Toggle Logic */
+.sidebar {
+    transition: all 0.3s ease-in-out;
+}
+
+/* 2. Main Content Adjustment */
+.main-content {
+    margin-left: 260px;
+    transition: margin-left 0.3s ease;
+    width: calc(100% - 260px);
+}
+
+/* 3. The Responsive Magic */
+@media (max-width: 1100px) {
+    .dual-containers {
+        flex-direction: column; /* Stack Clock and Calendar */
+    }
+    .left-container, .right-container {
+        width: 100%;
+        flex: none;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%); /* Hide sidebar by default */
+        width: 260px;
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+    .sidebar.active {
+        transform: translateX(0); /* Show when toggled */
+    }
+    .footer {
+        left: 0;
+    }
+}
+
+/* 4. Search Form Responsiveness */
+.search-group-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping on mobile */
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 20px;
+    align-items: flex-end;
+}
+
+.search-item {
+    flex: 1;
+    min-width: 200px; /* Forces wrapping if space is less than 200px */
+}
+
+.search-bar {
+    width: 100%;
+    border-radius: 10px !important; /* Overriding the 0 radius for mobile elegance */
+}
+
+.search-btn {
+    width: 100%;
+    border-radius: 10px !important;
+    height: 48px;
+}
+
+/* 5. Table Responsiveness */
+.table-section {
+    overflow-x: auto; /* Adds horizontal scroll to table only if needed */
+}
+
+.table-custom {
+    min-width: 600px; /* Prevents columns from squishing too much */
+}
     </style>
 
 </head>
@@ -961,34 +1057,28 @@
 
         <?= form_open('Employee/viewAttendance') ?>
 
-        <div style="display:flex; gap:10px; align-items:end; margin-top:20px;">
+<div class="search-form-wrapper">
+    <div class="search-group">
+        <label for="searchempid" class="text-white"><b>Employee ID</b></label>
+        <input type="text" name="searchempid" class="search-bar" placeholder="Enter ID">
+    </div>
 
-            <!-- Employee ID -->
-            <div>
-                <label for="searchempid" class="text-white"><b>Employee ID</b></label><br>
-                <input type="text" name="searchempid" class="search-bar" placeholder="Enter Employee ID">
-            </div>
+    <div class="search-group">
+        <label for="startdate" class="text-white"><b>Start Date</b></label>
+        <input type="date" name="startdate" class="search-bar">
+    </div>
 
-            <!-- Start Date -->
-            <div>
-                <label for="startdate" class="text-white"><b>Start Date</b></label><br>
-                <input type="date" name="startdate" class="search-bar">
-            </div>
+    <div class="search-group">
+        <label for="enddate" class="text-white"><b>End Date</b></label>
+        <input type="date" name="enddate" class="search-bar">
+    </div>
 
-            <!-- End Date -->
-            <div>
-                <label for="enddate" class="text-white"><b>End Date</b></label><br>
-                <input type="date" name="enddate" class="search-bar">
-            </div>
-
-            <!-- Search Button -->
-            <div>
-                <button type="submit" class="search-btn">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-
-        </div>
+    <div class="search-group">
+        <button type="submit" class="search-btn">
+            <i class="fas fa-search"></i> Search
+        </button>
+    </div>
+</div>
 
         <?= form_close() ?>
 

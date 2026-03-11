@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-light);
             overflow: hidden;
-            margin-left: 500px;
+            /* margin-left: 500px; */
             margin-bottom: 30px;
         }
 
