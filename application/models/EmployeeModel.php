@@ -298,59 +298,59 @@ class EmployeeModel extends CI_Model
 
     //  for update employee from admin panel
     public function update_employee($empid = '', $data = array())
-{
-    if (empty($empid) || empty($data)) {
-        return ['code' => 1, 'message' => 'Invalid parameters'];
+    {
+        if (empty($empid) || empty($data)) {
+            return ['code' => 1, 'message' => 'Invalid parameters'];
+        }
+
+        $this->db->trans_start();
+
+        // 1. Update main table (seemployee)
+        $employee_data = [
+            'seemp_email' => $data['email'],
+            'seemp_branch' => strtoupper($data['branch']),
+            'seemp_status' => strtolower($data['status']),
+            'seemp_acesslevel' => strtoupper($data['accessLevel'])
+        ];
+
+        // Password logic: only update if user typed a new one
+        $new_pass = $this->input->post('password');
+        if (!empty($new_pass)) {
+            $employee_data['seemp_pass'] = password_hash($new_pass, PASSWORD_DEFAULT);
+        }
+
+        $this->db->where('seemp_id', $empid);
+        $this->db->update('seemployee', $employee_data);
+
+        // 2. Update details table (seempdetails)
+        $details_data = [
+            'seempd_name' => $data['empName'],
+            'seempd_phone' => $data['phone'],
+            'seempd_designation' => $data['designation'],
+            'seempd_salary' => $data['salary'],
+            'seempd_project' => $data['project'],
+            'seempd_experience' => $data['experience'],
+            'seempd_dob' => $data['dob'],
+            'seempd_joiningdate' => $data['joiningDate'],
+            'seempd_increment' => $data['increment'],
+            'seempd_address_permanent' => $data['permAddress'],
+            'seempd_address_current' => $data['currentAddress'],
+            'seempd_aadhar' => $data['aadhar'],
+            'seempd_pan' => $data['pan'],
+            'seempd_img' => $data['photo'], // Files updated here
+            'seempd_cv' => $data['cv']      // Files updated here
+        ];
+
+        $this->db->where('seempd_empid', $empid);
+        $this->db->update('seempdetails', $details_data);
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            return ['code' => 1, 'message' => 'Database Transaction Failed'];
+        }
+        return ['code' => 0, 'message' => 'Success'];
     }
-
-    $this->db->trans_start();
-
-    // 1. Update main table (seemployee)
-    $employee_data = [
-        'seemp_email'      => $data['email'],
-        'seemp_branch'     => strtoupper($data['branch']),
-        'seemp_status'     => strtolower($data['status']),
-        'seemp_acesslevel' => strtoupper($data['accessLevel'])
-    ];
-
-    // Password logic: only update if user typed a new one
-    $new_pass = $this->input->post('password');
-    if (!empty($new_pass)) {
-        $employee_data['seemp_pass'] = password_hash($new_pass, PASSWORD_DEFAULT);
-    }
-
-    $this->db->where('seemp_id', $empid);
-    $this->db->update('seemployee', $employee_data);
-
-    // 2. Update details table (seempdetails)
-    $details_data = [
-        'seempd_name'              => $data['empName'],
-        'seempd_phone'             => $data['phone'],
-        'seempd_designation'       => $data['designation'],
-        'seempd_salary'            => $data['salary'],
-        'seempd_project'           => $data['project'],
-        'seempd_experience'        => $data['experience'],
-        'seempd_dob'               => $data['dob'],
-        'seempd_joiningdate'       => $data['joiningDate'],
-        'seempd_increment'         => $data['increment'],
-        'seempd_address_permanent' => $data['permAddress'],
-        'seempd_address_current'   => $data['currentAddress'],
-        'seempd_aadhar'            => $data['aadhar'],
-        'seempd_pan'               => $data['pan'],
-        'seempd_img'               => $data['photo'], // Files updated here
-        'seempd_cv'                => $data['cv']      // Files updated here
-    ];
-
-    $this->db->where('seempd_empid', $empid);
-    $this->db->update('seempdetails', $details_data);
-
-    $this->db->trans_complete();
-
-    if ($this->db->trans_status() === FALSE) {
-        return ['code' => 1, 'message' => 'Database Transaction Failed'];
-    }
-    return ['code' => 0, 'message' => 'Success'];
-}
     /**
      * Reset Employee Password
      */
@@ -393,7 +393,6 @@ class EmployeeModel extends CI_Model
 
         return $query->result();
     }
-
 }
 
 ?>

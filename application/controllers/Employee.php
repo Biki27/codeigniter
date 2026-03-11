@@ -265,7 +265,7 @@ class Employee extends CI_Controller
         ) {
             $this->load->model('AttendanceModel');
             $postd = $this->input->post();
-            $empid = $this->session->userdata('empid');
+            $empid = $this->session->userdata('empid'); 
             $todayAttendance = $this->AttendanceModel->get_today_login_logout($empid);
             $data['todayAttendance'] = $todayAttendance;
 
@@ -294,6 +294,7 @@ class Employee extends CI_Controller
             }
             // for hr attendance view
             if ($this->session->userdata('accesslevel') == 'HR') {
+                
                 $this->load->view('hr/hrHeaderView');
                 $this->load->view('hr/hrAttendenceView', $data);
                 return;
@@ -309,29 +310,29 @@ class Employee extends CI_Controller
         }
     }
     // Admin view fetch job applicants details
-    public function  getApplicantDetails($id)
-{
-    // Authorization Check
-    if (!$this->session->has_userdata('empid')) {
-        echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-        return;
-    }
+    public function getApplicantDetails($id)
+    {
+        // Authorization Check
+        if (!$this->session->has_userdata('empid')) {
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            return;
+        }
 
-    $this->load->model('jobApplicationModel');
-    
-    // Querying directly for a selected applicant
-    $this->db->where('sejoba_id', $id);
-    $this->db->where('sejoba_state', 'selected'); 
-    $query = $this->db->get('sejobapplicant');
-    $applicant = $query->row();
+        $this->load->model('jobApplicationModel');
 
-    if ($applicant) {
-        echo json_encode(['success' => true, 'data' => $applicant]);
-    } else {
-        // Provide a clear message if the ID exists but hasn't been "Selected" yet
-        echo json_encode(['success' => false, 'message' => 'Applicant not found or not in "Selected" state.']);
+        // Querying directly for a selected applicant
+        $this->db->where('sejoba_id', $id);
+        $this->db->where('sejoba_state', 'selected');
+        $query = $this->db->get('sejobapplicant');
+        $applicant = $query->row();
+
+        if ($applicant) {
+            echo json_encode(['success' => true, 'data' => $applicant]);
+        } else {
+            // Provide a clear message if the ID exists but hasn't been "Selected" yet
+            echo json_encode(['success' => false, 'message' => 'Applicant not found or not in "Selected" state.']);
+        }
     }
-}
 
 
     // AdminviewProjects
@@ -589,8 +590,8 @@ class Employee extends CI_Controller
             'seempd_address_current' => $formData['currentAddress'],
             'seempd_aadhar' => $formData['aadhar'],
             'seempd_pan' => $formData['pan'],
-            'seempd_img' => $photo_name, // Saved filename
-            'seempd_cv' => $cv_name      // Saved filename
+            'seempd_img' => $photo_name, 
+            'seempd_cv' => $cv_name      
         ];
 
         $result = $this->EmployeeModel->register_employee($employee, $details);
@@ -824,7 +825,18 @@ class Employee extends CI_Controller
             $data['new_applicants'] = $this->db->where('sejoba_state', 'applied')->count_all_results('sejobapplicant');
             $data['present_today'] = $this->db->where('seemp_logdate', date('Y-m-d'))->count_all_results('seemployeeloginlog');
 
-            // 2. Fetch Pending Leave Requests with Leave Balance Logic
+            // 2. Fetch Today's Attendance with Login/Logout Times
+            $this->load->model('AttendanceModel');
+            $today = date('Y-m-d');
+            
+            $this->db->select('l.*, d.seempd_name, d.seempd_designation');
+            $this->db->from('seemployeeloginlog l');
+            $this->db->join('seempdetails d', 'l.seemp_logempid = d.seempd_empid', 'left');
+            $this->db->where('l.seemp_logdate', $today);
+            $this->db->order_by('l.seemp_logintime', 'ASC');
+            $data['today_attendance'] = $this->db->get()->result();
+
+            // 3. Fetch Pending Leave Requests with Leave Balance Logic
             $current_year = date('Y');
 
             // We use 'r' as an alias for 'seemprequests' to avoid column name conflicts
@@ -844,7 +856,7 @@ class Employee extends CI_Controller
 
             $data['recent_leaves'] = $this->db->get()->result_array();
 
-            // 3. Fetch Recent Recruitment Activity
+            // 4. Fetch Recent Recruitment Activity
             $this->db->order_by('sejoba_atime', 'DESC');
             $this->db->limit(5);
             $data['recent_applicants'] = $this->db->get('sejobapplicant')->result_array();
@@ -912,41 +924,6 @@ class Employee extends CI_Controller
         }
     }
 
-
-
-
-    function ManagerDashboard()
-    {
-        if (
-            $this->session->userdata('accesslevel') == 'MANAGER' &&
-            $this->session->userdata('status') == 'active'
-        ) {
-            $this->load->model('EmployeeDetailsModel');
-            $this->load->model('jobApplicationModel');
-            $this->load->model('ProjectsModel');
-
-            $empdetails = $this->EmployeeDetailsModel->get_this_employee_details();
-            $emp_appliction_details = $this->jobApplicationModel->get_applicant_info($empdetails[0]->seempd_jobaid);
-
-            $this->session->set_userdata('empname', $emp_appliction_details[0]->sejoba_name);
-            $this->session->set_userdata('empapid', $emp_appliction_details[0]->sejoba_id);
-
-            $pendingproj = count($this->ProjectsModel->getPendingProjects());
-            $compleatedproj = count($this->ProjectsModel->getCompletedProjects());
-            $runningproj = count($this->ProjectsModel->getRunningProjects());
-
-            $data = array(
-                'projpending' => $pendingproj,
-                'projrunning' => $runningproj,
-                'projcompleated' => $compleatedproj,
-            );
-
-            $this->load->view('employee/managerHeaderView');
-            $this->load->view('employee/managerDashboardView', $data);
-        } else {
-            redirect('Employee/Login');
-        }
-    }
     // Logout Function
     function Logout()
     {
@@ -964,73 +941,73 @@ class Employee extends CI_Controller
 
     //  Update Employee Functionality
     public function updateEmployee($empid)
-{
-    $this->load->library('upload');
-    $this->load->model('EmployeeModel');
+    {
+        $this->load->library('upload');
+        $this->load->model('EmployeeModel');
 
-    // 1. Fetch current data to keep existing files if no new ones are uploaded
-    $current = $this->EmployeeModel->get_employee_full_details($empid);
-    if (empty($current)) {
-        show_error('Employee not found');
-    }
-    $old_photo = $current[0]->seempd_img;
-    $old_cv = $current[0]->seempd_cv;
+        // 1. Fetch current data to keep existing files if no new ones are uploaded
+        $current = $this->EmployeeModel->get_employee_full_details($empid);
+        if (empty($current)) {
+            show_error('Employee not found');
+        }
+        $old_photo = $current[0]->seempd_img;
+        $old_cv = $current[0]->seempd_cv;
 
-    // 2. Configure Upload
-    $config['upload_path']   = './uploads/';
-    $config['allowed_types'] = 'gif|jpg|png|jpeg|pdf|doc|docx';
-    $config['max_size']      = 5120;
-    $config['encrypt_name']  = TRUE;
-    $this->upload->initialize($config);
+        // 2. Configure Upload
+        $config['upload_path'] = './uploads/';
+        $config['allowed_types'] = 'gif|jpg|png|jpeg|pdf|doc|docx';
+        $config['max_size'] = 5120;
+        $config['encrypt_name'] = TRUE;
+        $this->upload->initialize($config);
 
-    // 3. Process Photo
-    $photo_name = $old_photo;
-    if (!empty($_FILES['photo']['name'])) {
-        if ($this->upload->do_upload('photo')) {
-            $photo_name = $this->upload->data('file_name');
+        // 3. Process Photo
+        $photo_name = $old_photo;
+        if (!empty($_FILES['photo']['name'])) {
+            if ($this->upload->do_upload('photo')) {
+                $photo_name = $this->upload->data('file_name');
+            }
+        }
+
+        // 4. Process CV
+        $cv_name = $old_cv;
+        if (!empty($_FILES['cv']['name'])) {
+            if ($this->upload->do_upload('cv')) {
+                $cv_name = $this->upload->data('file_name');
+            }
+        }
+
+        // 5. Prepare data matching the Model's expected keys
+        $updateData = [
+            'empName' => $this->input->post('empName'),
+            'email' => $this->input->post('email'),
+            'branch' => $this->input->post('branch'),
+            'status' => $this->input->post('status'),
+            'designation' => $this->input->post('designation'),
+            'phone' => $this->input->post('phone'),
+            'salary' => $this->input->post('salary'),
+            'experience' => $this->input->post('experience'),
+            'dob' => $this->input->post('dob'),
+            'joiningDate' => $this->input->post('joiningDate'),
+            'permAddress' => $this->input->post('permAddress'),
+            'currentAddress' => $this->input->post('currentAddress'),
+            'aadhar' => $this->input->post('aadhar'),
+            'pan' => $this->input->post('pan'),
+            'accessLevel' => $this->input->post('accessLevel'),
+            'project' => $this->input->post('project'),
+            'increment' => $this->input->post('increment'),
+            'photo' => $photo_name, // Must match Model key
+            'cv' => $cv_name     // Must match Model key
+        ];
+
+        $result = $this->EmployeeModel->update_employee($empid, $updateData);
+
+        if ($result['code'] == 0) {
+            $this->session->set_flashdata('msg', 'Employee Updated Successfully');
+            redirect('Employee/viewEmployee'); // Redirect to list view
+        } else {
+            echo "Update failed: " . $result['message'];
         }
     }
-
-    // 4. Process CV
-    $cv_name = $old_cv;
-    if (!empty($_FILES['cv']['name'])) {
-        if ($this->upload->do_upload('cv')) {
-            $cv_name = $this->upload->data('file_name');
-        }
-    }
-
-    // 5. Prepare data matching the Model's expected keys
-    $updateData = [
-        'empName'        => $this->input->post('empName'),
-        'email'          => $this->input->post('email'),
-        'branch'         => $this->input->post('branch'),
-        'status'         => $this->input->post('status'),
-        'designation'    => $this->input->post('designation'),
-        'phone'          => $this->input->post('phone'),
-        'salary'         => $this->input->post('salary'),
-        'experience'     => $this->input->post('experience'),
-        'dob'            => $this->input->post('dob'),
-        'joiningDate'    => $this->input->post('joiningDate'),
-        'permAddress'    => $this->input->post('permAddress'),
-        'currentAddress' => $this->input->post('currentAddress'),
-        'aadhar'         => $this->input->post('aadhar'),
-        'pan'            => $this->input->post('pan'),
-        'accessLevel'    => $this->input->post('accessLevel'),
-        'project'        => $this->input->post('project'),
-        'increment'      => $this->input->post('increment'),
-        'photo'          => $photo_name, // Must match Model key
-        'cv'             => $cv_name     // Must match Model key
-    ];
-
-    $result = $this->EmployeeModel->update_employee($empid, $updateData);
-
-    if ($result['code'] == 0) {
-        $this->session->set_flashdata('msg', 'Employee Updated Successfully');
-        redirect('Employee/viewEmployee'); // Redirect to list view
-    } else {
-        echo "Update failed: " . $result['message'];
-    }
-}
 
     /**
      * Reset Employee Functionality
@@ -1077,6 +1054,73 @@ class Employee extends CI_Controller
         } else {
             echo json_encode(['error' => 'Employee not found']);
         }
+    }
+
+    public function sendInterviewInvite()
+    {
+        $this->load->model('InterviewModel');
+        $this->load->model('jobApplicationModel'); // Step 3: Load model
+
+        $post = $this->security->xss_clean($this->input->post());
+
+        $email = $post['email'];
+        $name = $post['name'];
+        $position = $post['position'];
+        $phone = $post['phone'];
+        $applicant_id = $post['applicant_id']; // Step 3: Get applicant ID
+
+        $date = $post['interview_date'];
+        $time = $post['interview_time'];
+        $location = $post['location'];
+
+        $hr_name = $this->session->userdata('empname') ?? 'HR Team';
+
+        // Step 3: Save to database first
+        $interview_data = array(
+            'date' => $date,
+            'time' => $time,
+            'location' => $location,
+            'scheduled_by' => $hr_name
+        );
+
+        $db_result = $this->jobApplicationModel->schedule_interview($applicant_id, $interview_data);
+
+        if ($db_result['code'] == 0) {
+            // Database save successful, now send emails
+            $email_result = $this->InterviewModel->send_interview_email(
+                $email,
+                $name,
+                $position,
+                $date,
+                $time,
+                $location,
+                $phone,
+                $hr_name
+            );
+
+            if ($email_result == 0) {
+                $this->session->set_flashdata('msg', 'Interview Invitation Sent Successfully and Saved to Database');
+            } else {
+                $this->session->set_flashdata('error', 'Interview saved but email failed to send');
+            }
+        } else {
+            $this->session->set_flashdata('error', 'Failed to save interview to database: ' . $db_result['message']);
+        }
+
+        redirect('Employee/viewJobApplicants');
+    }
+    public function viewScheduledInterviews()
+    {
+        if (!$this->session->has_userdata('empid') || $this->session->userdata('accesslevel') != 'HR') {
+            redirect('login');
+            return;
+        }
+
+        $this->load->model('jobApplicationModel');
+        $data['interviews'] = $this->jobApplicationModel->get_interview_scheduled_applicants();
+
+        $this->load->view('hr/hrHeaderView');
+        $this->load->view('hr/scheduledInterviewsView', $data);
     }
 }
 
