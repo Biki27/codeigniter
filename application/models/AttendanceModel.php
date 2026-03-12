@@ -75,6 +75,23 @@ class AttendanceModel extends CI_Model
             ->get('seemployeeloginlog')
             ->row();
     }
+    // for HR dashboard
+    public function get_present_today_count() 
+    {
+        return $this->db->where('seemp_logdate', date('Y-m-d'))->count_all_results('seemployeeloginlog');
+    }
+    // for HR dashboard
+    public function get_today_attendance_list() 
+    {
+        $today = date('Y-m-d');
+        $this->db->select('l.*, d.seempd_name, d.seempd_designation');
+        $this->db->from('seemployeeloginlog l');
+        $this->db->join('seempdetails d', 'l.seemp_logempid = d.seempd_empid', 'left');
+        $this->db->where('l.seemp_logdate', $today);
+        $this->db->order_by('l.seemp_logintime', 'ASC');
+        
+        return $this->db->get()->result();
+    }
 }
 
 ?>

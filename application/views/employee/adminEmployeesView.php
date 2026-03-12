@@ -300,6 +300,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </head>
 
 <body>
+  <?php if ($this->session->flashdata('msg')): ?>
+        <script>
+            alert("<?= $this->session->flashdata('msg') ?>");
+        </script>
+    <?php endif; ?>
   <!-- Main Content -->
   <div class="main-content">
     <!-- Employees Section -->

@@ -83,6 +83,30 @@ class RequestsModel extends CI_Model
         }
 
     }
+    // for HR dashboard
+    public function get_pending_requests_count() 
+    {
+        return $this->db->where('seemrq_status', 'pending')->count_all_results('seemprequests');
+    }
+
+    public function get_pending_leaves_with_balance() 
+    {
+        $current_year = date('Y');
+        
+        $this->db->select('r.*, d.seempd_name, 
+        (SELECT SUM(seemrq_days) FROM seemprequests 
+         WHERE seemrq_empid = r.seemrq_empid 
+         AND seemrq_status = "approved" 
+         AND YEAR(seemrq_reqdate) = ' . $current_year . ') as total_taken');
+         
+        $this->db->from('seemprequests r');
+        $this->db->join('seemployee e', 'r.seemrq_empid = e.seemp_id');
+        $this->db->join('seempdetails d', 'e.seemp_id = d.seempd_empid');
+        $this->db->where('r.seemrq_status', 'pending');
+        $this->db->order_by('r.seemrq_reqdate', 'DESC');
+
+        return $this->db->get()->result_array();
+    }
 
 }
 
