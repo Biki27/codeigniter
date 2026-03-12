@@ -68,7 +68,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <section class="container-fluid">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 card-container">
 
-            <?php foreach($products as $product){?>
+            <?php foreach ($products as $product) { ?>
 
             <div class="col">
                 <div class="card h-100 shadow-sm">

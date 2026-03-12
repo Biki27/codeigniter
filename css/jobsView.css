@@ -1,0 +1,240 @@
+.job-search-section {
+	padding: 4rem 0;
+}
+
+.search-bar-main {
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+	border-radius: 16px;
+	overflow: hidden;
+	background: white;
+	backdrop-filter: blur(20px);
+}
+
+.search-main {
+	font-weight: 500;
+	border-left: none !important;
+}
+
+.search-main:focus {
+	box-shadow: none;
+	border-color: #2563eb !important;
+}
+
+.search-btn-main {
+	white-space: nowrap;
+	font-size: 1.1rem;
+	padding: 1.25rem 3rem !important;
+	transition: all 0.3s ease;
+}
+
+.search-btn-main:hover {
+	background: #1d4ed8 !important;
+	transform: translateY(-1px);
+	box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+}
+
+/* Filter Groups */
+.filter-group {
+	background: white;
+	border-radius: 12px;
+	padding: 1.25rem;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+	border: 1px solid rgba(0, 0, 0, 0.04);
+	transition: all 0.3s ease;
+	height: 100%;
+}
+
+.filter-group:hover {
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.filter-input {
+	border: 1px solid rgba(37, 99, 235, 0.2) !important;
+	border-radius: 8px !important;
+	padding: 0.75rem 1rem !important;
+	font-size: 0.9rem;
+	background: #fafbff;
+}
+
+.filter-input:focus {
+	border-color: #2563eb !important;
+	background: white;
+	box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.15);
+}
+
+.filter-btn {
+	border-radius: 8px !important;
+	border: 2px solid #2563eb !important;
+	padding: 0.875rem 1.25rem !important;
+	font-weight: 600 !important;
+	font-size: 0.9rem;
+	color: #2563eb !important;
+	transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+	background: #2563eb !important;
+	color: white !important;
+	transform: translateY(-1px);
+	box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.search-bar-main .input-group {
+		flex-direction: column;
+	}
+
+	.search-btn-main {
+		border-radius: 0 0 16px 16px !important;
+		margin-top: 0.5rem;
+	}
+
+	.filter-group {
+		margin-bottom: 1rem;
+	}
+}
+
+.jobs-list-section {
+	padding: 5rem 0;
+	min-height: 100vh;
+}
+
+.job-card-dynamic {
+	background: white;
+	border-radius: 20px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+	border: 1px solid rgba(0, 0, 0, 0.03);
+	transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	overflow: hidden;
+	height: 100%;
+}
+
+.job-card-dynamic:hover {
+	transform: translateY(-8px);
+	box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
+}
+
+.job-header {
+	background: linear-gradient(135deg, #f8fafc 0%, white 100%);
+}
+
+.job-title {
+	color: #1e293b !important;
+	font-weight: 700 !important;
+	font-size: 1.3rem !important;
+	line-height: 1.4;
+}
+
+.job-company {
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.job-location {
+	color: #64748b;
+	font-size: 0.9rem;
+}
+
+.job-tags .badge {
+	padding: 0.5rem 1rem;
+	border-radius: 20px;
+	font-size: 0.8rem;
+	font-weight: 500;
+}
+
+.job-description {
+	color: #64748b;
+	line-height: 1.7;
+	font-size: 0.95rem;
+}
+
+.job-meta small {
+	font-weight: 500;
+}
+
+.btn-primary {
+	background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+	border: none !important;
+	border-radius: 12px !important;
+	font-weight: 600 !important;
+	transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.job-title {
+		font-size: 1.2rem !important;
+	}
+
+	.d-flex.justify-content-between {
+		flex-direction: column;
+		gap: 1rem;
+		align-items: flex-start !important;
+	}
+}
+
+.resume-searches-section {
+	padding: 3rem 0;
+}
+
+.resume-card,
+.searches-card {
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	height: 100%;
+}
+
+.resume-card:hover,
+.searches-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.search-item {
+	color: #374151;
+	border-radius: 8px !important;
+}
+
+.search-item:hover {
+	background: #e5e7eb !important;
+	color: #1e293b !important;
+	transform: translateX(4px);
+}
+
+.search-item i.fa-times {
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.search-item:hover i.fa-times {
+	opacity: 1;
+}
+
+#resumeUpload {
+	border: 1px solid rgba(37, 99, 235, 0.2) !important;
+	border-radius: 8px !important;
+}
+
+#resumeUpload:focus {
+	border-color: #2563eb !important;
+	box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.resume-searches-section {
+		padding: 2rem 0;
+	}
+
+	.resume-card,
+	.searches-card {
+		margin-bottom: 1rem;
+	}
+}
