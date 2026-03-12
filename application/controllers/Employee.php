@@ -1,6 +1,5 @@
 <?php
 
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Employee extends CI_Controller
@@ -64,6 +63,7 @@ class Employee extends CI_Controller
 
         }
     }
+
     function Dashboard()
     {
         if (
@@ -287,6 +287,7 @@ class Employee extends CI_Controller
 
             // 3. Load the correct header based on role
             $header = ($access == 'HR') ? 'hr/hrHeaderView' : 'employee/adminHeaderView';
+
             $this->load->view($header);
             $this->load->view('employee/adminAttendanceView', $data);
 

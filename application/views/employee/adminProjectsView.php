@@ -447,32 +447,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 placeholder="Search by project name, client or ID...">
                         </div>
                     </div>
+                    <!-- This section contains the status filter -->
                     <div class="col-md-3">
-                        <select class="form-select border-0 shadow-sm">
-
-                            <option selected>
-                                All Projects (<?= $total ?> Total)
-                            </option>
-
-                            <option>
-                                Running Projects (<?= $running ?> Active)
-                            </option>
-
-                            <option>
-                                Pending Projects (<?= $pending ?> Active)
-                            </option>
-
-                            <option>
-                                Completed Projects (<?= $completed ?> Done)
-                            </option>
-
+                        <select name="status" class="form-select border-0 shadow-sm"
+                            onchange="window.location.href='<?= base_url('index.php/Employee/viewProjects') ?>?status='+this.value">
+                            <option value="">All Projects (<?= $total ?> Total)</option>
+                            <option value="running" <?= ($this->input->get('status') == 'running') ? 'selected' : '' ?>>
+                                Running Projects (<?= $running ?> Active)</option>
+                            <option value="pending" <?= ($this->input->get('status') == 'pending') ? 'selected' : '' ?>>
+                                Pending Projects (<?= $pending ?> Active)</option>
+                            <option value="completed" <?= ($this->input->get('status') == 'completed') ? 'selected' : '' ?>>Completed Projects (<?= $completed ?> Done)</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <!-- <div class="col-md-2">
                         <button type="button" class="btn btn-outline-primary w-100 btn-disabled">
                             <i class="fas fa-search me-1"></i>Search
                         </button>
-                    </div>
+                    </div> -->
                     <div class="col-md-2">
                         <a href="<?= base_url('index.php/Employee/addProjectPage') ?>" class="btn btn-primary w-100">
                             <i class="fas fa-plus me-1"></i>New Project
@@ -495,8 +486,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <th>Start</th>
                                 <th>Deadline</th>
                                 <th>Client</th>
-                                <th>Head</th>
-                                <th>Emp ID</th>
+                                <th>Assign Project Head</th>
+                                <!-- <th>Emp ID</th> -->
                                 <th>Price</th>
                                 <th>Status</th>
                             </tr>
@@ -526,7 +517,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                                         <td><?= $proj->seproj_headid ?></td>
 
-                                        <td><code><?= $proj->seproj_headid ?></code></td>
+                                        <!-- <td><code><?= $proj->seproj_headid ?></code></td> -->
 
                                         <td class="price">₹<?= $proj->seproj_price ?></td>
 
@@ -584,73 +575,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
             });
         </script>
-
-        <div class="modal fade" id="addProjectModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add New Project</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <form method="post" action="<?= base_url('index.php/Employee/viewProject') ?>">
-
-                        <div class="modal-body">
-
-                            <div class="mb-3">
-                                <label>Project Name</label>
-                                <input type="text" name="name" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Description</label>
-                                <textarea name="desc" class="form-control"></textarea>
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Start Date</label>
-                                <input type="date" name="date" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Deadline</label>
-                                <input type="date" name="deadline" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Client ID</label>
-                                <input type="text" name="clientid" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Project Head</label>
-                                <input type="text" name="headid" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Price</label>
-                                <input type="text" name="price" class="form-control">
-                            </div>
-
-                            <div class="mb-3">
-                                <label>Status</label>
-                                <select name="status" class="form-control">
-                                    <option value="pending">Pending</option>
-                                    <option value="running">Running</option>
-                                    <option value="completed">Completed</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Save Project</button>
-                        </div>
-                    </form>
-
-                </div>
-            </div>
-        </div>
 </body>
 
 </html>
