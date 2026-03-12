@@ -47,78 +47,7 @@ class EmployeeModel extends CI_Model
         return $res;
     }
 
-    // function get_employee_with_search($query = '', $status = '')
-    // {
-    //     if (trim($query) != '') {
-    //         if (trim($status) != '') {
-    //             $res = $this->db
-    //                 ->from('seemployee')
-    //                 ->group_start()
-    //                 ->like('seemployee.seseq_id', $query)
-    //                 ->or_like('seemployee.seemp_id', $query)
-    //                 ->or_like('seemployee.seemp_email', $query)
-    //                 ->or_like('seempdetails.seempd_name', $query)
-    //                 ->or_like('seempdetails.seempd_phone', $query)
-    //                 ->or_like('seempdetails.seempd_designation', $query)
-    //                 ->group_end()
-    //                 ->join('seempdetails', 'seemployee.seemp_id = seempdetails.seempd_empid', 'left')
-    //                 ->join('sejobapplicant', 'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id', 'left')
-    //                 ->get()
-    //                 ->result();
-
-    //         } else {
-
-    //             $res = $this->db
-    //                 ->from('seemployee')
-    //                 ->group_start()
-    //                 ->like('seemployee.seseq_id', $query)
-    //                 ->or_like('seemployee.seemp_id', $query)
-    //                 ->or_like('seemployee.seemp_email', $query)
-    //                 ->or_like('sejobapplicant.sejoba_name', $query)
-    //                 ->or_like('sejobapplicant.sejoba_phone', $query)
-    //                 ->or_like('sejobapplicant.sejoba_position', $query)
-    //                 ->group_end()
-    //                 ->join(
-    //                     'seempdetails',
-    //                     'seemployee.seemp_id = seempdetails.seempd_empid',
-    //                     'left'
-    //                 )
-    //                 ->join(
-    //                     'sejobapplicant',
-    //                     'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id',
-    //                     'left'
-    //                 )
-    //                 ->get()
-    //                 ->result();
-
-    //         }
-
-    //     } else {
-    //         if (trim($status) != '') {
-    //             $res = $this->db
-    //                 ->from('seemployee')
-    //                 ->where('seemp_status', $status)
-    //                 ->join(
-    //                     'seempdetails',
-    //                     'seemployee.seemp_id = seempdetails.seempd_empid',
-    //                     'left'
-    //                 )
-    //                 ->join(
-    //                     'sejobapplicant',
-    //                     'seempdetails.seempd_jobaid = sejobapplicant.sejoba_id',
-    //                     'left'
-    //                 )
-    //                 ->get()
-    //                 ->result();
-    //         } else {
-    //             $res = $this->getallemployee_with_joins();
-    //         }
-    //     }
-
-    //     return $res;
-    // }
-
-function get_employee_with_search($query = '', $status = '')
+    function get_employee_with_search($query = '', $status = '')
 {
     // 1. Explicitly select all from main table and joined tables
     $this->db->select('seemployee.*, seempdetails.*, sejobapplicant.sejoba_name, sejobapplicant.sejoba_phone');
@@ -421,6 +350,12 @@ function get_employee_with_search($query = '', $status = '')
         $query = $this->db->get();
 
         return $query->result();
+    }
+
+    // hr dashboard functions
+    public function get_total_staff_count()
+    {
+        return $this->db->count_all('seemployee');
     }
 }
 

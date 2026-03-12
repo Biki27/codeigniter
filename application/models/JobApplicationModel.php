@@ -99,7 +99,7 @@ class jobApplicationModel extends CI_Model
         }
     }
 
-    // Step 5: Add function to get scheduled interviews
+    // Step 3: Add function to get scheduled interviews
     function get_interview_scheduled_applicants()
     {
         return $this->db
@@ -108,6 +108,19 @@ class jobApplicationModel extends CI_Model
             ->order_by('sejoba_interview_time', 'ASC')
             ->get('sejobapplicant')
             ->result();
+    }
+    //Hr Dashboard functions
+    public function get_new_applicants_count() 
+    {
+        return $this->db->where('sejoba_state', 'applied')->count_all_results('sejobapplicant');
+    }
+
+    public function get_recent_applicants($limit = 5) 
+    {
+        return $this->db->order_by('sejoba_atime', 'DESC')
+                        ->limit($limit)
+                        ->get('sejobapplicant')
+                        ->result_array();
     }
 
 }

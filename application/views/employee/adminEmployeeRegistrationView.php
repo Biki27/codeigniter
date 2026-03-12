@@ -12,456 +12,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-gradient: radial-gradient(circle at 0% 50%, #461bb9 20%, #973ce0 50%, #6b37e4 100%);
-            --primary: #461bb9;
-            --secondary: #973ce0;
-            --accent: #6b37e4;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(255, 255, 255, 0.25);
-            --shadow-light: 0 10px 40px rgba(0, 0, 0, 0.15);
-            --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--primary-gradient);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
-
-        .employee-container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-light);
-            overflow: hidden;
-            /* margin-left: 500px; */
-            margin-bottom: 30px;
-        }
-
-        /* NEW: Applicant ID Section */
-        .applicant-id-section {
-            background: rgba(255, 255, 255, 0.98);
-            padding: 1.5rem 3rem;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-            width: 678px;
-            margin-bottom: 20px;
-        }
-
-        .applicant-id-group {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-            min-width: 280px;
-        }
-
-        .applicant-id-input {
-            flex: 1;
-            height: 44px;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .applicant-id-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(70, 27, 185, 0.1);
-            outline: none;
-        }
-
-        .fetch-btn {
-            height: 44px;
-            padding: 0 1.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-
-        .fetch-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
-        }
-
-        .form-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 2rem 3rem;
-            text-align: center;
-        }
-
-        .form-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-subtitle {
-            opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .form-body {
-            padding: 3rem;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            position: relative;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.75rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .required {
-            color: #ef4444;
-        }
-
-        .form-control,
-        .form-select {
-            height: 48px;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(70, 27, 185, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .form-control-textarea {
-            min-height: 80px;
-            resize: vertical;
-            padding: 1rem;
-        }
-
-        /* Compact Photo Section - Top Right */
-        .photo-section {
-            position: absolute;
-            top: 2.5rem;
-            right: 2.5rem;
-            width: 100px;
-            height: 100px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 4px solid white;
-            box-shadow: var(--shadow-hover);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .photo-preview {
-            width: 100%;
-            height: 80%;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            border-radius: 12px;
-        }
-
-        .photo-preview:hover {
-            transform: scale(1.05);
-        }
-
-        /* NEW: Small button under image */
-        .photo-btn {
-            width: 100%;
-            height: 20%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 0 0 12px 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .photo-btn:hover {
-            background: linear-gradient(135deg, var(--secondary), var(--accent));
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(70, 27, 185, 0.3);
-        }
-
-        /* Status Toggle */
-        .status-group {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 2px solid #e5e7eb;
-        }
-
-        .status-badge {
-            padding: 0.5rem 1.25rem;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-            text-align: center;
-        }
-
-        .status-active {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-        }
-
-        .status-inactive {
-            background: transparent;
-            color: #6b7280;
-            border: 2px solid transparent;
-        }
-
-        /* CV Upload */
-        .cv-upload {
-            padding: 1rem;
-            border: 2px dashed #d1d5db;
-            border-radius: 12px;
-            text-align: center;
-            background: #f8fafc;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .cv-upload:hover {
-            border-color: var(--primary);
-            background: rgba(70, 27, 185, 0.05);
-        }
-
-        /* Action Buttons */
-        /* Center the action buttons */
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            /* This centers the items horizontally */
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 2.5rem;
-            padding-top: 2rem;
-            margin-bottom: 20px;
-            border-top: 1px solid #e5e7eb;
-            width: 100%;
-            /* Ensure it spans the full width of the form */
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            border: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
-            min-width: 160px;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(70, 27, 185, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-            min-width: 160px;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: #6b7280;
-            border: 2px solid #e5e7eb;
-        }
-
-        .btn-secondary:hover {
-            background: #eb5012;
-            transform: translateY(-2px);
-            color: white;
-            border-color: #eb5012;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .employee-container {
-                margin: 1rem;
-                border-radius: 16px;
-            }
-
-            .form-body {
-                padding: 2rem 1.5rem;
-            }
-
-            .photo-section {
-                position: static;
-                width: 80px;
-                height: 90px;
-                margin: 0 auto 2rem;
-                flex-direction: column;
-            }
-
-            .photo-preview {
-                height: 70%;
-            }
-
-            .photo-btn {
-                height: 30%;
-                font-size: 0.65rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .applicant-id-section {
-                padding: 1.5rem 1.5rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .applicant-id-group {
-                width: 100%;
-                min-width: unset;
-            }
-        }
-
-        .optional::after {
-            content: "(Optional)";
-            font-size: 0.8rem;
-            color: #9ca3af;
-            font-weight: 400;
-            margin-left: 0.5rem;
-        }
-
-        /* Responsive for Applicant ID Section */
-        @media (max-width: 768px) {
-            .applicant-id-section {
-                padding: 1.25rem 1rem;
-                gap: 0.75rem;
-                margin: 0 0.5rem 0 -2rem;
-                max-width: 400px;
-            }
-
-            .applicant-id-group {
-                width: 100%;
-                min-width: unset;
-                flex-direction: row;
-                align-items: center;
-            }
-
-            .applicant-id-input {
-                flex: 1;
-                min-width: 0;
-            }
-
-            .fetch-btn {
-                width: 100%;
-                max-width: 200px;
-                align-self: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .applicant-id-section {
-                padding: 1.25rem 1rem;
-                gap: 0.75rem;
-                margin: 0 0.5rem 0 -2rem;
-                max-width: 400px;
-            }
-
-            .applicant-id-group {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 0.5rem;
-            }
-
-            .applicant-id-input {
-                width: 100%;
-            }
-
-            .fetch-btn {
-                width: 100%;
-                max-width: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="<?= base_url('css/admin/adminEmployeeRegistrationView.css') ?>">
 </head>
-
 <body>
+    <?php if ($this->session->flashdata('msg')): ?>
+        <script>
+            // This will pop up the message sent from the controller
+            alert(<?= json_encode($this->session->flashdata('msg')) ?>);
+        </script>
+    <?php endif; ?>
     <div class="employee-container">
         <div class="form-header">
             <h1 class="form-title">
@@ -659,7 +218,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </form>
     </div>
 
-    <script>
+   <script>
         // Photo preview logic
         document.getElementById('photoInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
@@ -681,10 +240,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         function resetForm() {
             document.getElementById('employeeForm').reset();
             document.getElementById('photoPreview').src = 'https://via.placeholder.com/100x80/461bb9/ffffff?text=👤';
+            document.getElementById('cvStatusText').innerText = "Click to upload CV (PDF, DOC)";
         }
 
         // Optimized AJAX Fetch Applicant logic
-        //trim APP ID and validate before sending request
         async function fetchApplicant() {
             let appId = document.getElementById('applicantIdSearch').value.trim();
             //remove APP from the beginning of the ID if user entered it
@@ -720,7 +279,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                     alert('✅ Selected Applicant data loaded successfully!');
                 } else {
-                    // This will trigger if applicant state is 'applied' or 'rejected' instead of 'selected'
                     alert('❌ ' + result.message);
                 }
             } catch (error) {
@@ -728,8 +286,62 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 alert('❌ Error connecting to server');
             }
         }
-   
-   </script>
+        
+        // Form validation logic
+    
+      document.getElementById('employeeForm').addEventListener('submit', function (e) {
+            
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const aadhar = document.getElementById('aadhar').value.trim();
+            const password = document.querySelector('input[name="password"]').value;
+            const cvInput = document.getElementById('cvInput').files.length;
+            
+            // Check if we are adding new or updating
+            const isUpdate = <?= isset($emp) ? 'true' : 'false' ?>;
+
+            let errors = [];
+            
+            // Email Format Validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errors.push("- Please enter a valid email format.");
+            }
+
+            // Phone Validation (10 digits)
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone.replace(/\D/g,''))) {
+                errors.push("- Phone number must be exactly 10 digits.");
+            }
+            
+            // Aadhar Validation (12 digits)
+            const aadharRegex = /^\d{12}$/;
+            if (!aadharRegex.test(aadhar.replace(/\s/g,''))) {
+                errors.push("- Aadhar number must be exactly 12 digits.");
+            }
+
+            // Password Check (Required only for new employees)
+            if (!isUpdate && password.length < 6) {
+                errors.push("- Password is required and must be at least 6 characters.");
+            }
+
+            // CV Check (Required only for new employees)
+            if (!isUpdate && cvInput === 0) {
+                errors.push("- You must upload a CV document for new employees.");
+            }
+
+            // If there are errors, stop submission and show alert
+            if (errors.length > 0) {
+                e.preventDefault(); // Prevents form from going to server
+                alert("⚠️ Please fix the following errors before submitting:\n\n" + errors.join("\n"));
+            } else {
+                // Confirm before sending using standard browser confirm
+                if(!confirm("Proceed with saving this employee profile?")) {
+                    e.preventDefault();
+                }
+            }
+        });  
+    </script>
 </body>
 
 </html>

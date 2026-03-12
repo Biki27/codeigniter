@@ -496,7 +496,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 <th>Deadline</th>
                                 <th>Client</th>
                                 <th>Head</th>
-                                <th>Emp ID</th>
                                 <th>Price</th>
                                 <th>Status</th>
                             </tr>
@@ -523,8 +522,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <td class="deadline"><?= $proj->seproj_deadline ?></td>
 
                                         <td><?= $proj->seproj_clientid ?></td>
-
-                                        <td><?= $proj->seproj_headid ?></td>
 
                                         <td><code><?= $proj->seproj_headid ?></code></td>
 
@@ -585,7 +582,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             });
         </script>
 
-        <div class="modal fade" id="addProjectModal">
+        <!-- <div class="modal fade" id="addProjectModal">
             <div class="modal-dialog">
                 <div class="modal-content">
 
@@ -650,7 +647,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
                 </div>
             </div>
-        </div>
+        </div> -->
 </body>
 
 </html>
