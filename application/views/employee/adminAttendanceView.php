@@ -19,8 +19,6 @@
 <body>
 
     <div class="main-content">
-
-
         <div class="dual-containers">
             <!-- FIXED CALENDAR -->
             <div class="left-container">
@@ -140,7 +138,6 @@
         </div>
 
         <?= form_close() ?>
-
 
         <div class="table-section">
             <h2 class="table-title">Today's Attendance Records</h2>

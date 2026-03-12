@@ -447,32 +447,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                 placeholder="Search by project name, client or ID...">
                         </div>
                     </div>
+                    <!-- This section contains the status filter -->
                     <div class="col-md-3">
-                        <select class="form-select border-0 shadow-sm">
-
-                            <option selected>
-                                All Projects (<?= $total ?> Total)
-                            </option>
-
-                            <option>
-                                Running Projects (<?= $running ?> Active)
-                            </option>
-
-                            <option>
-                                Pending Projects (<?= $pending ?> Active)
-                            </option>
-
-                            <option>
-                                Completed Projects (<?= $completed ?> Done)
-                            </option>
-
+                        <select name="status" class="form-select border-0 shadow-sm"
+                            onchange="window.location.href='<?= base_url('index.php/Employee/viewProjects') ?>?status='+this.value">
+                            <option value="">All Projects (<?= $total ?> Total)</option>
+                            <option value="running" <?= ($this->input->get('status') == 'running') ? 'selected' : '' ?>>
+                                Running Projects (<?= $running ?> Active)</option>
+                            <option value="pending" <?= ($this->input->get('status') == 'pending') ? 'selected' : '' ?>>
+                                Pending Projects (<?= $pending ?> Active)</option>
+                            <option value="completed" <?= ($this->input->get('status') == 'completed') ? 'selected' : '' ?>>Completed Projects (<?= $completed ?> Done)</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <!-- <div class="col-md-2">
                         <button type="button" class="btn btn-outline-primary w-100 btn-disabled">
                             <i class="fas fa-search me-1"></i>Search
                         </button>
-                    </div>
+                    </div> -->
                     <div class="col-md-2">
                         <a href="<?= base_url('index.php/Employee/addProjectPage') ?>" class="btn btn-primary w-100">
                             <i class="fas fa-plus me-1"></i>New Project
