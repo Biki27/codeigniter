@@ -699,6 +699,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 } else {
                     resumeElement.innerText = "No Resume Uploaded";
                 }
+                //scroll to the candidate info section
+                document.querySelector('.candidate-section').scrollIntoView({ behavior: 'smooth' });
             });
         });
     </script>

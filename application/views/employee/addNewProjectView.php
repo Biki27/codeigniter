@@ -388,7 +388,7 @@
                 <p class="form-subtitle">Complete project information for enterprise tracking</p>
             </div>
 
-            <!-- ✅ FORM TAG STARTS HERE - WRAPS EVERYTHING -->
+            <!-- FORM TAG STARTS HERE - WRAPS EVERYTHING -->
             <form id="projectForm" method="post" action="<?= base_url('index.php/Employee/addProject') ?>">
 
                 <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>"
@@ -478,7 +478,7 @@
                         <i class="fas fa-undo me-2"></i>Reset
                     </button>
                 </div>
-            </form> <!-- ✅ FORM TAG ENDS HERE -->
+            </form> <!--FORM TAG ENDS HERE -->
         </div>
     </div>
 

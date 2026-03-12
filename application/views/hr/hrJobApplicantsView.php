@@ -626,7 +626,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     </div>
 
                     <!-- Review & Status -->
-                    <!-- Review & Status -->
                     <div class="status-section">
                         <h2 class="section-title">Review & Status</h2>
 
