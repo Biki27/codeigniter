@@ -20,6 +20,7 @@ body {
 	border-radius: 8px;
 	font-weight: 500;
 	transition: all 0.3s ease;
+
 }
 .btn-primary:hover {
 	background: #1d4ed8;
@@ -68,10 +69,10 @@ body {
     background: transparent;
     color: #1e3a8a;
 }
-
- 
 .input-group .form-control {
     border-right: none;
 }
-
+#loginBtn {
+	width: 100%;
+}	
  

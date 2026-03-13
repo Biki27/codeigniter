@@ -13,11 +13,15 @@
 </head>
 
 <body>
-    <button class="mobile-toggle d-lg-none" id="mobileToggle"><i class="fas fa-bars"></i></button>
+    <!-- MOBILE TOGGLE BUTTON -->
+    <button class="mobile-toggle" id="mobileToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- MOBILE OVERLAY -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <div class="sidebar" id="sidebar">
-
+    <!-- Sidebar -->
         <nav class="nav flex-column">
             <div class="sidebar" id="sidebar">
                 <div class="logo text-center border-bottom mb-4 pb-3">
@@ -47,8 +51,24 @@
             </div>
         </nav>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('mobileToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
 
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', function () {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                    btn.style.display = 'none';
+                });
 
-</body>
-
-</html>
+                overlay.addEventListener('click', function () {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    btn.style.display = 'flex';
+                });
+            }
+        });
+    </script>

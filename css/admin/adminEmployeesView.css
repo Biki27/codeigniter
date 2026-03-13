@@ -200,3 +200,25 @@ h2.text-white {
         padding-top: 80px; /* Creates space for the toggle button */
     }
 }
+/* Responsive adjustments for Search Box */
+@media (max-width: 768px) {
+    .search-box {
+        padding: 15px; /* Slightly less padding on mobile to save space */
+    }
+
+    .search-box .form-control {
+        width: 100%; /* Force full width on mobile */
+        margin-bottom: 5px;
+    }
+
+    /* Adjust the main content padding for mobile */
+    .main-content {
+        padding: 15px;
+        margin-bottom: 80px; /* Space for fixed footer if needed */
+    }
+    
+    /* Ensure the search button text stays centered */
+    .btn-view.w-100 {
+        margin-top: 10px;
+    }
+}
