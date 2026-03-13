@@ -25,34 +25,38 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <p class="text-muted">Employee / Admin Login</p>
           </div>
 
-         <?= form_open('Employee/Login') ?>
-            <div class="mb-3">
-              <label for="username" class="form-label fw-semibold"><i class="fas fa-user"></i> Username</label>
-              <input type="text" class="form-control" id="username" name="username" placeholder="e.g., user@supropriyo.com" required aria-describedby="usernameHelp">
-              <div id="usernameHelp" class="form-text">Enter your username.</div>
-            </div>
-            <div class="mb-3">
-  <label for="password" class="form-label fw-semibold"><i class="fas fa-lock"></i> Password</label>
-  
-  <div class="input-group">
-    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-      <i class="fas fa-eye" id="eyeIcon"></i>
-    </button>
-  </div>
+          <?= form_open('Employee/Login') ?>
+          <div class="mb-3">
+            <label for="username" class="form-label fw-semibold"><i class="fas fa-user"></i> Username</label>
+            <input type="text" class="form-control" id="username" name="username"
+              placeholder="e.g., user@supropriyo.com" required aria-describedby="usernameHelp">
+            <div id="usernameHelp" class="form-text">Enter your username.</div>
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label fw-semibold"><i class="fas fa-lock"></i> Password</label>
 
-  <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-</div>
-            <div class="mb-3 text-end">
-              <a href="#" class="text-decoration-none" onclick="alert('Forgot Password? Contact IT support at support@supropriyo.com')">Forgot Password?</a>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password" name="password"
+                placeholder="Enter your password" required>
+              <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+              </button>
             </div>
-            <button type="submit" class="btn btn-primary w-100" id="loginBtn">
-              <i class="fas fa-sign-in-alt"></i> Login
-            </button>   
-          <?=  form_close() ?>
 
-          <?php if(isset($error)){ ?>
-              <div id="errorMessage" class="alert alert-danger mt-3" role="alert"><?= $error ?></div>
+            <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>"
+              value="<?= $this->security->get_csrf_hash(); ?>" />
+          </div>
+          <div class="mb-3 text-end">
+            <a href="#" class="text-decoration-none"
+              onclick="alert('Forgot Password? Contact IT support at support@supropriyo.com')">Forgot Password?</a>
+          </div>
+          <button type="submit" class="btn btn-primary w-" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </button>
+          <?= form_close() ?>
+
+          <?php if (isset($error)) { ?>
+            <div id="errorMessage" class="alert alert-danger mt-3" role="alert"><?= $error ?></div>
           <?php } ?>
 
         </div>
@@ -64,20 +68,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   </div>
 
   <script>
-  const togglePassword = document.querySelector('#togglePassword');
-  const password = document.querySelector('#password');
-  const eyeIcon = document.querySelector('#eyeIcon');
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+    const eyeIcon = document.querySelector('#eyeIcon');
 
-  togglePassword.addEventListener('click', function (e) {
-    // Toggle the type attribute
-    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    
-    // Toggle the eye / eye-slash icon
-    eyeIcon.classList.toggle('fa-eye');
-    eyeIcon.classList.toggle('fa-eye-slash');
-  });
-</script>
+    togglePassword.addEventListener('click', function (e) {
+      // Toggle the type attribute
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+
+      // Toggle the eye / eye-slash icon
+      eyeIcon.classList.toggle('fa-eye');
+      eyeIcon.classList.toggle('fa-eye-slash');
+    });
+  </script>
 </body>
 
 </html>

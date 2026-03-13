@@ -1,94 +1,3 @@
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
-body {
-	background: radial-gradient(
-		circle at 0% 50%,
-		#461bb9 20%,
-		#973ce0 50%,
-		#6b37e4 100%
-	);
-	font-family: "Inter", sans-serif;
-	min-height: 100vh;
-	color: #333;
-}
-
-/* SAME SIDEBAR - UNCHANGED */
-.sidebar {
-	background: rgba(255, 255, 255, 0.97);
-	height: 100vh;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 260px;
-	padding: 25px 20px;
-	box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-	backdrop-filter: blur(10px);
-	z-index: 1000;
-}
-
-.logo {
-	text-align: center;
-	margin-bottom: 40px;
-	padding-bottom: 20px;
-	border-bottom: 2px solid rgba(70, 27, 185, 0.1);
-}
-
-.logo-icon {
-	width: 70px;
-	height: 70px;
-	background: linear-gradient(135deg, #461bb9, #973ce0);
-	border-radius: 20px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: white;
-	font-size: 1.8rem;
-	margin: 0 auto 15px;
-	box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
-}
-
-.logo h5 {
-	color: #461bb9;
-	font-weight: 700;
-	font-size: 1.3rem;
-	margin: 0;
-}
-
-.nav-link {
-	display: flex;
-	align-items: center;
-	color: #6b37e4 !important;
-	font-weight: 500;
-	margin-bottom: 12px;
-	padding: 12px 20px !important;
-	border-radius: 12px;
-	text-decoration: none;
-	transition: all 0.3s ease;
-	font-size: 0.95rem;
-}
-
-.nav-link i {
-	margin-right: 12px;
-	width: 20px;
-	text-align: center;
-}
-
-.nav-link:hover {
-	background: linear-gradient(135deg, #461bb9, #973ce0);
-	color: white !important;
-	transform: translateX(8px);
-	box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
-}
-
-.nav-link.active {
-	background: linear-gradient(135deg, #461bb9, #973ce0);
-	color: white !important;
-}
-
 .main-content {
 	margin-left: 260px;
 	padding: 30px;
@@ -883,7 +792,7 @@ body {
 	transition: all 0.3s ease;
 }
 
-/* 4. Responsive adjustments for Footer + Content */
+ 
 @media (max-width: 992px) {
 	.main-content,
 	.footer {
@@ -894,15 +803,11 @@ body {
 	.footer {
 		padding: 15px;
 		font-size: 0.85rem;
-		/* Ensure footer doesn't hide behind mobile navigation bars */
+	 
 		margin-bottom: 0;
 	}
 }
-
-/* 1. Sidebar Toggle Logic */
-.sidebar {
-	transition: all 0.3s ease-in-out;
-}
+ 
 
 /* 2. Main Content Adjustment */
 .main-content {
@@ -926,22 +831,13 @@ body {
 }
 
 @media (max-width: 992px) {
-	.sidebar {
-		transform: translateX(-100%);
-		/* Hide sidebar by default */
-		width: 260px;
-	}
-
+	 
 	.main-content {
 		margin-left: 0;
 		width: 100%;
 		padding: 20px;
 	}
-
-	.sidebar.active {
-		transform: translateX(0);
-		/* Show when toggled */
-	}
+ 
 
 	.footer {
 		left: 0;
@@ -977,8 +873,7 @@ body {
 	border-radius: 10px !important;
 	height: 48px;
 }
-
-/* 5. Table Responsiveness */
+ 
 .table-section {
 	overflow-x: auto;
 	/* Adds horizontal scroll to table only if needed */

@@ -16,13 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </head>
 
 <body>
-  <!-- MOBILE TOGGLE BUTTON -->
-  <button class="mobile-toggle" id="mobileToggle">
-    <i class="fas fa-bars"></i>
-  </button>
-
-  <!-- MOBILE OVERLAY -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  
 
   <!-- Main Content -->
   <div class="main-content">
