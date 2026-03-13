@@ -308,6 +308,7 @@ textarea {
 
 @media (max-width: 992px) {
 	.main-content {
+        padding-top: 80px; /* Creates space for the toggle button */
 		margin-left: 0;
 		width: 100%;
 		padding: 15px;

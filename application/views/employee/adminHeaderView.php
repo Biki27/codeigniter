@@ -71,11 +71,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 btn.addEventListener('click', function () {
                     sidebar.classList.toggle('active');
                     overlay.classList.toggle('active');
+                    btn.style.display = 'none';
                 });
 
                 overlay.addEventListener('click', function () {
                     sidebar.classList.remove('active');
                     overlay.classList.remove('active');
+                    btn.style.display = 'flex';
                 });
             }
         });

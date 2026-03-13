@@ -268,3 +268,9 @@
 .d-none {
 	display: none !important;
 }
+/* for mobile device */
+@media (max-width: 992px) {
+    .main-content {
+        padding-top: 80px; /* Creates space for the toggle button */
+    }
+}

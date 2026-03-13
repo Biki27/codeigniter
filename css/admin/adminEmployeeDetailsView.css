@@ -194,6 +194,12 @@
 }
 
 @media (max-width: 992px) {
+	/* for mobile device */
+ 
+    .main-content {
+        padding-top: 80px; /* Creates space for the toggle button */
+    }
+
 	.emp-details {
 		flex-direction: column;
 	}
