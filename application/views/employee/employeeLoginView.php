@@ -33,10 +33,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               <div id="usernameHelp" class="form-text">Enter your username.</div>
             </div>
             <div class="mb-3">
-              <label for="password" class="form-label fw-semibold"><i class="fas fa-lock"></i> Password</label>
-              <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-              <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
-            </div>
+  <label for="password" class="form-label fw-semibold"><i class="fas fa-lock"></i> Password</label>
+  
+  <div class="input-group">
+    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+      <i class="fas fa-eye" id="eyeIcon"></i>
+    </button>
+  </div>
+
+  <input type="hidden" name="<?=$this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" />
+</div>
             <div class="mb-3 text-end">
               <a href="#" class="text-decoration-none" onclick="alert('Forgot Password? Contact IT support at support@supropriyo.com')">Forgot Password?</a>
             </div>
@@ -56,6 +63,22 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   <div class="footer">
     &copy; <?= date('Y') ?> Suropriyo Enterprise. All rights reserved.
   </div>
+
+  <script>
+  const togglePassword = document.querySelector('#togglePassword');
+  const password = document.querySelector('#password');
+  const eyeIcon = document.querySelector('#eyeIcon');
+
+  togglePassword.addEventListener('click', function (e) {
+    // Toggle the type attribute
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    
+    // Toggle the eye / eye-slash icon
+    eyeIcon.classList.toggle('fa-eye');
+    eyeIcon.classList.toggle('fa-eye-slash');
+  });
+</script>
 </body>
 
 </html>
