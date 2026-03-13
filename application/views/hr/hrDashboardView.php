@@ -12,98 +12,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .main-content {
-            margin-left: 260px;
-            padding: 40px;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 20px;
-            padding: 25px;
-            transition: transform 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            height: 100%;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-10px);
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-top: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 260px;
-            right: 0;
-            text-align: center;
-            color: white;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        @media (max-width: 992px) {
-            .main-content {
-                margin-left: 0;
-                padding-top: 80px;
-            }
-
-            .footer {
-                left: 0;
-            }
-        }
-
-        .btn-success.rounded-circle:hover {
-            background-color: #198754;
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(25, 135, 84, 0.4);
-        }
-
-        .btn-danger.rounded-circle:hover {
-            background-color: #dc3545;
-            transform: scale(1.1);
-            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4);
-        }
-
-        .progress {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .action-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px) scale(1.1);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-success.action-btn:hover {
-            background-color: #157347;
-        }
-
-        .btn-danger.action-btn:hover {
-            background-color: #bb2d3b;
-        }
-
-        .progress-bar {
-            transition: width 1s ease-in-out;
-        }
-    </style>
-
+    <link rel="stylesheet" href="<?= base_url() ?>css/hr/hrDashboardView.css">
+</head>
 <body>
     <div class="main-content">
         <div class="container-fluid">
@@ -270,11 +180,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
         </div>
     </div>
-
-    <div class="footer">
-        © <?= date("Y") ?> Suropriyo Enterprise. All rights reserved.
-    </div>
-
     <div class="modal fade" id="leaveDetailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
@@ -307,6 +212,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
         </div>
     </div>
+
+    <div class="footer">
+        © <?= date("Y") ?> Suropriyo Enterprise. All rights reserved.
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
+    </script>   
 
     <script>
         const mobileToggle = document.getElementById('mobileToggle');
@@ -343,7 +256,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             myModal.show();
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   
 </body>
 </body>
 

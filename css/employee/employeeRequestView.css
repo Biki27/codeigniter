@@ -1,0 +1,61 @@
+/* YOUR EXISTING CSS */
+body {
+	background-color: #f8fafc;
+	font-family: "Inter", sans-serif;
+	color: #374151;
+}
+.navbar {
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+}
+.card {
+	border: none;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transition:
+		transform 0.3s ease,
+		box-shadow 0.3s ease;
+}
+.card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+.table th {
+	background-color: #f3f4f6;
+	font-weight: 600;
+}
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+.nav-section-btn {
+	background: none;
+	border: 2px solid #1e3a8a;
+	color: #1e3a8a;
+	padding: 8px 20px;
+	border-radius: 25px;
+	font-weight: 500;
+	transition: all 0.3s ease;
+}
+.nav-section-btn:hover {
+	background: #1e3a8a;
+	color: white;
+	transform: translateY(-2px);
+}
+.nav-section-btn.active {
+	background: #1e3a8a;
+	color: white;
+}
+.mini-chart {
+	height: 30px;
+	background: linear-gradient(to right, #3b82f6 70%, #e5e7eb 30%);
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 0.8rem;
+	font-weight: 600;
+}
