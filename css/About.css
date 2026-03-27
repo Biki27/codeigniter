@@ -243,9 +243,7 @@
     }
 }
 
-html {
-	scroll-behavior: smooth;
-}
+ 
 
 .product-detail-card {
 	border: none !important;

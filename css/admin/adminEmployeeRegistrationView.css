@@ -1,481 +1,178 @@
 :root {
-	--primary-gradient: radial-gradient(
-		circle at 0% 50%,
-		#461bb9 20%,
-		#973ce0 50%,
-		#6b37e4 100%
-	);
-	--primary: #461bb9;
-	--secondary: #973ce0;
-	--accent: #6b37e4;
-	--glass-bg: rgba(255, 255, 255, 0.95);
-	--glass-border: rgba(255, 255, 255, 0.25);
-	--shadow-light: 0 10px 40px rgba(0, 0, 0, 0.15);
-	--shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.2);
+    --primary-gradient: radial-gradient(circle at 0% 50%, #461bb9 20%, #973ce0 50%, #6b37e4 100%);
+    --primary: #461bb9;
+    --secondary: #973ce0;
+    --accent: #6b37e4;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.25);
+    --shadow-light: 0 10px 40px rgba(0, 0, 0, 0.15);
+    --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.2);
 }
- 
+
 .employee-container {
-	max-width: 900px;
-	margin: 0 auto;
-	background: var(--glass-bg);
-	backdrop-filter: blur(20px);
-	border-radius: 24px;
-	border: 1px solid var(--glass-border);
-	box-shadow: var(--shadow-light);
-	overflow: hidden;
-	margin-left: 500px;
-	margin-bottom: 30px;
-}
-
-/* NEW: Applicant ID Section */
-.applicant-id-section {
-	/* background: rgba(255, 255, 255, 0.98);
-	padding: 1.5rem 3rem;
-	border-bottom: 1px solid #e5e7eb;
-	display: flex;
-	gap: 1rem;
-	align-items: center;
-	flex-wrap: wrap;
-	width: 100%;
-	margin-bottom: 20px;
-*/
-  background: rgba(255, 255, 255, 0.98);
-    padding: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    flex-wrap: nowrap;
-    width: 100%;              /* FIX: full responsive */
-    margin-bottom: 20px;
-    box-sizing: border-box;
-	} 
-
-.applicant-id-group {
-	/* display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	flex: 1;
-	min-width: 280px; */
-	display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1;
-    min-width: 0; 
-	gap: 0.75rem;
-}
-
-.applicant-id-input {
-	flex: 1;
-	height: 44px;
-	padding: 0.75rem 1rem;
-	border: 2px solid #e5e7eb;
-	border-radius: 12px;
-	font-size: 0.95rem;
-	font-weight: 500;
-	transition: all 0.3s ease;
-	background: white;
-}
-
-.applicant-id-input:focus {
-	border-color: var(--primary);
-	box-shadow: 0 0 0 3px rgba(70, 27, 185, 0.1);
-	outline: none;
-}
-
-.fetch-btn {
-	height: 44px;
-	padding: 0 1.5rem;
-	background: linear-gradient(135deg, var(--primary), var(--secondary));
-	color: white;
-	border: none;
-	border-radius: 12px;
-	font-weight: 600;
-	font-size: 0.9rem;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	white-space: nowrap;
-	flex-shrink: 0;
-}
-
-.fetch-btn:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
+    max-width: 900px;
+    margin: 0 auto 30px 500px; /* Note: The 500px left margin implies this sits next to a sidebar */
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
 }
 
 .form-header {
-	background: linear-gradient(135deg, var(--primary), var(--secondary));
-	color: white;
-	padding: 2rem 3rem;
-	text-align: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 2.5rem 3rem;
+    text-align: center;
 }
 
 .form-title {
-	font-size: 2.2rem;
-	font-weight: 700;
-	margin-bottom: 0.5rem;
-}
-
-.form-subtitle {
-	opacity: 0.9;
-	font-size: 1.1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
 .form-body {
-	padding: 3rem;
-	padding-right: 151px;
+    padding: 3rem;
+    /* --- CHANGE 1: Remove extra right padding previously used for the floating photo --- */
+    padding-right: 3rem; 
+    position: relative;
 }
 
 .form-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: 1.5rem;
-	margin-bottom: 2rem;
-}
-
-.form-group {
-	position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .form-label {
-	font-weight: 600;
-	color: #374151;
-	margin-bottom: 0.75rem;
-	font-size: 0.9rem;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
-.required {
-	color: #ef4444;
+.required { color: #ef4444; }
+
+.form-control, .form-select {
+    height: 48px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
 }
 
-.form-control,
-.form-select {
-	height: 48px;
-	padding: 0.75rem 1rem;
-	border: 2px solid #e5e7eb;
-	border-radius: 12px;
-	font-size: 0.95rem;
-	font-weight: 500;
-	transition: all 0.3s ease;
-	background: white;
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(70, 27, 185, 0.1);
+    outline: none;
 }
 
-.form-control:focus,
-.form-select:focus {
-	border-color: var(--primary);
-	box-shadow: 0 0 0 3px rgba(70, 27, 185, 0.1);
-	transform: translateY(-1px);
-}
-
-.form-control-textarea {
-	min-height: 80px;
-	resize: vertical;
-	padding: 1rem;
-}
-
-/* Compact Photo Section - Top Right */
+/* Photo Section - Top Middle */
 .photo-section {
-	position: absolute;
-	top: 2.5rem;
-	right: 2.5rem;
-	width: 100px;
-	height: 100px;
-	border-radius: 16px;
-	overflow: hidden;
-	border: 4px solid white;
-	box-shadow: var(--shadow-hover);
-	z-index: 10;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+    /* --- CHANGE 2: Switch from Absolute to Relative/Static positioning --- */
+    position: relative; 
+    top: 0;
+    right: 0;
+    
+    /* --- CHANGE 3: Use margin auto to center horizontally, add bottom margin for spacing --- */
+    margin: 0 auto 2.5rem auto; 
+    
+    width: 110px;
+    height: 125px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: var(--shadow-hover);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
 }
 
 .photo-preview {
-	width: 100%;
-	height: 80%;
-	object-fit: cover;
-	cursor: pointer;
-	transition: transform 0.3s ease;
-	border-radius: 12px;
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    cursor: pointer;
 }
 
-.photo-preview:hover {
-	transform: scale(1.05);
-}
-
-/* NEW: Small button under image */
 .photo-btn {
-	width: 100%;
-	height: 20%;
-	background: linear-gradient(135deg, var(--primary), var(--secondary));
-	color: white;
-	border: none;
-	border-radius: 0 0 12px 12px;
-	font-size: 0.7rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
+    height: 20%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
 }
 
-.photo-btn:hover {
-	background: linear-gradient(135deg, var(--secondary), var(--accent));
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(70, 27, 185, 0.3);
-}
-
-/* Status Toggle */
-.status-group {
-	display: flex;
-	gap: 0.75rem;
-	padding: 0.75rem;
-	background: #f8fafc;
-	border-radius: 12px;
-	border: 2px solid #e5e7eb;
-}
-
-.status-badge {
-	padding: 0.5rem 1.25rem;
-	border-radius: 25px;
-	font-size: 0.85rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	flex: 1;
-	text-align: center;
-}
-
-.status-active {
-	background: linear-gradient(135deg, #10b981, #059669);
-	color: white;
-	border: none;
-}
-
-.status-inactive {
-	background: transparent;
-	color: #6b7280;
-	border: 2px solid transparent;
-}
-
-/* CV Upload */
+/* CV Upload Box */
 .cv-upload {
-	padding: 1rem;
-	border: 2px dashed #d1d5db;
-	border-radius: 12px;
-	text-align: center;
-	background: #f8fafc;
-	transition: all 0.3s ease;
-	cursor: pointer;
+    padding: 1.5rem;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .cv-upload:hover {
-	border-color: var(--primary);
-	background: rgba(70, 27, 185, 0.05);
+    border-color: var(--primary);
+    background: rgba(70, 27, 185, 0.05);
 }
 
-/* Action Buttons */
-/* Center the action buttons */
+/* Action Buttons Container */
 .action-buttons {
-	display: flex;
-	gap: 1rem;
-	justify-content: center;
-	/* This centers the items horizontally */
-	align-items: center;
-	flex-wrap: wrap;
-	margin-top: 2.5rem;
-	padding-top: 2rem;
-	margin-bottom: 20px;
-	border-top: 1px solid #e5e7eb;
-	width: 100%;
-	/* Ensure it spans the full width of the form */
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
 }
 
 .btn {
-	padding: 1rem 2rem;
-	border-radius: 12px;
-	font-weight: 600;
-	font-size: 0.95rem;
-	border: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	cursor: pointer;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
+    padding: 0.8rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
 }
 
 .btn-primary {
-	background: linear-gradient(135deg, var(--primary), var(--secondary));
-	color: white;
-	box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
-	min-width: 160px;
-}
-
-.btn-primary:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 15px 35px rgba(70, 27, 185, 0.4);
-}
-
-.btn-success {
-	background: linear-gradient(135deg, #10b981, #059669);
-	color: white;
-	box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-	min-width: 160px;
-}
-
-.btn-success:hover {
-	transform: translateY(-3px);
-	box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    box-shadow: 0 8px 20px rgba(70, 27, 185, 0.2);
 }
 
 .btn-secondary {
-	background: transparent;
-	color: #6b7280;
-	border: 2px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #4b5563;
 }
 
-.btn-secondary:hover {
-	background: #eb5012;
-	transform: translateY(-2px);
-	color: white;
-	border-color: #eb5012;
-}
-
-.footer {
-	position: fixed;
-	bottom: 0;
-	left: 260px;
-	right: 0;
-	text-align: center;
-	color: rgba(255, 255, 255, 0.85);
-	font-size: 0.9rem;
-	padding: 15px;
-	background: rgba(70, 27, 185, 0.1);
-	backdrop-filter: blur(10px);
-}
-/* Responsive */
-@media (max-width: 768px) {
-	 
-	.main-content {
-		margin-left: 0;
-	}
-	.footer {
-		left: 0;
-	}
-	.employee-container {
-		margin: 1rem;
-		border-radius: 16px;
-	}
-
-	.form-body {
-		padding: 2rem 1.5rem;
-	}
-
-	.photo-section {
-		position: static;
-		width: 80px;
-		height: 90px;
-		margin: 0 auto 2rem;
-		flex-direction: column;
-	}
-
-	.photo-preview {
-		height: 70%;
-	}
-
-	.photo-btn {
-		height: 30%;
-		font-size: 0.65rem;
-	}
-
-	.action-buttons {
-		flex-direction: column;
-	}
-
-	.btn {
-		width: 100%;
-	}
-
-	.applicant-id-section {
-		padding: 1.5rem 1.5rem;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.applicant-id-group {
-		width: 100%;
-		min-width: unset;
-	}
-}
+.btn-secondary:hover { background: #e5e7eb; }
 
 .optional::after {
-	content: "(Optional)";
-	font-size: 0.8rem;
-	color: #9ca3af;
-	font-weight: 400;
-	margin-left: 0.5rem;
+    content: " (Optional)";
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: none;
 }
 
-/* Responsive for Applicant ID Section */
-@media (max-width: 768px) {
-	.applicant-id-section {
-		padding: 1.25rem 1rem;
-		gap: 0.75rem;
-		margin: 0 0.5rem 0 -2rem;
-		max-width: 400px;
-	}
-
-	.applicant-id-group {
-		width: 100%;
-		min-width: unset;
-		flex-direction: row;
-		align-items: center;
-	}
-
-	.applicant-id-input {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.fetch-btn {
-		width: 100%;
-		max-width: 200px;
-		align-self: center;
-	}
-}
-
-@media (max-width: 480px) {
-	.applicant-id-section {
-		padding: 1.25rem 1rem;
-		gap: 0.75rem;
-		margin: 0 0.5rem 0 -2rem;
-		max-width: 400px;
-	}
-
-	.applicant-id-group {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 0.5rem;
-	}
-
-	.applicant-id-input {
-		width: 100%;
-	}
-
-	.fetch-btn {
-		width: 100%;
-		max-width: none;
-	}
-}
-/* for mobile device */
+/* Mobile Responsive Adjustments */
 @media (max-width: 992px) {
-    .main-content {
-        padding-top: 80px; /* Creates space for the toggle button */
-    }
+    /* --- CHANGE 4: Clean up mobile query since photo is already centered --- */
+    .employee-container { margin: 20px auto; width: 95%; }
+    .form-body { padding: 2rem; }
+    .photo-section { margin: 0 auto 2rem; }
 }

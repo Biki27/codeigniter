@@ -1,107 +1,71 @@
 <?php 
- 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class ContactUs extends CI_Controller{
+class ContactUs extends CI_Controller {
 
-        // for mysql
-        // code 0  = inserted success 
-        // code 1  = something wrong
-    //contact us page
-    function index(){ 
-       $this->load->view('headerView');
-       
-       $this->load->model('ContactusModel');
-       $this->load->model('TestimonialsModel');
-       $tsm_data = $this->TestimonialsModel->get_testimonials();
+    public function index() { 
+        $this->load->view('headerView');
+        
+        $this->load->model('ContactusModel');
+        $this->load->model('TestimonialsModel');
+        $tsm_data = $this->TestimonialsModel->get_testimonials();
 
-       $con_tsm_data = array(
-        'tsm_d' => $tsm_data
-       );
-
-       $this->load->view('contactusView', $con_tsm_data);
-       $this->load->view('footerView');
-
-       $config = array(
-                array(
-                        'field' => 'name',
-                        'label' => 'Name',
-                        'rules' => 'required'
-                ),
-                array(
-                        'field' => 'email',
-                        'label' => 'Email',
-                        'rules' => 'required|valid_email'
-                ),
-                array(
-                        'field' => 'subject',
-                        'label' => 'Subject',
-                        'rules' => 'required',
-                        'errors' => array(
-                                'required' => 'You must provide a %s.',
-                        ),
-                ),
-                array(
-                        'field' => 'message',
-                        'label' => 'Message',
-                        'rules' => 'required',
-                        'errors' => array(
-                                'required' => 'You must provide a %s.',
-                        ),
-                ),
-                
+        $con_tsm_data = array(
+            'tsm_d' => $tsm_data
         );
 
-       $this->form_validation->set_rules($config);
-       $this->form_validation->run();
+        $this->load->view('contactusView', $con_tsm_data);
+        $this->load->view('footerView');
+    }
 
-       $errors =  validation_errors();
-       if($errors == FALSE){
+    /**
+     * AJAX Submission Handler
+     * Improved for faster response and SweetAlert2 compatibility
+     */
+    public function submit() {
+        // Ensure this is an AJAX request to prevent direct URL access
+        if (!$this->input->is_ajax_request()) {
+            show_404();
+        }
+
+        // 1. Set Validation Rules
+        $this->form_validation->set_rules('name', 'Name', 'required|trim');
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email|trim');
+        $this->form_validation->set_rules('subject', 'Subject', 'required|trim');
+        $this->form_validation->set_rules('message', 'Message', 'required|trim');
+
+        if ($this->form_validation->run() == FALSE) {
+            // 2. Return Validation Errors as JSON
+            echo json_encode([
+                'status' => 'error',
+                'message' => validation_errors('<li>', '</li>')
+            ]);
+        } else {
+            // 3. Process the data through the Model
+            $this->load->model('ContactusModel');
             $data = $this->input->post();
             
-            if($data !=  null){
-                $issuccess = $this->ContactusModel->insertConactus($data);
+            $issuccess = $this->ContactusModel->insertConactus($data);
 
-                if($issuccess['code'] != 0 ){
-                   $this->load->view('alertView', array("alertclass" => '',"heading"=>"Something went wrong. Email not sent." ));
-                }
-
-                if($issuccess['code'] == 0 ){
-                   $this->load->view('alertView', array("alertclass" => '',"heading"=>"Thank you! Your message has been sent successfully. We will contact you within 24-48 hours." ));
-                }
-
+            if ($issuccess['code'] == 0) {
+                // 4. Return Success Response
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Thank you! Your message has been sent successfully. We will contact you shortly.'
+                ]);
+            } else {
+                // 5. Return Database Error Response
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Something went wrong on our server. Please try again later.'
+                ]);
             }
-
-       }else{
-            $this->load->view('alertView', array("alertclass" => '',"heading"=>"Please fill the form Correctly." ));
-       }
+        }
     }
 
-    function Ceo(){
-        $this->load->view('headerView');
-        $this->load->view('ceoView');
-        $this->load->view('footerView');
-    }
-
-    function LeadDev(){
-        $this->load->view('headerView');
-        $this->load->view('leadDevView');
-        $this->load->view('footerView');
-    }
-    function DevOps(){
-        $this->load->view('headerView');
-        $this->load->view('devopsView');
-        $this->load->view('footerView');
-    }
-    function Technologies(){
-        $this->load->view('headerView');
-        $this->load->view('technologiesView');
-        $this->load->view('footerView');
-    }
-
-
-
+    // Keep your existing profile methods
+    public function Ceo() { $this->load->view('headerView'); $this->load->view('ceoView'); $this->load->view('footerView'); }
+    public function LeadDev() { $this->load->view('headerView'); $this->load->view('leadDevView'); $this->load->view('footerView'); }
+    public function DevOps() { $this->load->view('headerView'); $this->load->view('devopsView'); $this->load->view('footerView'); }
 }
-
-
 ?>

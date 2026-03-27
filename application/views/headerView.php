@@ -1,4 +1,4 @@
-<?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +17,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url(); ?>favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url(); ?>/favicon-16x16.png">
     <link rel="manifest" href="<?= base_url(); ?>/site.webmanifest">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 

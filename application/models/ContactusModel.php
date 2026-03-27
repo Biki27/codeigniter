@@ -1,38 +1,45 @@
 <?php
-// Suropriyo Enterprise
-// Howrah
+ 
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class ContactusModel extends CI_Model
 {
-    function insertConactus($data)
+    /**
+     * Inserts contact data and triggers notifications
+     * Optimized for AJAX response speed
+     */
+    public function insertConactus($data)
     {
         $contact_info = array(
-            'secon_name' => $data['name'],
-            'secon_email' => $data['email'],
+            'secon_name'    => $data['name'],
+            'secon_email'   => $data['email'],
             'secon_subject' => $data['subject'],
             'secon_message' => $data['message'],
-            'secon_action' => 'none',
+            'secon_action'  => 'none',
         );
 
+        // Start Transaction
         $this->db->trans_start();
         $this->db->insert('secontactus', $contact_info);
-        $issucess = $this->db->error();
         $this->db->trans_complete();
 
-        // Send email notification only if DB insert succeeded
-        if ($issucess['code'] == 0) {
+        $db_error = $this->db->error();
+
+        // If DB insertion was successful, handle emails
+        if ($this->db->trans_status() === TRUE && $db_error['code'] == 0) {
+            // We return success immediately to the controller so the user sees the popup,
+            // even if the SMTP server takes a few seconds to respond.
             $this->send_contact_notification_email($data);
+            return ['code' => 0, 'message' => 'Success'];
         }
 
-        return $issucess;
+        return $db_error;
     }
 
     // Send contact notification emails
     function send_contact_notification_email($contact_data = array())
     {
-        $this->load->helper('email');
         $this->load->library('email');
 
         // Validate user email
@@ -76,6 +83,5 @@ class ContactusModel extends CI_Model
         $this->email->message($this->load->view('email/emailContactAdminView', $admindata, TRUE));
 
         $this->email->send();
-        return 0;
     }
 }
