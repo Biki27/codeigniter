@@ -41,18 +41,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <div class="form-body" style="position: relative;">
                 <input type="hidden" name="linked_applicant_id"
                     value="<?= isset($prefill_applicant) ? $prefill_applicant->sejoba_id : '' ?>">
-                <!-- Applicant ID Section -->
-                <!-- <div class="applicant-id-section">
-                    <div class="applicant-id-group">
-                        <label
-                            style="font-weight: 600; color: #374151; font-size: 0.9rem; white-space: nowrap;">Applicant
-                            ID:</label>
-                        <input type="text" class="applicant-id-input" id="applicantIdSearch" placeholder="Example: 44">
-                    </div>
-                    <button type="button" class="fetch-btn" onclick="fetchApplicant()">
-                        <i class="fas fa-search me-2"></i> Fetch
-                    </button>
-                </div> -->
+
                 <!-- Photo Section -->
                 <div class="photo-section">
                     <?php
@@ -274,9 +263,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             document.getElementById('cvStatusText').innerText = "Click to upload CV (PDF, DOC)";
         }
 
-        // Optimized AJAX Fetch Applicant logic
+        
          
-        // Form validation logic
+        // Form Submission Logic
 
         document.getElementById('employeeForm').addEventListener('submit', function (e) {
 
