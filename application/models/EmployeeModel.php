@@ -4,19 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class EmployeeModel extends CI_Model
 {
-    /// Get user by email or employee ID for authentication 
-    //ADDED on 2024-06-15 by BIKI
-
-    // public function get_user_by_identity($identity) {
-//     $this->db->group_start();
-//     $this->db->where('seemp_email', $identity);
-//     $this->db->or_where('seemp_id', $identity);
-//     $this->db->group_end();
-//     $query = $this->db->get('seemployee');
-
-    //     return ($query->num_rows() == 1) ? $query->row() : false;
-// }
-
+  
     function getallemployee_with_joins()
     {
         $res = $this->db

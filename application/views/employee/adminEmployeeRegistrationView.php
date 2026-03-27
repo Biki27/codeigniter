@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input type="hidden" name="linked_applicant_id"
                     value="<?= isset($prefill_applicant) ? $prefill_applicant->sejoba_id : '' ?>">
                 <!-- Applicant ID Section -->
-                <div class="applicant-id-section">
+                <!-- <div class="applicant-id-section">
                     <div class="applicant-id-group">
                         <label
                             style="font-weight: 600; color: #374151; font-size: 0.9rem; white-space: nowrap;">Applicant
@@ -52,7 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <button type="button" class="fetch-btn" onclick="fetchApplicant()">
                         <i class="fas fa-search me-2"></i> Fetch
                     </button>
-                </div>
+                </div> -->
                 <!-- Photo Section -->
                 <div class="photo-section">
                     <?php
@@ -275,49 +275,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         }
 
         // Optimized AJAX Fetch Applicant logic
-        async function fetchApplicant() {
-            let appId = document.getElementById('applicantIdSearch').value.trim();
-            //remove APP from the beginning of the ID if user entered it
-            if (appId.toUpperCase().startsWith('APP')) {
-                appId = appId.substring(3);
-            }
-
-            if (!appId) {
-                alert('⚠️ Please enter an Applicant ID');
-                return;
-            }
-
-            try {
-                const response = await fetch('<?= site_url("Employee/getApplicantDetails/") ?>' + appId);
-                const result = await response.json();
-
-                if (result.success) {
-                    const data = result.data;
-
-                    // Mapping database columns to Form IDs
-                    document.getElementById('empName').value = data.sejoba_name || '';
-                    document.getElementById('email').value = data.sejoba_email || '';
-                    document.getElementById('phone').value = data.sejoba_phone || '';
-                    document.getElementById('designation').value = data.sejoba_position || '';
-                    document.getElementById('experience').value = data.sejoba_experience || '';
-                    document.getElementById('salary').value = data.sejoba_exp_salary || '';
-
-                    // Optional: Map address if available in applicant table
-                    if (data.sejoba_address) {
-                        document.getElementById('currentAddress').value = data.sejoba_address;
-                        document.getElementById('permAddress').value = data.sejoba_address;
-                    }
-
-                    alert('✅ Selected Applicant data loaded successfully!');
-                } else {
-                    alert('❌ ' + result.message);
-                }
-            } catch (error) {
-                console.error('Fetch error:', error);
-                alert('❌ Error connecting to server');
-            }
-        }
-
+         
         // Form validation logic
 
         document.getElementById('employeeForm').addEventListener('submit', function (e) {
