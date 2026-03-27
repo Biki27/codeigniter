@@ -1,0 +1,198 @@
+:root {
+    --primary: #461bb9;
+    --secondary: #973ce0;
+    --accent: #6b37e4;
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.25);
+    --shadow-light: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Adjusting Main Content for Sidebar */
+.main-content {
+    margin-left: 260px; /* Matches your sidebar width */
+    padding: 30px;
+    min-height: 100vh;
+    background: #0f0f23;
+    transition: all 0.3s ease;
+}
+
+.welcome h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.welcome p {
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+}
+
+/* Project Container Card */
+.project-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--glass-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+}
+
+.form-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.form-body {
+	padding: 2rem;
+	border-top: 1px solid #e2e8f0;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+/* Fetch Section - Responsive Row */
+.project-id-section {
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.project-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.project-id-input {
+    flex: 1;
+    height: 45px;
+    padding: 0 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.project-id-input:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+.fetch-btn{
+	height: 44px;
+	padding: 0 1.5rem;
+	background: linear-gradient(135deg, var(--primary), var(--secondary));
+	color: white;
+	border: none;
+	border-radius: 12px;
+	font-weight: 600;
+	font-size: 0.9rem;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	white-space: nowrap;
+}
+.fetch-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(70, 27, 185, 0.3);
+}
+
+/* Form Grid - 2 columns on Laptop, 1 on Mobile */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Make description and large fields span full width on desktop */
+.form-group:nth-child(2) { grid-column: span 2; } 
+
+.form-label {
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.form-control, .form-select {
+    height: 48px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.form-control-textarea {
+    height: auto !important;
+    min-height: 100px;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(70, 27, 185, 0.1);
+}
+
+/* Buttons */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn {
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    min-width: 150px;
+    transition: 0.3s;
+}
+
+.btn-primary { background: var(--primary); color: white; border: none; }
+.btn-success { background: #10b981; color: white; border: none; }
+.btn-secondary { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+
+.btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 0; /* Sidebar is hidden or toggled on mobile */
+        padding: 80px 15px 20px; /* Extra top padding for mobile toggle button */
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Switch to single column */
+    }
+
+    .form-group:nth-child(2) { grid-column: span 1; }
+
+    .project-id-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .welcome h1 { font-size: 1.8rem; }
+}
+
+.d-none { display: none !important; }
