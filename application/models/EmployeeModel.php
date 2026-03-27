@@ -50,7 +50,7 @@ class EmployeeModel extends CI_Model
     function get_employee_with_search($query = '', $status = '')
 {
     // 1. Explicitly select all from main table and joined tables
-    $this->db->select('seemployee.*, seempdetails.*, sejobapplicant.sejoba_name, sejobapplicant.sejoba_phone');
+    $this->db->select('seemployee.*, seempdetails.*, sejobapplicant.sejoba_phone');
     $this->db->from('seemployee');
     
     // 2. Apply Joins
@@ -69,7 +69,7 @@ class EmployeeModel extends CI_Model
 
     // 4. Handle Status Filter (IMPORTANT: Use the table prefix)
     if (!empty(trim($status))) {
-        $this->db->where('seemployee.seemp_status', $status);
+        $this->db->where('seemployee.seemp_status', strtolower($status));
     }
 
     // 5. Execute

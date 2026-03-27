@@ -312,20 +312,23 @@ class Employee extends CI_Controller
             return;
         }
 
-        $this->load->model('jobApplicationModel');
-
-        // Querying directly for a selected applicant
+        // UPDATED: Added JOIN to get personal details from secandidates
+        $this->db->select('sejobapplicant.*, secandidates.full_name, secandidates.email');
+        $this->db->from('sejobapplicant');
+        $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
         $this->db->where('sejoba_id', $id);
         $this->db->where('sejoba_state', 'selected');
-        $query = $this->db->get('sejobapplicant');
+
+        $query = $this->db->get();
         $applicant = $query->row();
 
         if ($applicant) {
             echo json_encode(['success' => true, 'data' => $applicant]);
         } else {
-            // Provide a clear message if the ID exists but hasn't been "Selected" yet
             echo json_encode(['success' => false, 'message' => 'Applicant not found or not in "Selected" state.']);
         }
+
+
     }
 
 
@@ -495,13 +498,15 @@ class Employee extends CI_Controller
                 }
             }
 
-            // 2. NEW: Check if Hiring an Applicant (Auto-Fill)
             $applicant_id = $this->input->get('applicant_id', TRUE);
             if (!empty($applicant_id)) {
-                // Fetch applicant directly from DB
+                // UPDATED: Now joins with secandidates to get the name/email for pre-filling
+                $this->db->select('sejobapplicant.*, secandidates.full_name as sejoba_name, secandidates.email as sejoba_email');
+                $this->db->from('sejobapplicant');
+                $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
                 $this->db->where('sejoba_id', $applicant_id);
 
-                $app_query = $this->db->get('sejobapplicant');
+                $app_query = $this->db->get();
                 if ($app_query->num_rows() > 0) {
                     $data['prefill_applicant'] = $app_query->row();
                 }
