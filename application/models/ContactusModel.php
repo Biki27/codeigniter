@@ -1,4 +1,6 @@
 <?php
+ 
+
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class ContactusModel extends CI_Model
@@ -35,36 +37,51 @@ class ContactusModel extends CI_Model
         return $db_error;
     }
 
-    /**
-     * Handles background email notifications
-     */
-    private function send_contact_notification_email($contact_data)
+    // Send contact notification emails
+    function send_contact_notification_email($contact_data = array())
     {
         $this->load->library('email');
 
-        // Configure standard SMTP or Mail settings here if needed
+        // Validate user email
+        if (!filter_var($contact_data['email'], FILTER_VALIDATE_EMAIL)) {
+            return 1;
+        }
+
+        // Fetch values from .env
+        $from_email  = getenv('SYSTEM_EMAIL_FROM');
+        $from_name   = getenv('SYSTEM_EMAIL_NAME');
+        $admin_email = getenv('ADMIN_CONTACT_EMAIL');
+
         $this->email->set_newline("\r\n");
 
-        // 1. Send Confirmation to the User
-        $this->email->from('hr@suropriyo.in', 'Suropriyo Enterprise');
+        // --- 1. Send confirmation to the person who contacted ---
+        $this->email->from($from_email, $from_name);
         $this->email->to($contact_data['email']);
-        $this->email->subject('Message Received - Suropriyo Enterprise');
-        
-        $user_email_content = $this->load->view('email/emailContactConfirmationView', $contact_data, TRUE);
-        $this->email->message($user_email_content);
+
+        $view_data = array(
+            'name' => $contact_data['name'],
+            'subject' => $contact_data['subject'],
+            'message' => $contact_data['message']
+        );
+
+        $this->email->subject($from_name . ' - Contact Form Received');
+        $this->email->message($this->load->view('email/emailContactConfirmationView', $view_data, TRUE));
         $this->email->send();
 
-        // 2. Send Notification to Admin
-        $this->email->clear(); // Clear previous settings for the next email
-        $this->email->from('hr@suropriyo.in', 'System Notification');
-        $this->email->to('suropriyoenterprise@gmail.com'); 
-        $this->email->subject('New Lead: ' . $contact_data['subject']);
-        
-        $admin_data = $contact_data;
-        $admin_data['contact_date'] = date('Y-m-d H:i:s');
-        
-        $admin_email_content = $this->load->view('email/emailContactAdminView', $admin_data, TRUE);
-        $this->email->message($admin_email_content);
+        // --- 2. Send notification to the Admin ---
+        $admindata = array(
+            'name' => $contact_data['name'],
+            'email' => $contact_data['email'],
+            'subject' => $contact_data['subject'],
+            'message' => $contact_data['message'],
+            'contact_date' => date('Y-m-d H:i:s')
+        );
+
+        $this->email->from($from_email, $from_name);
+        $this->email->to($admin_email);
+        $this->email->subject($from_name . ' - New Contact Form Submission');
+        $this->email->message($this->load->view('email/emailContactAdminView', $admindata, TRUE));
+
         $this->email->send();
     }
 }

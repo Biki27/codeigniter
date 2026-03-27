@@ -2,9 +2,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 // Contact Form Email Settings
-$config['contact_from_email'] = 'satyajitmanna35@gmail.com';
-$config['contact_from_name'] = 'Suropriyo Enterprise';
-$config['admin_notification_email'] = 'goutam201shaw@gmail.com'; // Admin email
+// $config['contact_from_email'] = 'satyajitmanna35@gmail.com';
+// $config['contact_from_name'] = 'Suropriyo Enterprise';
+// $config['admin_notification_email'] = 'goutam201shaw@gmail.com'; // Admin email
 // $config['support_email'] = 'suropriyoenterprise@gmail.com'; // Support email
 
 // Email Templates
