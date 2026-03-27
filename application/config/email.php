@@ -1,17 +1,16 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-    defined('BASEPATH') OR exit('No direct script access allowed');
-    // change smtp_pass app password 
-    $config['protocol'] = 'mail';
-    $config['smtp_auth'] = TRUE;
-    $config['smtp_host'] = 'mail.suropriyo.in';
-    $config['smtp_port'] = 465;
-    $config['smtp_user'] = 'hr@suropriyo.in';
-    $config['smtp_pass'] = 'Suropriyo@123';
-    $config['smtp_crypto'] = 'ssl';
-    $config['mailtype'] = 'html';
-    $config['charset'] = 'utf-8';
-    $config['newline'] = "\r\n";
-    $config['crlf'] = "\r\n";
-    $config['wordwrap'] = TRUE;
-?>
+$config['protocol']    = getenv('SMTP_PROTOCOL') ? getenv('SMTP_PROTOCOL') : 'smtp';
+$config['smtp_host']    = getenv('SMTP_HOST');
+$config['smtp_port']    = getenv('SMTP_PORT');
+$config['smtp_user']    = getenv('SMTP_USER');
+$config['smtp_pass']    = getenv('SMTP_PASS');
+$config['smtp_crypto']  = getenv('SMTP_CRYPTO');
+
+$config['smtp_auth']    = TRUE;
+$config['mailtype']     = 'html';
+$config['charset']      = 'utf-8';
+$config['newline']      = "\r\n";
+$config['crlf']         = "\r\n";
+$config['wordwrap']     = TRUE;
