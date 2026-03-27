@@ -11,7 +11,7 @@
 
 .employee-container {
     max-width: 900px;
-    margin: 0 auto 30px 500px;
+    margin: 0 auto 30px 500px; /* Note: The 500px left margin implies this sits next to a sidebar */
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border-radius: 24px;
@@ -35,7 +35,9 @@
 
 .form-body {
     padding: 3rem;
-    padding-right: 151px; /* Maintains space for the absolute-positioned photo */
+    /* --- CHANGE 1: Remove extra right padding previously used for the floating photo --- */
+    padding-right: 3rem; 
+    position: relative;
 }
 
 .form-grid {
@@ -73,11 +75,16 @@
     outline: none;
 }
 
-/* Photo Section - Top Right Floating */
+/* Photo Section - Top Middle */
 .photo-section {
-    position: absolute;
-    top: 2.5rem;
-    right: 2.5rem;
+    /* --- CHANGE 2: Switch from Absolute to Relative/Static positioning --- */
+    position: relative; 
+    top: 0;
+    right: 0;
+    
+    /* --- CHANGE 3: Use margin auto to center horizontally, add bottom margin for spacing --- */
+    margin: 0 auto 2.5rem auto; 
+    
     width: 110px;
     height: 125px;
     border-radius: 16px;
@@ -164,7 +171,8 @@
 
 /* Mobile Responsive Adjustments */
 @media (max-width: 992px) {
+    /* --- CHANGE 4: Clean up mobile query since photo is already centered --- */
     .employee-container { margin: 20px auto; width: 95%; }
     .form-body { padding: 2rem; }
-    .photo-section { position: relative; top: 0; right: 0; margin: 0 auto 2rem; }
+    .photo-section { margin: 0 auto 2rem; }
 }

@@ -40,13 +40,10 @@ body {
 }
 
 #logo {
-	/* height: 50px;
+	height: 50px;
 	width: 50px;
 	border-radius: 50%;
-	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); */
-	height: 40px;
-	width: 40px;
-	border-radius: 50%;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-collapse {
@@ -119,42 +116,6 @@ body {
 .search-icon:hover {
 	background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
 	transform: scale(1.05);
-}
-.navbar-brand {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	max-width: 75%;
-}
-
-/* Brand text */
-.brand-text {
-	color: #2563eb;
-	font-weight: bold;
-	font-size: 1.2rem;
-	white-space: nowrap;
-}
-@media (max-width: 576px) {
-
-	#logo {
-		height: 32px;
-		width: 32px;
-	}
-
-	.brand-text {
-		font-size: 0.95rem;
-		max-width: 140px;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.navbar-brand {
-		max-width: 65%;
-	}
-
-	.navbar-toggler {
-		margin-left: auto;
-	}
 }
 
 /* Mobile Responsiveness */
