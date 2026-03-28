@@ -14,89 +14,56 @@ class JobApplicationModel extends CI_Model
         return $query->row();
     }
 
-    // Fixed: Removed non-existent name/email columns. Uses candidate_id and job_id.
-    // public function register_applicant($apdata, $resume_path = '')
-    // {
-    //     if (trim($resume_path) == '') {
-    //         return 1;
-    //     }
-
-    //     $applicant_info = array(
-    //         'candidate_id'      => $apdata['candidate_id'], // Required for new schema
-    //         'job_id'            => $apdata['job_id'],       // Required for new schema
-    //         'sejoba_phone'      => $apdata['phone'],
-    //         'sejoba_position'   => $apdata['position'] ?? '', 
-    //         'sejoba_resume'     => $resume_path,
-    //         'sejoba_experience' => $apdata['experience'],
-    //         'sejoba_exp_salary' => $apdata['salary'],
-    //         'sejoba_coverletter'=> $apdata['coverletter'],
-    //         'sejoba_state'      => 'applied',
-    //         'sejoba_atime'      => date('Y-m-d H:i:s')
-    //     );
-
-    //     $this->db->trans_start();
-    //     $this->db->insert('sejobapplicant', $applicant_info);
-    //     $issuccess = $this->db->error();
-    //     $this->db->trans_complete();
-
-    //     return $issuccess['code'];
-    // }
+     
     public function register_applicant($apdata, $resume_path = '')
-    {
-        if (trim($resume_path) == '') {
-            return 1;
-        }
-
-        $applicant_info = array(
-            'candidate_id' => $apdata['candidate_id'],
-            'job_id' => $apdata['job_id'],
-            'sejoba_phone' => $apdata['phone'],
-            'sejoba_position' => $apdata['position'] ?? '',
-            'sejoba_resume' => $resume_path,
-            'sejoba_experience' => $apdata['experience'],
-            'sejoba_exp_salary' => $apdata['salary'],
-            'sejoba_coverletter' => $apdata['coverletter'],
-            'sejoba_state' => 'applied',
-            'sejoba_atime' => date('Y-m-d H:i:s')
-        );
-
-        $this->db->trans_start();
-        $this->db->insert('sejobapplicant', $applicant_info);
-        $new_applicant_id = $this->db->insert_id(); // Get the ID of the new application
-        $this->db->trans_complete();
-
-        if ($this->db->trans_status() === TRUE) {
-            // --- DATA FETCHING FOR EMAIL ---
-
-            $this->db->select('
-            secandidates.email, 
-            secandidates.full_name, 
-            sejobs.sejob_jobtitle, 
-            sejobapplicant.sejoba_phone
-        ');
-            $this->db->from('sejobapplicant');
-            $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
-            $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
-            $this->db->where('sejobapplicant.sejoba_id', $new_applicant_id);
-
-            $details = $this->db->get()->row();
-
-            if ($details) {
-                $this->load->model('EmailModel');
-                // Passing the fetched data to your existing function
-                $this->EmailModel->send_applicant_submission_email(
-                    $details->email,           // From secandidates
-                    $details->full_name,       // From secandidates
-                    $details->sejob_jobtitle,  // From sejobs
-                    $details->sejoba_phone     // From sejobapplicant
-                );
-            }
-
-            return 0; 
-        }
-
-        return 1; 
+{
+    if (trim($resume_path) == '') {
+        return 1;
     }
+
+    $applicant_info = array(
+        'candidate_id'      => $apdata['candidate_id'],
+        'job_id'            => $apdata['job_id'],
+        'sejoba_phone'      => $apdata['phone'],
+        'sejoba_resume'     => $resume_path,
+        'sejoba_experience' => $apdata['experience'],
+        'sejoba_exp_salary' => $apdata['salary'],
+        'sejoba_coverletter'=> $apdata['coverletter'],
+        'sejoba_state'      => 'applied',
+        'sejoba_atime'      => date('Y-m-d H:i:s')
+    );
+
+    $this->db->trans_start();
+    $this->db->insert('sejobapplicant', $applicant_info);
+    $new_id = $this->db->insert_id(); // Get the ID of the row just inserted
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === TRUE) {
+        // FETCH ACTUAL STRINGS FOR THE EMAIL
+        $this->db->select('secandidates.email, secandidates.full_name, sejobs.sejob_jobtitle');
+        $this->db->from('sejobapplicant');
+        $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
+        $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
+        $this->db->where('sejobapplicant.sejoba_id', $new_id);
+       
+        $details = $this->db->get()->row();
+
+       if ($details) {
+    $this->load->model('EmailModel');
+    $this->EmailModel->send_applicant_submission_email(
+        $details->email,
+        $details->full_name,
+        $details->sejob_jobtitle,
+        $apdata['phone']
+    );
+    
+    // ADD THIS LINE TEMPORARILY TO SEE ERRORS IN application/logs/
+    log_message('error', 'SMTP Debug: ' . $this->email->print_debugger());
+}
+        return 0;
+    }
+    return 1;
+}
     // Fixed: Added JOIN to ensure you get candidate details
     public function get_applicant_info($sejobaid = '')
     {
@@ -202,22 +169,48 @@ class JobApplicationModel extends CI_Model
         return $this->db->get()->result_array();
     }
     // Submits the finalized application into the bridging table
-    public function submit_application($candidate_id, $job_id, $resume_path, $cover_letter, $phone, $experience, $expected_salary)
-    {
-        $data = array(
-            'candidate_id' => $candidate_id,
-            'job_id' => $job_id, // Ensure this column exists in your DB
-            'sejoba_phone' => $phone,
-            'sejoba_experience' => $experience,
-            'sejoba_exp_salary' => $expected_salary,
-            'sejoba_resume' => $resume_path,
-            'sejoba_coverletter' => $cover_letter,
-            'sejoba_state' => 'applied',
-            'sejoba_atime' => date('Y-m-d H:i:s')
-        );
+   public function submit_application($candidate_id, $job_id, $resume_path, $cover_letter, $phone, $experience, $expected_salary)
+{
+    $data = array(
+        'candidate_id' => $candidate_id,
+        'job_id' => $job_id,
+        'sejoba_phone' => $phone,
+        'sejoba_experience' => $experience,
+        'sejoba_exp_salary' => $expected_salary,
+        'sejoba_resume' => $resume_path,
+        'sejoba_coverletter' => $cover_letter,
+        'sejoba_state' => 'applied',
+        'sejoba_atime' => date('Y-m-d H:i:s')
+    );
 
-        return $this->db->insert('sejobapplicant', $data);
+    $this->db->trans_start();
+    $this->db->insert('sejobapplicant', $data);
+    $new_id = $this->db->insert_id(); // Capture the new application ID
+    $this->db->trans_complete();
+
+    if ($this->db->trans_status() === TRUE) {
+        // TRIGGER EMAIL LOGIC
+        $this->db->select('secandidates.email, secandidates.full_name, sejobs.sejob_jobtitle');
+        $this->db->from('sejobapplicant');
+        $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
+        $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
+        $this->db->where('sejobapplicant.sejoba_id', $new_id);
+       
+        $details = $this->db->get()->row();
+
+        if ($details) {
+            $this->load->model('EmailModel');
+            $this->EmailModel->send_applicant_submission_email(
+                $details->email,
+                $details->full_name,
+                $details->sejob_jobtitle,
+                $phone
+            );
+        }
+        return TRUE;
     }
+    return FALSE;
+}
 
     public function is_eligible_to_apply($candidate_id)
     {

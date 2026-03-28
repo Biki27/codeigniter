@@ -221,11 +221,23 @@ $(document).ready(function() {
     });
 
     // Hash handling for smooth scroll
-    if (window.location.hash === "#contactForm") {
-        let target = $("#contactFormSection");
-        if (target.length) {
-            window.scrollTo(0, target.offset().top - 100);
-        }
+   if (window.location.hash === "#contactForm") {
+        setTimeout(function() {
+            let target = $("#contactFormSection"); // Target the section container
+            if (target.length) {
+                // Calculate position minus header offset (approx 90px-100px)
+                let headerOffset = 100; 
+                let elementPosition = target.offset().top;
+                let offsetPosition = elementPosition - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }, 300); // Short delay to ensure images/layouts are loaded
+        
+        // Clean the URL without refreshing
         history.replaceState(null, null, window.location.pathname);
     }
 });
