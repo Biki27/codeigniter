@@ -16,51 +16,60 @@ class JobApplicationModel extends CI_Model
 
      
     public function register_applicant($apdata, $resume_path = '')
-{
-    if (trim($resume_path) == '') {
+    {
+        if (trim($resume_path) == '') {
+            return 1;
+        }
+
+        $applicant_info = array(
+            'candidate_id' => $apdata['candidate_id'],
+            'job_id' => $apdata['job_id'],
+            'sejoba_phone' => $apdata['phone'],
+            'sejoba_position' => $apdata['position'] ?? '',
+            'sejoba_resume' => $resume_path,
+            'sejoba_experience' => $apdata['experience'],
+            'sejoba_exp_salary' => $apdata['salary'],
+            'sejoba_coverletter' => $apdata['coverletter'],
+            'sejoba_state' => 'applied',
+            'sejoba_atime' => date('Y-m-d H:i:s')
+        );
+
+        $this->db->trans_start();
+        $this->db->insert('sejobapplicant', $applicant_info);
+        $new_applicant_id = $this->db->insert_id(); // Get the ID of the new application
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === TRUE) {
+            // --- DATA FETCHING FOR EMAIL ---
+
+            $this->db->select('
+            secandidates.email, 
+            secandidates.full_name, 
+            sejobs.sejob_jobtitle, 
+            sejobapplicant.sejoba_phone
+        ');
+            $this->db->from('sejobapplicant');
+            $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
+            $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
+            $this->db->where('sejobapplicant.sejoba_id', $new_applicant_id);
+
+            $details = $this->db->get()->row();
+
+            if ($details) {
+                $this->load->model('EmailModel');
+                // Passing the fetched data to your existing function
+                $this->EmailModel->send_applicant_submission_email(
+                    $details->email,           // From secandidates
+                    $details->full_name,       // From secandidates
+                    $details->sejob_jobtitle,  // From sejobs
+                    $details->sejoba_phone     // From sejobapplicant
+                );
+            }
+
+            return 0;
+        }
+
         return 1;
-    }
-
-    $applicant_info = array(
-        'candidate_id'      => $apdata['candidate_id'],
-        'job_id'            => $apdata['job_id'],
-        'sejoba_phone'      => $apdata['phone'],
-        'sejoba_resume'     => $resume_path,
-        'sejoba_experience' => $apdata['experience'],
-        'sejoba_exp_salary' => $apdata['salary'],
-        'sejoba_coverletter'=> $apdata['coverletter'],
-        'sejoba_state'      => 'applied',
-        'sejoba_atime'      => date('Y-m-d H:i:s')
-    );
-
-    $this->db->trans_start();
-    $this->db->insert('sejobapplicant', $applicant_info);
-    $new_id = $this->db->insert_id(); // Get the ID of the row just inserted
-    $this->db->trans_complete();
-
-    if ($this->db->trans_status() === TRUE) {
-        // FETCH ACTUAL STRINGS FOR THE EMAIL
-        $this->db->select('secandidates.email, secandidates.full_name, sejobs.sejob_jobtitle');
-        $this->db->from('sejobapplicant');
-        $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
-        $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
-        $this->db->where('sejobapplicant.sejoba_id', $new_id);
-       
-        $details = $this->db->get()->row();
-
-       if ($details) {
-    $this->load->model('EmailModel');
-    $this->EmailModel->send_applicant_submission_email(
-        $details->email,
-        $details->full_name,
-        $details->sejob_jobtitle,
-        $apdata['phone']
-    );
-    
-    // ADD THIS LINE TEMPORARILY TO SEE ERRORS IN application/logs/
-    log_message('error', 'SMTP Debug: ' . $this->email->print_debugger());
-}
-        return 0;
     }
     return 1;
 }
@@ -115,7 +124,7 @@ class JobApplicationModel extends CI_Model
         $this->db->trans_start();
 
         $update_data = array(
-            'sejoba_state' => 'interviewing', // Matches DB ENUM
+            'sejoba_state' => $interview_data['round_status'],
             'sejoba_interview_date' => $interview_data['date'] ?? null,
             'sejoba_interview_time' => $interview_data['time'] ?? null,
             'sejoba_interview_location' => $interview_data['location'] ?? null,
@@ -142,9 +151,11 @@ class JobApplicationModel extends CI_Model
         $this->db->from('sejobapplicant');
         $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
         $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
-        $this->db->where('sejoba_state', 'interviewing');
-        $this->db->order_by('sejoba_interview_date', 'ASC');
 
+        // Updated: Look for both specific interview rounds
+        $this->db->where_in('sejoba_state', ['technical interview', 'communication and document verification']);
+
+        $this->db->order_by('sejoba_interview_date', 'ASC');
         return $this->db->get()->result();
     }
 
