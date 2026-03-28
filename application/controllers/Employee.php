@@ -53,7 +53,7 @@ class Employee extends CI_Controller
 
                 // 2. ALWAYS call the Log update. 
                 // The Model will be responsible for not overwriting the first login time.
-                $this->EmployeeModel->update_log_current_state($info[0]->seemp_id, 'login');
+                // $this->EmployeeModel->update_log_current_state($info[0]->seemp_id, 'login');
 
                 redirect('Employee/Dashboard');
             } else {
@@ -1153,8 +1153,8 @@ class Employee extends CI_Controller
     function Logout()
     {
         $this->load->model('EmployeeModel');
-        $sion = $this->session->userdata('empid');
-        $this->EmployeeModel->update_log_current_state($sion, 'logout');
+        // $sion = $this->session->userdata('empid');
+        // $this->EmployeeModel->update_log_current_state($sion, 'logout');
         $this->session->unset_userdata(['empid', 'email', 'accesslevel', 'branch', 'status']);
         $this->session->sess_destroy();
         $this
@@ -1235,26 +1235,32 @@ class Employee extends CI_Controller
 
         $hr_name = $this->session->userdata('empname') ?? 'HR Team';
 
-     $interview_data = array(
-        'date' => $this->input->post('interview_date', TRUE),
-        'time' => $this->input->post('interview_time', TRUE),
-        'location' => $this->input->post('location', TRUE),
-        'scheduled_by' => $this->session->userdata('empname') ?? 'HR Team',
-        'round_status' => $round // Pass chosen round to model
-    );
-
-    $db_result = $this->jobApplicationModel->schedule_interview($applicant_id, $interview_data);
-
-    if ($db_result['code'] == 0) {
-        $this->InterviewModel->send_interview_email(
-            $email, $name, $position, $interview_data['date'], 
-            $interview_data['time'], $interview_data['location'], 
-            $phone, $interview_data['scheduled_by'], $round
+        $interview_data = array(
+            'date' => $this->input->post('interview_date', TRUE),
+            'time' => $this->input->post('interview_time', TRUE),
+            'location' => $this->input->post('location', TRUE),
+            'scheduled_by' => $this->session->userdata('empname') ?? 'HR Team',
+            'round_status' => $round // Pass chosen round to model
         );
-        $this->session->set_flashdata('msg', $round . ' scheduled successfully!');
+
+        $db_result = $this->jobApplicationModel->schedule_interview($applicant_id, $interview_data);
+
+        if ($db_result['code'] == 0) {
+            $this->InterviewModel->send_interview_email(
+                $email,
+                $name,
+                $position,
+                $interview_data['date'],
+                $interview_data['time'],
+                $interview_data['location'],
+                $phone,
+                $interview_data['scheduled_by'],
+                $round
+            );
+            $this->session->set_flashdata('msg', $round . ' scheduled successfully!');
+        }
+        redirect('Employee/viewJobApplicants');
     }
-    redirect('Employee/viewJobApplicants');
-}
 
     public function viewScheduledInterviews()
     {
@@ -1424,6 +1430,103 @@ class Employee extends CI_Controller
         $this->db->delete('sejobs');
         $this->session->set_flashdata('msg', 'Job posting removed');
         redirect('Employee/viewJobs');
+    }
+    //geo location tracking for employee attendance
+    // --- AJAX ATTENDANCE & GEOFENCING ROUTE ---
+  public function SubmitAttendanceAjax()
+    {
+        // 1. Check Session
+        if (!$this->session->has_userdata('empid')) {
+            echo json_encode(['status' => 'error', 'message' => 'Your session has expired. Please login again.']);
+            return;
+        }
+
+        // 2. Get POST data (No 'TRUE' filter here so we don't break the decimals)
+        $lat = $this->input->post('lat');
+        $lng = $this->input->post('lng');
+        $action = $this->input->post('action'); 
+        $empid = $this->session->userdata('empid');
+
+        // 3. Detect the Device (THIS IS WHAT WAS MISSING!)
+        $this->load->library('user_agent');
+        if ($this->agent->is_mobile()) {
+            $device = 'Mobile (' . $this->agent->mobile() . ')';
+        } elseif ($this->agent->is_browser()) {
+            $device = 'Desktop/Laptop (' . $this->agent->browser() . ')';
+        } else {
+            $device = 'Unknown Device';
+        }
+
+        // 4. Trap if coordinates are empty
+        if (empty($lat) || empty($lng)) {
+            echo json_encode([
+                'status' => 'error', 
+                'message' => 'Could not read location coordinates. Please allow location permissions.',
+                'what_php_saw' => $_POST
+            ]);
+            return;
+        }
+
+        // 5. Multiple Office Boundaries (150 meters)
+        $radius_km = 0.15; 
+        
+        $offices = [
+            [
+                'name' => 'Howrah Branch',
+                'lat'  => getenv('HOWRAH_LAT'),  // Add actual Howrah coordinates
+                'lng'  => getenv('HOWRAH_LNG') 
+            ],
+            [
+                'name' => 'Kolkata Branch',
+                'lat'  => getenv('KOLKATA_LAT'),  // Add actual Kolkata coordinates
+                'lng'  => getenv('KOLKATA_LNG')   
+            ]
+        ];
+
+        $is_inside_fence = false;
+        $matched_office = '';
+
+        // 6. Check Distance
+        foreach ($offices as $office) {
+            if ($this->calculate_distance($lat, $lng, $office['lat'], $office['lng'], $radius_km)) {
+                $is_inside_fence = true;
+                $matched_office = $office['name'];
+                break; 
+            }
+        }
+
+        // 7. Save to Database
+        if ($is_inside_fence) {
+            $this->load->model('EmployeeModel');
+            
+            $log_result = $this->EmployeeModel->update_log_current_state($empid, $action, $device, $lat, $lng);
+
+            if ($log_result['code'] == 0) {
+                $msg = ($action == 'login') ? "Clocked IN successfully at the $matched_office!" : "Clocked OUT successfully from the $matched_office!";
+                echo json_encode([
+                    'status' => 'success', 
+                    'message' => $msg,
+                    'device' => $device
+                ]);
+            } else {
+                $error_msg = ($action == 'login') ? 'You have already clocked in today.' : 'Could not clock out. Have you clocked in yet?';
+                echo json_encode(['status' => 'error', 'message' => $error_msg]);
+            }
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Out of range! You must be within 150 meters of an office location.']);
+        }
+    }
+    // Helper Math function for Geofencing
+    private function calculate_distance($emp_lat, $emp_lng, $office_lat, $office_lng, $radius)
+    {
+        $theta = $emp_lng - $office_lng;
+        $dist = sin(deg2rad($emp_lat)) * sin(deg2rad($office_lat)) + cos(deg2rad($emp_lat)) * cos(deg2rad($office_lat)) * cos(deg2rad($theta));
+        $dist = acos($dist);
+        $dist = rad2deg($dist);
+        $miles = $dist * 60 * 1.1515;
+        $km = $miles * 1.609344; // Convert miles to Kilometers
+
+        return ($km <= $radius);
     }
 }
 

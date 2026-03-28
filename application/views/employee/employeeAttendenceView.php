@@ -46,7 +46,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <?php foreach ($attendence as $atdc) { ?>
                             <tr>
                                 <td><?= $atdc->seemp_logdate ?></td>
-                                <td><?= $atdc->seemp_logintime ?></td>
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-2"
+                                            style="background: rgba(127, 255, 112, 0.24); color:#10b981;">
+                                            <i class="fas fa-sign-in-alt me-1"></i>
+                                            <?= date('h:i A', strtotime($atdc->seemp_logintime)) ?>
+                                        </span>
+                                </td>
                                 <td>
                                     <?php if ($atdc->seemp_logouttime && $atdc->seemp_logouttime != '0000-00-00 00:00:00'): ?>
                                         <span class="badge rounded-pill px-3 py-2"
@@ -56,8 +62,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         </span>
                                     <?php else: ?>
                                         <span class="badge rounded-pill px-3 py-2"
-                                            style="background: rgba(239,68,68,0.1); color:#dc2626;">
-                                             <i class="fas fa-sign-out-alt me-1"></i>Not Logged Out</span>
+                                            style="background: rgba(239,68,68,0.1); color:rgba(6, 6, 6, 0.51);">
+                                             <i class="fas fa-sign-out-alt me-1"></i>Not Logged Out
+                                        </span>
                                     <?php endif; ?>
                                 </td>
                             </tr>

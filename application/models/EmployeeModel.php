@@ -152,7 +152,54 @@ class EmployeeModel extends CI_Model
         }
     }
 
-    function update_log_current_state($empid = '', $action = 'login')
+    // function update_log_current_state($empid = '', $action = 'login')
+    // {
+    //     if (empty(trim($empid)) || empty(trim($action))) {
+    //         return ['code' => 1];
+    //     }
+
+    //     $today = date('Y-m-d');
+    //     $now = date('Y-m-d H:i:s');
+
+    //     // Check if an entry already exists for this employee for TODAY
+    //     $this->db->where([
+    //         'seemp_logempid' => $empid,
+    //         'seemp_logdate' => $today
+    //     ]);
+    //     $existing_log = $this->db->get('seemployeeloginlog')->row();
+
+    //     if ($action == 'login') {
+    //         // ONLY insert if NO record exists for today.
+    //         // This prevents the login time from being changed on second login.
+    //         if (!$existing_log) {
+    //             $data = [
+    //                 'seemp_logempid' => $empid,
+    //                 'seemp_logdate' => $today,
+    //                 'seemp_logintime' => $now
+    //             ];
+    //             $this->db->insert('seemployeeloginlog', $data);
+    //             return ['code' => 0];
+    //         }
+    //         // If it exists, do nothing (keep original login time)
+    //         return ['code' => 0];
+    //     } else if ($action == 'logout') {
+    //         // Find today's record and update the logout time
+    //         if ($existing_log) {
+    //             $this->db->where([
+    //                 'seemp_logempid' => $empid,
+    //                 'seemp_logdate' => $today
+    //             ]);
+    //             $this->db->update('seemployeeloginlog', [
+    //                 'seemp_logouttime' => $now
+    //             ]);
+    //             return ['code' => 0];
+    //         }
+    //     }
+    //     return ['code' => 1];
+    // }
+
+    // Update Login/Logout Log with Device and Geolocation
+    function update_log_current_state($empid = '', $action = 'login', $device = null, $lat = null, $lng = null)
     {
         if (empty(trim($empid)) || empty(trim($action))) {
             return ['code' => 1];
@@ -170,12 +217,14 @@ class EmployeeModel extends CI_Model
 
         if ($action == 'login') {
             // ONLY insert if NO record exists for today.
-            // This prevents the login time from being changed on second login.
             if (!$existing_log) {
                 $data = [
                     'seemp_logempid' => $empid,
                     'seemp_logdate' => $today,
-                    'seemp_logintime' => $now
+                    'seemp_logintime' => $now,
+                    'seemp_device_info' => $device, // Added Device Detection
+                    'seemp_lat' => $lat,            // Added Geolocation
+                    'seemp_lng' => $lng             // Added Geolocation
                 ];
                 $this->db->insert('seemployeeloginlog', $data);
                 return ['code' => 0];
@@ -197,6 +246,7 @@ class EmployeeModel extends CI_Model
         }
         return ['code' => 1];
     }
+    
 
     function get_all_loginlog_for_thisempid()
     {
