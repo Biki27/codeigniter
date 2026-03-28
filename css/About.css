@@ -4,13 +4,13 @@
     margin-left: 0 !important;
 }
  
-#carouselExampleIndicators {
+/* #carouselExampleIndicators {
     border-radius: 24px;
     
     margin-top: 20px;
     margin-bottom: 30px;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
-}
+} */
 
 .carousel-item img {
 	height: 70vh;
@@ -227,11 +227,11 @@
         width: calc(100% - 30px) !important; 
     }
 
-    #carouselExampleIndicators {
+    /* #carouselExampleIndicators {
         margin: 20px 15px !important;
         border-radius: 16px;
         width: calc(100% - 30px) !important;
-    }
+    } */
 
     .carousel-item img {
         height: 40vh;
@@ -417,4 +417,40 @@
     background: #1d4ed8 !important; /* Darker blue on hover */
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+/* --- DESKTOP FULL WIDTH --- */
+#carouselExampleIndicators {
+    border-radius: 0; /* Remove rounded corners for edge-to-edge look */
+    margin-top: 0;    /* Remove top margin if you want it to touch the header */
+    margin-bottom: 30px;
+    width: 100%;      /* Ensure it takes full width */
+    box-shadow: none; /* Shadow looks odd on edge-to-edge elements */
+    overflow: hidden;
+}
+
+.carousel-item img {
+    height: 70vh;
+    width: 100%;
+    object-fit: cover;
+    filter: brightness(0.7);
+}
+
+/* --- MOBILE FULL WIDTH --- */
+@media (max-width: 768px) {
+    #carouselExampleIndicators {
+        margin: 0 !important; /* Forces 0 margin on mobile */
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .carousel-item img {
+        height: 45vh !important; /* Adjusted height for mobile view */
+        object-fit: cover;
+    }
+    
+    /* Ensure the body doesn't have horizontal overflow */
+    body {
+        overflow-x: hidden;
+    }
 }
