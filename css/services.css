@@ -1,27 +1,27 @@
 /* =========================================
            GLOBAL FIXES (Overrides Header.css)
            ========================================= */
-/* * {
+* {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-} */
+}
 .row {
 	margin-right: 0 !important;
 	margin-left: 0 !important;
 }
 
 /* Locks horizontal scroll & forces content to slide under navbar */
-/* body {
+body {
 	font-family: "Inter", sans-serif !important;
 	background-color: #f8fafc !important;
 	color: #475569 !important;
-	padding-top: 0px !important; 
-	overflow-x: hidden !important;  
+	padding-top: 0px !important; /* Kills the white gap under navbar */
+	overflow-x: hidden !important; /* Kills horizontal scrolling */
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
-} */
+}
 
 .bg-light-soft {
 	background-color: #f8fafc;
@@ -102,7 +102,7 @@
            ========================================= */
 .premium-hero {
 	background: #0f172a !important;
-	padding: 140px 0 100px !important;  /
+	padding: 140px 0 100px !important; /* Top padding pushes text safely below navbar */
 	position: relative;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	overflow: hidden;

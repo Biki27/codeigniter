@@ -38,7 +38,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <div class="mb-3">
                     <i class="fas fa-wallet fa-2x text-success"></i>
                 </div>
-                <h6 class="text-muted">Yearly Salary</h6>
+                <h6 class="text-muted">Monthly Salary</h6>
                 <h3 class="fw-bold text-success">
                     ₹ <?= $empdetails->seempd_salary ?>
                 </h3>

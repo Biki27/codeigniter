@@ -187,7 +187,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                         <p style="color:#1e40af;font-size:16px;font-weight:600;margin:0 0 15px 0;">
                                             ⚡ Quick Actions
                                         </p>
-                                       
+                                        <!-- <p style="color:#6b7280;font-size:14px;margin:0 0 10px 0;">
+                                            <a href="" style="background-color:#1e3a8a;color:#ffffff !important;padding:12px 24px;border-radius:6px;-webkit-border-radius:6px;text-decoration:none;font-weight:600;display:inline-block;font-size:14px;">Review Application</a>
+                                        </p> -->
                                         <p style="color:#6b7280;font-size:14px;margin:0;">
                                             Review and Take action against application.
                                         </p>

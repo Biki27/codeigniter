@@ -1,6 +1,4 @@
 <?php
- 
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class ContactusModel extends CI_Model
@@ -19,7 +17,7 @@ class ContactusModel extends CI_Model
             'secon_action'  => 'none',
         );
 
-        // Start Transaction
+        // Start Transaction to ensure data integrity
         $this->db->trans_start();
         $this->db->insert('secontactus', $contact_info);
         $this->db->trans_complete();
@@ -28,8 +26,7 @@ class ContactusModel extends CI_Model
 
         // If DB insertion was successful, handle emails
         if ($this->db->trans_status() === TRUE && $db_error['code'] == 0) {
-            // We return success immediately to the controller so the user sees the popup,
-            // even if the SMTP server takes a few seconds to respond.
+            // Trigger background email process
             $this->send_contact_notification_email($data);
             return ['code' => 0, 'message' => 'Success'];
         }
@@ -37,17 +34,17 @@ class ContactusModel extends CI_Model
         return $db_error;
     }
 
-    // Send contact notification emails
+    // Send contact notification emails using your existing views
     function send_contact_notification_email($contact_data = array())
     {
         $this->load->library('email');
 
-        // Validate user email
-        if (!filter_var($contact_data['email'], FILTER_VALIDATE_EMAIL)) {
+        // Basic validation
+        if (!isset($contact_data['email']) || !filter_var($contact_data['email'], FILTER_VALIDATE_EMAIL)) {
             return 1;
         }
 
-        // Fetch values from .env
+        // Fetch values from .env for a clean configuration
         $from_email  = getenv('SYSTEM_EMAIL_FROM');
         $from_name   = getenv('SYSTEM_EMAIL_NAME');
         $admin_email = getenv('ADMIN_CONTACT_EMAIL');
@@ -55,11 +52,12 @@ class ContactusModel extends CI_Model
         $this->email->set_newline("\r\n");
 
         // --- 1. Send confirmation to the person who contacted ---
+        // Uses your existing 'emailContactConfirmationView'
         $this->email->from($from_email, $from_name);
         $this->email->to($contact_data['email']);
 
         $view_data = array(
-            'name' => $contact_data['name'],
+            'name'    => $contact_data['name'],
             'subject' => $contact_data['subject'],
             'message' => $contact_data['message']
         );
@@ -67,13 +65,14 @@ class ContactusModel extends CI_Model
         $this->email->subject($from_name . ' - Contact Form Received');
         $this->email->message($this->load->view('email/emailContactConfirmationView', $view_data, TRUE));
         $this->email->send();
-
+        // log_message('error', $this->email->print_debugger());
         // --- 2. Send notification to the Admin ---
+        // Uses your existing 'emailContactAdminView'
         $admindata = array(
-            'name' => $contact_data['name'],
-            'email' => $contact_data['email'],
-            'subject' => $contact_data['subject'],
-            'message' => $contact_data['message'],
+            'name'         => $contact_data['name'],
+            'email'        => $contact_data['email'],
+            'subject'      => $contact_data['subject'],
+            'message'      => $contact_data['message'],
             'contact_date' => date('Y-m-d H:i:s')
         );
 
@@ -83,5 +82,6 @@ class ContactusModel extends CI_Model
         $this->email->message($this->load->view('email/emailContactAdminView', $admindata, TRUE));
 
         $this->email->send();
+        // log_message('error', $this->email->print_debugger());
     }
 }
