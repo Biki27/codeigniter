@@ -1214,6 +1214,9 @@ class Employee extends CI_Controller
     {
         $this->load->model('InterviewModel');
         $this->load->model('jobApplicationModel');
+        // Capture the new dropdown value
+        $round = $this->input->post('interview_round', TRUE);
+        $applicant_id = $this->input->post('applicant_id', TRUE);
 
         $email = $this->input->post('email', TRUE);
         $name = $this->input->post('name', TRUE);
@@ -1232,42 +1235,26 @@ class Employee extends CI_Controller
 
         $hr_name = $this->session->userdata('empname') ?? 'HR Team';
 
-        $interview_data = array(
-            'date' => $date,
-            'time' => $time,
-            'location' => $location,
-            'scheduled_by' => $hr_name
+     $interview_data = array(
+        'date' => $this->input->post('interview_date', TRUE),
+        'time' => $this->input->post('interview_time', TRUE),
+        'location' => $this->input->post('location', TRUE),
+        'scheduled_by' => $this->session->userdata('empname') ?? 'HR Team',
+        'round_status' => $round // Pass chosen round to model
+    );
+
+    $db_result = $this->jobApplicationModel->schedule_interview($applicant_id, $interview_data);
+
+    if ($db_result['code'] == 0) {
+        $this->InterviewModel->send_interview_email(
+            $email, $name, $position, $interview_data['date'], 
+            $interview_data['time'], $interview_data['location'], 
+            $phone, $interview_data['scheduled_by'], $round
         );
-
-        // This now correctly sets the status to 'interviewing' in the DB
-        $db_result = $this->jobApplicationModel->schedule_interview($applicant_id, $interview_data);
-
-        if ($db_result['code'] == 0) {
-
-            // Attempt to send the email
-            $email_result = $this->InterviewModel->send_interview_email(
-                $email,
-                $name,
-                $position,
-                $date,
-                $time,
-                $location,
-                $phone,
-                $hr_name
-            );
-
-            if ($email_result == 0) {
-                $this->session->set_flashdata('msg', 'Interview scheduled and Email Invitation sent!');
-            } else {
-                // Modified Error: Acknowledges the DB success, warns about local email failure
-                $this->session->set_flashdata('error', 'Status updated to Interviewing, but the Email failed to send (Check local SMTP config).');
-            }
-        } else {
-            $this->session->set_flashdata('error', 'Failed to save interview to database: ' . $db_result['message']);
-        }
-
-        redirect('Employee/viewJobApplicants');
+        $this->session->set_flashdata('msg', $round . ' scheduled successfully!');
     }
+    redirect('Employee/viewJobApplicants');
+}
 
     public function viewScheduledInterviews()
     {

@@ -92,10 +92,10 @@ class JobApplicationModel extends CI_Model
                 );
             }
 
-            return 0; 
+            return 0;
         }
 
-        return 1; 
+        return 1;
     }
     // Fixed: Added JOIN to ensure you get candidate details
     public function get_applicant_info($sejobaid = '')
@@ -148,7 +148,7 @@ class JobApplicationModel extends CI_Model
         $this->db->trans_start();
 
         $update_data = array(
-            'sejoba_state' => 'interviewing', // Matches DB ENUM
+            'sejoba_state' => $interview_data['round_status'],
             'sejoba_interview_date' => $interview_data['date'] ?? null,
             'sejoba_interview_time' => $interview_data['time'] ?? null,
             'sejoba_interview_location' => $interview_data['location'] ?? null,
@@ -175,9 +175,11 @@ class JobApplicationModel extends CI_Model
         $this->db->from('sejobapplicant');
         $this->db->join('secandidates', 'sejobapplicant.candidate_id = secandidates.id', 'left');
         $this->db->join('sejobs', 'sejobapplicant.job_id = sejobs.sejob_id', 'left');
-        $this->db->where('sejoba_state', 'interviewing');
-        $this->db->order_by('sejoba_interview_date', 'ASC');
 
+        // Updated: Look for both specific interview rounds
+        $this->db->where_in('sejoba_state', ['technical interview', 'communication and document verification']);
+
+        $this->db->order_by('sejoba_interview_date', 'ASC');
         return $this->db->get()->result();
     }
 

@@ -58,7 +58,8 @@
                         <option value="all">All Statuses</option>
                         <option value="applied">Applied</option>
                         <option value="pending">Pending</option>
-                        <option value="interviewing">Interviewing</option>
+                        <option value="technical interview">Technical Interview</option>
+                        <option value="communication and document verification">Comm & Doc Verification</option>
                         <option value="selected">Selected</option>
                         <option value="rejected">Rejected</option>
                     </select>
@@ -90,12 +91,17 @@
                             <?php foreach ($applicants as $app): ?>
                                 <?php
                                 $statusClass = 'bg-pending';
-                                if (strtolower($app->sejoba_state) == 'selected')
+                                $state = strtolower($app->sejoba_state);
+
+                                if ($state == 'selected')
                                     $statusClass = 'bg-selected';
-                                if (strtolower($app->sejoba_state) == 'rejected')
+                                if ($state == 'rejected')
                                     $statusClass = 'bg-rejected';
-                                // ADD THIS LINE:
-                                if (strtolower($app->sejoba_state) == 'interviewing')
+                                if ($state == 'technical interview')
+                                    $statusClass = 'bg-primary text-white'; // Blue for technical
+                                if ($state == 'communication and document verification')
+                                    $statusClass = 'bg-info text-dark';
+                                if ($state == 'interviewing')
                                     $statusClass = 'bg-info text-dark';
                                 ?>
                                 <tr>
@@ -211,7 +217,9 @@
                                             <option value="" disabled>Select Decision...</option>
                                             <option value="applied">Applied</option>
                                             <option value="pending">Pending</option>
-                                            <option value="interviewing">Interviewing</option>
+                                            <option value="technical interview">Technical Interview</option>
+                                            <option value="communication and document verification">Communication and
+                                                Document Verification</option>
                                             <option value="selected">Selected</option>
                                             <option value="rejected">Rejected</option>
                                         </select>
@@ -239,19 +247,39 @@
                                         <input type="hidden" name="position" id="invite_position">
                                         <input type="hidden" name="phone" id="invite_phone">
 
+                                        <div class="mb-3">
+                                            <label class="info-label"><i
+                                                    class="fas fa-layer-group text-primary me-1"></i> Interview
+                                                Round</label>
+                                            <select name="interview_round" id="interview_round" class="form-select"
+                                                required>
+                                                <option value="" disabled selected>Select Round Type...</option>
+                                                <option value="technical interview">Technical Interview</option>
+                                                <option value="communication and document verification">Communication
+                                                    and Document Verification</option>
+                                            </select>
+                                        </div>
+
                                         <div class="interview-grid mb-3">
                                             <div>
-                                                <label class="info-label"><i
-                                                        class="fas fa-calendar-day text-primary me-1"></i> Date</label>
-                                                <input type="date" name="interview_date" class="form-control" required>
+                                                <label class="info-label">
+                                                    <i class="fas fa-calendar-day text-primary me-1"></i> Date
+                                                </label>
+                                                <input type="date" name="interview_date" id="interview_date"
+                                                    class="form-control" min="<?= date('Y-m-d') ?>" required>
+                                                <div id="date-error" class="text-danger small mt-1"
+                                                    style="display:none;">
+                                                    <i class="fas fa-exclamation-circle me-1"></i> Cannot select a past
+                                                    date.
+                                                </div>
                                             </div>
                                             <div>
-                                                <label class="info-label"><i class="fas fa-clock text-primary me-1"></i>
-                                                    Time</label>
+                                                <label class="info-label">
+                                                    <i class="fas fa-clock text-primary me-1"></i> Time
+                                                </label>
                                                 <input type="time" name="interview_time" class="form-control" required>
                                             </div>
                                         </div>
-
                                         <div class="mb-4">
                                             <label class="info-label"><i
                                                     class="fas fa-map-marker-alt text-primary me-1"></i>
@@ -285,7 +313,9 @@
             // 1. Initialize Toasts
             var toastElList = [].slice.call(document.querySelectorAll('.toast'));
             var toastList = toastElList.map(function (toastEl) {
-                return new bootstrap.Toast(toastEl, { delay: 4000 });
+                return new bootstrap.Toast(toastEl, {
+                    delay: 4000
+                });
             });
             toastList.forEach(toast => toast.show());
 
@@ -302,7 +332,8 @@
                 rows.forEach(row => {
                     const textMatch = row.textContent.toLowerCase().includes(searchTerm);
                     const rowStatusBadge = row.querySelector('.badge-status');
-                    const rowStatus = rowStatusBadge ? rowStatusBadge.textContent.toLowerCase().trim() : '';
+                    const rowStatus = rowStatusBadge ? rowStatusBadge.textContent.toLowerCase().trim() :
+                        '';
                     const statusMatch = (selectedStatus === 'all' || rowStatus === selectedStatus);
 
                     row.style.display = (textMatch && statusMatch) ? '' : 'none';
@@ -311,84 +342,174 @@
 
             searchInput.addEventListener('input', filterApplicants);
             statusFilter.addEventListener('change', filterApplicants);
-            searchForm.addEventListener('submit', e => { e.preventDefault(); filterApplicants(); });
+            searchForm.addEventListener('submit', e => {
+                e.preventDefault();
+                filterApplicants();
+            });
 
-            // 3. Populate and Open Modal
-            const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            // 3. Initialize Modal and View Button Handlers
+            try {
+                const reviewModalElement = document.getElementById('reviewModal');
+                if (!reviewModalElement) {
+                    console.error('Modal element not found!');
+                    return;
+                }
 
-            document.querySelectorAll('.view-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const data = this.dataset;
+                const reviewModal = new bootstrap.Modal(reviewModalElement);
+                console.log('Modal initialized successfully');
 
-                    // Populate Texts
-                    document.getElementById('modal_name').innerText = data.name;
-                    document.getElementById('modal_position').innerText = data.position;
-                    document.getElementById('modal_id').innerText = "APP" + data.id.padStart(3, '0');
-                    document.getElementById('modal_email').innerText = data.email;
-                    document.getElementById('modal_phone').innerText = data.phone;
-                    document.getElementById('modal_exp').innerText = data.exp ? data.exp + " Years" : "Not specified";
-                    document.getElementById('modal_salary').innerText = data.salary ? "₹" + data.salary : "Not specified";
+                document.querySelectorAll('.view-btn').forEach(button => {
+                    button.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        console.log('View button clicked');
 
-                    // Populate Review Form
-                    document.getElementById('review_applicant_id').value = data.id;
-                    const statusDropdown = document.getElementById('form_status');
-                    statusDropdown.value = data.status.toLowerCase();
+                        const data = this.dataset;
+                        console.log('Button data:', data);
 
-                    // Populate Interview Form
-                    document.getElementById("invite_applicant_id").value = data.id;
-                    document.getElementById("invite_email").value = data.email;
-                    document.getElementById("invite_name").value = data.name;
-                    document.getElementById("invite_position").value = data.position;
-                    document.getElementById("invite_phone").value = data.phone;
+                        try {
+                            // Populate Texts
+                            document.getElementById('modal_name').innerText = data.name ||
+                                'N/A';
+                            document.getElementById('modal_position').innerText = data
+                                .position ||
+                                'N/A';
+                            document.getElementById('modal_id').innerText = "APP" + (data.id ?
+                                data
+                                    .id.padStart(3, '0') : '000');
+                            document.getElementById('modal_email').innerText = data.email ||
+                                'N/A';
+                            document.getElementById('modal_phone').innerText = data.phone ||
+                                'N/A';
+                            document.getElementById('modal_exp').innerText = data.exp ? data
+                                .exp +
+                                " Years" : "Not specified";
+                            document.getElementById('modal_salary').innerText = data.salary ?
+                                "₹" +
+                                data.salary : "Not specified";
 
-                    // Parse Resume URL Safely
-                    const resumeBox = document.getElementById('modal_resume');
-                    if (data.resume && data.resume.trim() !== "") {
-                        const baseUrl = '<?= base_url(); ?>';
-                        // Remove './' if it exists
-                        let cleanPath = data.resume.replace(/^\.\//, '');
+                            // Populate Review Form
+                            document.getElementById('review_applicant_id').value = data.id;
 
-                        // Build the base path
-                        let fullResumePath = cleanPath.startsWith('resume/') ? baseUrl + cleanPath : baseUrl + 'resume/' + cleanPath;
+                            // --- FIXED STATUS DROPDOWN LOGIC ---
+                            const statusDropdown = document.getElementById('form_status');
+                            const currentStatus = data.status ? data.status.toLowerCase()
+                                .trim() :
+                                '';
 
-                        // Only append .pdf if there is NO file extension present (checks for a dot followed by 3-4 letters)
-                        if (!fullResumePath.match(/\.[0-9a-z]+$/i)) {
-                            fullResumePath += '.pdf';
+                            // Check if the status exists in the dropdown to prevent JS crash
+                            let matchFound = false;
+                            for (let i = 0; i < statusDropdown.options.length; i++) {
+                                if (statusDropdown.options[i].value.toLowerCase() ===
+                                    currentStatus) {
+                                    statusDropdown.selectedIndex = i;
+                                    matchFound = true;
+                                    break;
+                                }
+                            }
+                            if (!matchFound) statusDropdown.value = ""; // Reset if no match
+
+                            // Populate Interview Form
+                            document.getElementById("invite_applicant_id").value = data.id;
+                            document.getElementById("invite_email").value = data.email;
+                            document.getElementById("invite_name").value = data.name;
+                            document.getElementById("invite_position").value = data.position;
+                            document.getElementById("invite_phone").value = data.phone;
+
+                            // Parse Resume URL Safely
+                            const resumeBox = document.getElementById('modal_resume');
+                            if (data.resume && data.resume.trim() !== "") {
+                                const baseUrl = '<?= base_url(); ?>';
+                                let cleanPath = data.resume.replace(/^\.\//, '');
+                                let fullResumePath = cleanPath.startsWith('resume/') ? baseUrl +
+                                    cleanPath : baseUrl + 'resume/' + cleanPath;
+
+                                if (!fullResumePath.match(/\.[0-9a-z]+$/i)) {
+                                    fullResumePath += '.pdf';
+                                }
+
+                                resumeBox.innerHTML =
+                                    `<a href="${fullResumePath}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 mt-1 fw-bold"><i class="fas fa-file-download me-2"></i>Download File</a>`;
+                            } else {
+                                resumeBox.innerHTML =
+                                    '<span class="text-danger small fst-italic">No Resume Uploaded</span>';
+                            }
+
+                            // Reset tabs to default
+                            const firstTab = document.querySelector('#pills-review-tab');
+                            if (firstTab) {
+                                const tabTrigger = new bootstrap.Tab(firstTab);
+                                tabTrigger.show();
+                            }
+
+                            // Show Modal
+                            reviewModal.show();
+                            console.log('Modal should be visible now');
+
+                        } catch (error) {
+                            console.error('Error populating modal:', error);
+                            alert(
+                                'Error loading applicant details. Please check console for details.'
+                            );
                         }
+                    });
+                });
 
-                        resumeBox.innerHTML = `<a href="${fullResumePath}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 mt-1 fw-bold"><i class="fas fa-file-download me-2"></i>Download File</a>`;
+                console.log('View button handlers attached. Found ' + document.querySelectorAll('.view-btn')
+                    .length + ' buttons');
+
+            } catch (error) {
+                console.error('Error initializing modal:', error);
+            }
+
+            // NEW: Instance Check for Date
+            const dateInput = document.getElementById('interview_date');
+            const dateError = document.getElementById('date-error');
+
+            if (dateInput) {
+                dateInput.addEventListener('input', function () {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+
+                    // Reset hours to compare only the date part
+                    today.setHours(0, 0, 0, 0);
+
+                    if (this.value && selectedDate < today) {
+                        dateError.style.display = 'block';
+                        this.classList.add('is-invalid');
+                        this.value = ""; // Optional: Clear the value so they must pick again
                     } else {
-                        resumeBox.innerHTML = '<span class="text-danger small fst-italic">No Resume Uploaded</span>';
+                        dateError.style.display = 'none';
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            }
+            // 4. Interview Form Confirmation
+            const interviewForm = document.getElementById('interviewForm');
+            if (interviewForm) {
+                interviewForm.addEventListener('submit', function (e) {
+                    const applicantName = document.getElementById("invite_name").value;
+                    const interviewRound = document.getElementById("interview_round").value;
+                    const interviewDate = document.querySelector('input[name="interview_date"]').value;
+
+                    if (!interviewRound) {
+                        alert("Please select an interview round.");
+                        e.preventDefault();
+                        return;
                     }
 
-                    // Reset tabs so "Review Decision" is always the active one when opening
-                    document.getElementById('pills-review-tab').click();
+                    const confirmSend = confirm(
+                        'Confirm Interview Invitation:\n\n' +
+                        'Applicant: ' + applicantName + '\n' +
+                        'Round: ' + interviewRound.toUpperCase() + '\n' +
+                        'Date: ' + interviewDate + '\n\n' +
+                        'Click OK to schedule and send email.'
+                    );
 
-                    // Show Modal
-                    reviewModal.show();
+                    if (!confirmSend) {
+                        e.preventDefault();
+                    }
                 });
-            });
-
-            // 4. Interview Form Confirmation Validation
-            document.getElementById('interviewForm').addEventListener('submit', function (e) {
-                const applicantName = document.getElementById("invite_name").value;
-                const interviewDate = document.querySelector('input[name="interview_date"]').value;
-                const interviewTime = document.querySelector('input[name="interview_time"]').value;
-                const interviewLocation = document.querySelector('input[name="location"]').value;
-
-                const confirmSend = confirm(
-                    'Confirm Interview Invitation:\n\n' +
-                    'Applicant: ' + applicantName + '\n' +
-                    'Date: ' + interviewDate + '\n' +
-                    'Time: ' + interviewTime + '\n' +
-                    'Location: ' + interviewLocation + '\n\n' +
-                    'Click OK to schedule and send email.'
-                );
-
-                if (!confirmSend) {
-                    e.preventDefault();
-                }
-            });
+            }
         });
     </script>
 </body>

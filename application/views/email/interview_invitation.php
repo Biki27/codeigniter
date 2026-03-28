@@ -40,8 +40,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             </p>
 
                             <p>
-                                We are pleased to invite you for an interview. Please find the interview details below:
+                                We are pleased to invite you for a
+                                <strong><?= htmlspecialchars($round) ?></strong>. Please find the interview details
+                                below:
                             </p>
+
 
                             <!-- Interview Details -->
                             <table width="100%"
