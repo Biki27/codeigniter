@@ -17,7 +17,13 @@
     <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url(); ?>favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url(); ?>/favicon-16x16.png">
     <link rel="manifest" href="<?= base_url(); ?>/site.webmanifest">
+
+    <!--navbar code  -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
 </head>
 
 

@@ -41,15 +41,15 @@ class Employee extends CI_Controller
                 );
                 $this->session->set_userdata($sdata);
 
-                // 1. Update the Main Employee Table (Last Login Date) if it's a new day
-                if (trim($info[0]->seemp_lastlogin) != date('Y-m-d')) {
-                    $this->EmployeeModel->update_employee_table_with_today(
-                        $info[0]->seemp_id,
-                        $info[0]->seemp_email,
-                        $info[0]->seseq_id,
-                        $info[0]->seemp_status
-                    );
-                }
+                // // 1. Update the Main Employee Table (Last Login Date) if it's a new day
+                // if (trim($info[0]->seemp_lastlogin) != date('Y-m-d')) {
+                //     $this->EmployeeModel->update_employee_table_with_today(
+                //         $info[0]->seemp_id,
+                //         $info[0]->seemp_email,
+                //         $info[0]->seseq_id,
+                //         $info[0]->seemp_status
+                //     );
+                // }
 
                 // 2. ALWAYS call the Log update. 
                 // The Model will be responsible for not overwriting the first login time.

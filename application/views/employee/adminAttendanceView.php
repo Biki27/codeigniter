@@ -30,22 +30,7 @@ alert("<?= $alert ?>");
                                 <?= $this->session->userdata("empname") ?>
                             </h3>
                         </div>
-                        <div class="col-md-4 border-md-end border-white-50 mb-3 mb-md-0 text-center">
-                            <h5 class="mb-1 opacity-75"><i class="fas fa-sign-in-alt me-2"></i>Login Time</h5>
-                            <h3 class="mb-0 fw-bold">
-                                <?= (!empty($todayAttendance->seemp_logintime))
-                                    ? date("h:i A", strtotime($todayAttendance->seemp_logintime))
-                                    : '--:--' ?>
-                            </h3>
-                        </div>
-                        <div class="col-md-4 text-center text-md-center">
-                            <h5 class="mb-1 opacity-75"><i class="fas fa-sign-out-alt me-2"></i>Logout Time</h5>
-                            <h3 class="mb-0 fw-bold">
-                                <?= (!empty($todayAttendance->seemp_logouttime) && $todayAttendance->seemp_logouttime != '0000-00-00 00:00:00')
-                                    ? date("h:i A", strtotime($todayAttendance->seemp_logouttime))
-                                    : '--:--' ?>
-                            </h3>
-                        </div>
+                         
                     </div>
                 </div>
             </div>
