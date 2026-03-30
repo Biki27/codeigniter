@@ -299,7 +299,6 @@ class Employee extends CI_Controller
 
         } else {
             $this->session->sess_destroy();
-               $this->session->sess_destroy();
             $this->load->view('errors/invalidAccessView');
         }
     }
