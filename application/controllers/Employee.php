@@ -82,14 +82,12 @@ class Employee extends CI_Controller
                 $this->HRDashboard();
             }
 
-
-
             if ($this->session->userdata('accesslevel') == 'EMPL') {
                 $this->EmployeeOverview();
             }
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -134,7 +132,7 @@ class Employee extends CI_Controller
             $this->load->view('employee/adminDashboardView', $data);
         } else {
             $this->session->sess_destroy();
-            redirect('Employee/Login');
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -169,7 +167,8 @@ class Employee extends CI_Controller
                 $this->load->view('employee/adminEmployeesView', $data);
             }
         } else {
-            redirect('Employee/Login');
+               $this->session->sess_destroy();
+            $this->load->view('errors/invalidAccessView');
         }
     }
     function viewJobApplicants()
@@ -223,7 +222,7 @@ class Employee extends CI_Controller
             }
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -260,7 +259,7 @@ class Employee extends CI_Controller
             }
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -300,7 +299,8 @@ class Employee extends CI_Controller
 
         } else {
             $this->session->sess_destroy();
-            redirect('Employee/Login');
+               $this->session->sess_destroy();
+            $this->load->view('errors/invalidAccessView');
         }
     }
     // Admin view fetch job applicants details
@@ -365,7 +365,7 @@ class Employee extends CI_Controller
             $this->load->view('employee/adminProjectsView', $data);
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
     // Add Project
@@ -405,7 +405,7 @@ class Employee extends CI_Controller
             }
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -422,7 +422,7 @@ class Employee extends CI_Controller
             $this->load->view('employee/addNewProjectView');
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -475,7 +475,7 @@ class Employee extends CI_Controller
                 redirect('Employee/viewProjects');
             } else {
                 $this->session->sess_destroy();
-                echo 'INVALID ACCESS';
+                $this->load->view('errors/invalidAccessView');
             }
         }
     }
@@ -518,7 +518,7 @@ class Employee extends CI_Controller
 
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
     public function addEmployee()
@@ -810,7 +810,7 @@ class Employee extends CI_Controller
         } else {
 
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
 
         }
     }
@@ -836,7 +836,7 @@ class Employee extends CI_Controller
             $this->load->view('employee/employeeAttendenceView.php', $data);
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -910,7 +910,7 @@ class Employee extends CI_Controller
             $this->load->view('employee/employeeRequestView.php', $data);
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
     // CUSTOM VALIDATION CALLBACK
@@ -993,7 +993,7 @@ class Employee extends CI_Controller
             }
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
     // HR Dashboard
@@ -1107,7 +1107,7 @@ class Employee extends CI_Controller
 
         } else {
             $this->session->sess_destroy();
-            echo 'INVALID ACCESS';
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
