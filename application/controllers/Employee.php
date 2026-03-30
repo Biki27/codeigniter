@@ -734,6 +734,7 @@ class Employee extends CI_Controller
 
         // Update Data
         $updateData = [
+            'new_empid' => $this->input->post('empid'), // New Employee ID
             'empName' => $this->input->post('empName'),
             'email' => $this->input->post('email'),
             'branch' => $this->input->post('branch'),

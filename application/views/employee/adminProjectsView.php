@@ -17,19 +17,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </head>
 
 <body>
-    <?php if ($this->session->flashdata('msg')) { ?>
-
-        <script>
-            alert("<?= $this->session->flashdata('msg') ?>");
-        </script>
-
-    <?php } ?>
+    
     <!-- Main Content -->
     <div class="main-content">
-        <div class="welcome">
-            <h1>Welcome, <?= $this->session->userdata("empname") ?>!</h1>
-            <p>Projects Management Dashboard</p>
-        </div>
+        
 
         <!-- Projects Section - ACTIVE BY DEFAULT (no JS needed) -->
         <div id="projects" class="section active">

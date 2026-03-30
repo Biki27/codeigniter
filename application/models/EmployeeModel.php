@@ -302,7 +302,24 @@ class EmployeeModel extends CI_Model
 
         $this->db->trans_start();
 
-        // 1. Update main table (seemployee)
+        // 1. HANDLE ID MIGRATION (If HR changed the Intern ID to a Permanent ID)
+        $new_empid = $data['new_empid'];
+        
+        if ($empid !== $new_empid) {
+            // Temporarily disable strict foreign key checks to safely move the data
+            $this->db->query('SET FOREIGN_KEY_CHECKS = 0');
+
+            // Migrate the ID across all 4 connected tables instantly
+            $this->db->where('seemp_id', $empid)->update('seemployee', ['seemp_id' => $new_empid]);
+            $this->db->where('seempd_empid', $empid)->update('seempdetails', ['seempd_empid' => $new_empid]);
+            $this->db->where('seemp_logempid', $empid)->update('seemployeeloginlog', ['seemp_logempid' => $new_empid]);
+            $this->db->where('seemrq_empid', $empid)->update('seemprequests', ['seemrq_empid' => $new_empid]);
+
+            // Re-enable strict rules
+            $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
+        }
+
+        // 2. Update main table (seemployee) USING THE NEW ID
         $employee_data = [
             'seemp_email' => $data['email'],
             'seemp_branch' => strtoupper($data['branch']),
@@ -316,10 +333,10 @@ class EmployeeModel extends CI_Model
             $employee_data['seemp_pass'] = password_hash($new_pass, PASSWORD_DEFAULT);
         }
 
-        $this->db->where('seemp_id', $empid);
+        $this->db->where('seemp_id', $new_empid); // Use new ID
         $this->db->update('seemployee', $employee_data);
 
-        // 2. Update details table (seempdetails)
+        // 3. Update details table (seempdetails) USING THE NEW ID
         $details_data = [
             'seempd_name' => $data['empName'],
             'seempd_phone' => $data['phone'],
@@ -334,11 +351,11 @@ class EmployeeModel extends CI_Model
             'seempd_address_current' => $data['currentAddress'],
             'seempd_aadhar' => $data['aadhar'],
             'seempd_pan' => $data['pan'],
-            'seempd_img' => $data['photo'], // Files updated here
-            'seempd_cv' => $data['cv']      // Files updated here
+            'seempd_img' => $data['photo'], 
+            'seempd_cv' => $data['cv']      
         ];
 
-        $this->db->where('seempd_empid', $empid);
+        $this->db->where('seempd_empid', $new_empid); // Use new ID
         $this->db->update('seempdetails', $details_data);
 
         $this->db->trans_complete();

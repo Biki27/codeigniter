@@ -9,22 +9,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url() ?>css/admin/addNewProjectView.css">
+     
 </head>
 <body>
-    <?php if ($this->session->flashdata('msg')) { ?>
-
-        <script>
-            alert("<?= $this->session->flashdata('msg') ?>");
-        </script>
-    <?php } ?>
-
     <!-- Main Content -->
     <div class="main-content">
-        <div class="welcome">
-            <h1>Add New Project</h1>
-            <p>Project Management Dashboard</p>
-        </div>
-
         <div class="project-container">
             <!-- Header -->
             <div class="form-header">
@@ -32,7 +21,7 @@
                     <i class="fas fa-project-diagram me-3"></i>
                     New Project Details
                 </h1>
-                <p class="form-subtitle">Complete project information for enterprise tracking</p>
+                <!-- <p class="form-subtitle">Complete project information for enterprise tracking</p> -->
             </div>
 
             <!-- FORM TAG STARTS HERE - WRAPS EVERYTHING -->
@@ -126,84 +115,149 @@
     </div>
 
     <script>
-        // Set default dates
-        document.getElementById('startDate').valueAsDate = new Date();
-        document.getElementById('deadlineDate').valueAsDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
+        $(document).ready(function() {
+            
+            // --- Helper: Format Date to YYYY-MM-DD for input fields ---
+            function formatDate(date) {
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
 
-        function resetForm() {
-            document.getElementById('projectForm').reset();
-            document.getElementById('projectId').value = '';
-            document.getElementById('startDate').valueAsDate = new Date();
-            document.getElementById('deadlineDate').valueAsDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
 
-            // Show Add button and hide Update button
-            document.getElementById("addBtn").classList.remove("d-none");
-            document.getElementById("updateBtn").classList.add("d-none");
-        }
-
-        function fetchProject() {
-
-            let projectId = document.getElementById("projectId").value;
-
-            if (!projectId) {
-                alert("Please enter Project ID");
-                return;
+                return [year, month, day].join('-');
             }
 
-            // Remove PJ prefix
-            projectId = projectId.replace(/[^0-9]/g, "");
-            const csrfName = "<?= $this->security->get_csrf_token_name(); ?>";
-            const csrfHash = "<?= $this->security->get_csrf_hash(); ?>";
+            // --- 1. Set Default Dates on Load ---
+            let today = new Date();
+            let nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
 
-            fetch("<?= base_url('Employee/fetchProject') ?>", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: "id=" + projectId + "&" + csrfName + "=" + csrfHash
-            }).then(response => response.json())
-                .then(data => {
+            $('#startDate').val(formatDate(today));
+            $('#deadlineDate').val(formatDate(nextMonth));
 
-                    if (!data) {
-                        alert("Project not found");
-                        return;
+            // --- 2. Form Reset Function ---
+            window.resetForm = function() {
+                $('#projectForm')[0].reset();
+                $('#projectId').val('');
+                
+                // Reset dates to default
+                $('#startDate').val(formatDate(new Date()));
+                let futureDate = new Date();
+                futureDate.setMonth(futureDate.getMonth() + 1);
+                $('#deadlineDate').val(formatDate(futureDate));
+
+                // Reset buttons
+                $('#addBtn').removeClass('d-none');
+                $('#updateBtn').addClass('d-none');
+            };
+
+            // --- 3. AJAX Fetch Function ---
+            window.fetchProject = function() {
+                let projectId = $('#projectId').val();
+
+                if (!projectId) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Missing ID',
+                        text: 'Please enter a Project ID to fetch data.',
+                        confirmButtonColor: '#461bb9'
+                    });
+                    return;
+                }
+
+                // Clean the ID and prepare CSRF Token
+                projectId = projectId.replace(/[^0-9]/g, "");
+                let csrfName = "<?= $this->security->get_csrf_token_name(); ?>";
+                let csrfHash = "<?= $this->security->get_csrf_hash(); ?>";
+
+                // Build POST Data
+                let postData = { id: projectId };
+                postData[csrfName] = csrfHash;
+
+                // jQuery AJAX Call
+                $.ajax({
+                    url: "<?= base_url('Employee/fetchProject') ?>",
+                    type: "POST",
+                    dataType: "json",
+                    data: postData,
+                    success: function(data) {
+                        if (!data) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Not Found',
+                                text: 'No project exists with this ID.',
+                                confirmButtonColor: '#ef4444'
+                            });
+                            return;
+                        }
+
+                        // Success Toast
+                        Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        }).fire({
+                            icon: 'success',
+                            title: 'Project Data Loaded!'
+                        });
+
+                        // Auto-fill all inputs using jQuery .val()
+                        $('#projectName').val(data.seproj_name);
+                        $('#description').val(data.seproj_desc);
+                        $('#startDate').val(data.seproj_date);
+                        $('#deadlineDate').val(data.seproj_deadline);
+                        $('#clientName').val(data.seproj_clientid);
+                        $('#projectHead').val(data.seproj_headid);
+                        $('#price').val(data.seproj_price);
+                        $('#status').val(data.seproj_status);
+
+                        // Swap Buttons
+                        $('#addBtn').addClass('d-none');
+                        $('#updateBtn').removeClass('d-none');
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Server Error',
+                            text: 'Could not connect to the server. Please try again.',
+                            confirmButtonColor: '#ef4444'
+                        });
                     }
-
-                    document.getElementById("projectName").value = data.seproj_name;
-                    document.getElementById("description").value = data.seproj_desc;
-                    document.getElementById("startDate").value = data.seproj_date;
-                    document.getElementById("deadlineDate").value = data.seproj_deadline;
-                    document.getElementById("clientName").value = data.seproj_clientid;
-                    document.getElementById("projectHead").value = data.seproj_headid;
-                    document.getElementById("price").value = data.seproj_price;
-                    document.getElementById("status").value = data.seproj_status;
-
                 });
-                // Show Update button and hide Add button
-                document.getElementById("addBtn").classList.add("d-none");
-                document.getElementById("updateBtn").classList.remove("d-none");
-        }
+            };
 
-        function addProject(event) {
-            event.preventDefault(); // Prevent form submission
-            const formData = new FormData(document.getElementById('projectForm'));
-            const data = Object.fromEntries(formData);
+            // --- 4. Pre-Submit Validation ---
+            $('#projectForm').on('submit', function(e) {
+                let isValid = true;
+                
+                // Check if all required fields have a value
+                $(this).find('[required]').each(function() {
+                    if (!$(this).val()) {
+                        isValid = false;
+                    }
+                });
 
-            if (!data.projectName || !data.status) {
-                alert('⚠️ Please fill all required fields');
-                return;
-            }
+                if (!isValid) {
+                    e.preventDefault(); // Stop form submission
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Incomplete Form',
+                        text: 'Please fill out all required fields marked with *.',
+                        confirmButtonColor: '#461bb9'
+                    });
+                }
+                // If valid, the form submits normally to CodeIgniter
+            });
+            
+            // --- 5. Premium Logout Alert ---
+             
 
-            alert('✅ Project Added Successfully!\n\n' + JSON.stringify(data, null, 2));
-            resetForm();
-        }
-
-        
-        function logout() {
-            if (confirm('Logout from Admin Dashboard?')) {
-                window.location.href = 'login.html';
-            }
-        }
+        });
     </script>
 </body>
 

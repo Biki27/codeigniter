@@ -1,8 +1,3 @@
-<?php if (isset($alert)) { ?>
-<script>
-alert("<?= $alert ?>");
-</script>
-<?php } ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,9 +9,28 @@ alert("<?= $alert ?>");
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="<?= base_url('css/admin/adminAttendanceView.css') ?>" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
+    <?php if (isset($alert)):
+        $isError = (stripos($alert, 'error') !== false || stripos($alert, 'failed') !== false);
+        ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '<?= $isError ? "Notice" : "Success" ?>',
+                    text: <?= json_encode($alert) ?>,
+                    icon: '<?= $isError ? "warning" : "success" ?>',
+                    confirmButtonColor: '#461bb9',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg'
+                    }
+                });
+            });
+        </script>
+    <?php endif; ?>
 
     <div class="main-content">
         <div class="status-header mb-4">
@@ -30,7 +44,7 @@ alert("<?= $alert ?>");
                                 <?= $this->session->userdata("empname") ?>
                             </h3>
                         </div>
-                         
+
                     </div>
                 </div>
             </div>
@@ -77,27 +91,27 @@ alert("<?= $alert ?>");
                 </thead>
                 <tbody id="attendanceTable">
                     <?php if (!empty($atten)): ?>
-                    <?php foreach ($atten as $att): ?>
-                    <tr>
-                        <td><?= date("d-M-Y", strtotime($att->seemp_logdate)) ?></td>
-                        <td><span class="emp-id"><?= $att->seemp_logempid ?></span></td>
-                        <td><strong><?= $att->seempd_name ?? 'Unknown Employee' ?></strong></td>
-                        <td class="login-time">
-                            <i class="fas fa-sign-in-alt me-1"></i>
-                            <?= date("h:i A", strtotime($att->seemp_logintime)) ?>
-                        </td>
-                        <td class="logout-time">
-                            <i class="fas fa-sign-out-alt me-1"></i>
-                            <?= ($att->seemp_logouttime && $att->seemp_logouttime != '0000-00-00 00:00:00')
+                        <?php foreach ($atten as $att): ?>
+                            <tr>
+                                <td><?= date("d-M-Y", strtotime($att->seemp_logdate)) ?></td>
+                                <td><span class="emp-id"><?= $att->seemp_logempid ?></span></td>
+                                <td><strong><?= $att->seempd_name ?? 'Unknown Employee' ?></strong></td>
+                                <td class="login-time">
+                                    <i class="fas fa-sign-in-alt me-1"></i>
+                                    <?= date("h:i A", strtotime($att->seemp_logintime)) ?>
+                                </td>
+                                <td class="logout-time">
+                                    <i class="fas fa-sign-out-alt me-1"></i>
+                                    <?= ($att->seemp_logouttime && $att->seemp_logouttime != '0000-00-00 00:00:00')
                                         ? date("h:i A", strtotime($att->seemp_logouttime))
                                         : '<span class="text-muted">Not Logged Out</span>' ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     <?php else: ?>
-                    <tr>
-                        <td colspan="5" class="text-center p-4">No attendance records found.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="5" class="text-center p-4">No attendance records found.</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
@@ -105,16 +119,16 @@ alert("<?= $alert ?>");
     </div>
 
     <script>
-    document.querySelector('[name="searchempid"]').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const rows = document.querySelectorAll('#attendanceTable tr');
-        rows.forEach(row => {
-            // Check if it's not the "No records found" row
-            if (row.cells.length > 1) {
-                row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
-            }
+        document.querySelector('[name="searchempid"]').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#attendanceTable tr');
+            rows.forEach(row => {
+                // Check if it's not the "No records found" row
+                if (row.cells.length > 1) {
+                    row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+                }
+            });
         });
-    });
     </script>
 
 </body>

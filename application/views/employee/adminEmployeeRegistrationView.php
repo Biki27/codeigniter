@@ -2,24 +2,28 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Management | Supropriyo Enterprise</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('css/admin/adminEmployeeRegistrationView.css') ?>">
-</head>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="<?= base_url('css/admin/adminEmployeeRegistrationView.css') ?>">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 <body>
-    <?php if ($this->session->flashdata('msg')): ?>
+    <?php if ($this->session->flashdata('msg')):
+        $msg = $this->session->flashdata('msg');
+        $isError = (stripos($msg, 'Failed') !== false || stripos($msg, 'Error') !== false);
+        ?>
         <script>
-            // This will pop up the message sent from the controller
-            alert(<?= json_encode($this->session->flashdata('msg')) ?>);
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '<?= $isError ? "Oops!" : "Success!" ?>',
+                    text: <?= json_encode($msg) ?>,
+                    icon: '<?= $isError ? "error" : "success" ?>',
+                    confirmButtonColor: '#461bb9'
+                });
+            });
         </script>
     <?php endif; ?>
     <div class="employee-container">
@@ -42,38 +46,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 <input type="hidden" name="linked_applicant_id"
                     value="<?= isset($prefill_applicant) ? $prefill_applicant->sejoba_id : '' ?>">
 
-                <!-- Photo Section -->
                 <div class="photo-section">
                     <?php
+                    // Get the name for the avatar (Existing Employee, Prefilled Applicant, or "New Employee")
+                    $emp_name = isset($emp) ? $emp->seempd_name : (isset($prefill_applicant) ? $prefill_applicant->sejoba_name : 'New Employee');
+
+                    // Generate the dynamic initials avatar
+                    $fallback_avatar = "https://ui-avatars.com/api/?name=" . urlencode($emp_name) . "&background=461bb9&color=ffffff&size=180&bold=true";
+
                     $img_url = (isset($emp) && !empty($emp->seempd_img))
                         ? base_url('uploads/' . $emp->seempd_img)
-                        :base_url('imgs/placeholder.png');
+                        : $fallback_avatar;
                     ?>
+
                     <img src="<?= $img_url ?>" alt="Photo" class="photo-preview" id="photoPreview"
-                        onclick="document.getElementById('photoInput').click()">
+                        onclick="document.getElementById('photoInput').click()"
+                        onerror="this.onerror=null; this.src='<?= $fallback_avatar ?>';">
+
                     <button type="button" class="photo-btn" onclick="document.getElementById('photoInput').click()">
                         <i class="fas fa-camera"></i> Photo
                     </button>
                     <input type="file" id="photoInput" name="photo" accept="image/*" style="display: none;">
                 </div>
-                <!-- Form Grid -->
+
                 <div class="form-grid">
-                    <!-- Employee Name -->
                     <div class="form-group">
                         <label class="form-label">Employee Name <span class="required">*</span></label>
                         <input type="text" class="form-control" id="empName" name="empName"
                             value="<?= isset($emp) ? $emp->seempd_name : (isset($prefill_applicant) ? htmlspecialchars($prefill_applicant->sejoba_name, ENT_QUOTES) : '') ?>"
-                            required>
+                            required oninput="updateAvatarLive(this.value)">
                     </div>
-                    <!-- Employee ID -->
-
                     <div class="form-group">
                         <label class="form-label">Employee ID <span class="required">*</span></label>
                         <input type="text" class="form-control" id="empid" name="empid" placeholder="SE26KOL01"
-                            value="<?= isset($emp) ? $emp->seemp_id : '' ?>" <?= isset($emp) ? 'readonly style="background-color: #f3f4f6;"' : '' ?> required>
+                            value="<?= isset($emp) ? $emp->seemp_id : '' ?>" <?= isset($emp) ? ' style="background-color: #f3f4f6;"' : '' ?> required>
                     </div>
 
-                    <!-- Branch -->
                     <div class="form-group">
                         <label class="form-label">Branch <span class="required">*</span></label>
                         <select class="form-select" id="branch" name="branch" required>
@@ -81,55 +89,46 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <option value="HOWRAH" <?= (isset($emp) && $emp->seemp_branch == 'HOWRAH') ? 'selected' : '' ?>>Howrah</option>
                         </select>
                     </div>
-                    <!-- Designation -->
                     <div class="form-group">
                         <label class="form-label">Designation <span class="required">*</span></label>
                         <input type="text" class="form-control" id="designation" name="designation"
                             value="<?= isset($emp) ? $emp->seempd_designation : (isset($prefill_applicant) ? htmlspecialchars($prefill_applicant->sejoba_position, ENT_QUOTES) : '') ?>"
                             required>
                     </div>
-                    <!-- Email -->
                     <div class="form-group">
                         <label class="form-label">Email <span class="required">*</span></label>
                         <input type="email" class="form-control" id="email" name="email"
                             value="<?= isset($emp) ? $emp->seemp_email : (isset($prefill_applicant) ? htmlspecialchars($prefill_applicant->sejoba_email, ENT_QUOTES) : '') ?>"
                             required>
                     </div>
-                    <!-- Phone -->
-
                     <div class="form-group">
                         <label class="form-label">Phone <span class="required">*</span></label>
                         <input type="tel" class="form-control" id="phone" name="phone"
                             value="<?= isset($emp) ? $emp->seempd_phone : (isset($prefill_applicant) ? htmlspecialchars($prefill_applicant->sejoba_phone, ENT_QUOTES) : '') ?>"
                             required>
                     </div>
-                    <!-- Salary -->
                     <div class="form-group">
                         <label class="form-label">Salary (₹) <span class="required">*</span></label>
                         <input type="number" class="form-control" id="salary" name="salary"
                             value="<?= isset($emp) ? $emp->seempd_salary : (isset($prefill_applicant) ? htmlspecialchars($prefill_applicant->sejoba_exp_salary, ENT_QUOTES) : '') ?>"
                             required>
                     </div>
-                    <!-- Experience -->
                     <div class="form-group">
                         <label class="form-label">Experience (Years) <span class="required">*</span></label>
                         <input type="number" class="form-control" id="experience" name="experience"
                             value="<?= isset($emp) ? $emp->seempd_experience : (isset($prefill_applicant) ? htmlspecialchars($prefill_applicant->sejoba_experience, ENT_QUOTES) : '') ?>"
                             required>
                     </div>
-                    <!-- Date of Birth -->
                     <div class="form-group">
                         <label class="form-label">Date of Birth <span class="required">*</span></label>
                         <input type="date" class="form-control" id="dob" name="dob"
                             value="<?= isset($emp) ? $emp->seempd_dob : '1990-01-01' ?>" required>
                     </div>
-                    <!-- Joining Date -->
                     <div class="form-group">
                         <label class="form-label">Joining Date <span class="required">*</span></label>
                         <input type="date" class="form-control" id="joiningDate" name="joiningDate"
                             value="<?= isset($emp) ? $emp->seempd_joiningdate : date('Y-m-d') ?>" required>
                     </div>
-                    <!-- access level -->
                     <div class="form-group">
                         <label class="form-label">Access Level <span class="required">*</span></label>
                         <select name="accessLevel" id="accessLevel" class="form-select">
@@ -139,7 +138,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             <option value="ADMIN" <?= (isset($emp) && $emp->seemp_acesslevel == 'ADMIN') ? 'selected' : '' ?>>Admin</option>
                         </select>
                     </div>
-                    <!-- Status -->
                     <div class="form-group">
                         <label class="form-label">Status <span class="required">*</span></label>
                         <select class="form-select" id="status" name="status" required>
@@ -148,7 +146,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </select>
                     </div>
                 </div>
-                <!-- Addresses   -->
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <label class="form-label">Permanent Address <span class="required">*</span></label>
@@ -161,7 +158,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                             required><?= isset($emp) ? $emp->seempd_address_current : '' ?></textarea>
                     </div>
                 </div>
-                <!-- Additional Information -->
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">Aadhar Number <span class="required">*</span></label>
@@ -199,7 +195,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
                     </div>
                 </div>
-                <!-- CV Upload -->
                 <div class="form-group mt-4">
                     <label class="form-label">CV Upload
                         <?= isset($emp) && !empty($emp->seempd_cv) ? '<span class="badge bg-success">CV Exists</span>' : '<span class="required">*</span>' ?></label>
@@ -212,7 +207,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <input type="file" id="cvInput" name="cv" accept=".pdf,.doc,.docx" style="display: none;">
                     </div>
                 </div>
-                <!-- Action Buttons  -->
                 <div class="action-buttons">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i> <?= isset($emp) ? 'Update Employee' : 'Add Employee' ?>
@@ -224,28 +218,39 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             </div>
         </form>
     </div>
-     
+
 
     <script>
+        let hasCustomPhoto = <?= (isset($emp) && !empty($emp->seempd_img)) ? 'true' : 'false' ?>;
+
+        // Dynamic Avatar live update when typing name
+        function updateAvatarLive(name) {
+            if (!hasCustomPhoto) {
+                const defaultName = name.trim() === '' ? 'New Employee' : name;
+                const newAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(defaultName) + "&background=461bb9&color=ffffff&size=180&bold=true";
+                document.getElementById('photoPreview').src = newAvatar;
+            }
+        }
+
         // Photo preview logic with size validation
         document.getElementById('photoInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
-            
-            // Clear previous preview first
-            document.getElementById('photoPreview').src = 'https://via.placeholder.com/100x80/461bb9/ffffff?text=';
-            
+
             if (file) {
-                // Check file size FIRST (5MB = 5 * 1024 * 1024 bytes)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert(" Please upload an image smaller than 5MB.");
-                    this.value = ""; 
-                    return; 
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Too Large',
+                        text: 'Please upload an image smaller than 5MB.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    this.value = "";
+                    return;
                 }
-                
-                // If size is OK, show preview
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     document.getElementById('photoPreview').src = e.target.result;
+                    hasCustomPhoto = true; // Stop the live text from overwriting the uploaded image
                 };
                 reader.readAsDataURL(file);
             }
@@ -259,66 +264,80 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         function resetForm() {
             document.getElementById('employeeForm').reset();
-            document.getElementById('photoPreview').src = 'https://via.placeholder.com/100x80/461bb9/ffffff?text=👤';
-            document.getElementById('cvStatusText').innerText = "Click to upload CV (PDF, DOC)";
+
+            // Revert back to the proper initials avatar or original uploaded image
+            hasCustomPhoto = <?= (isset($emp) && !empty($emp->seempd_img)) ? 'true' : 'false' ?>;
+            document.getElementById('photoPreview').src = '<?= $img_url ?>';
+
+            document.getElementById('cvStatusText').innerText = "<?= (isset($emp) && !empty($emp->seempd_cv)) ? 'Click to replace current CV' : 'Click to upload CV (PDF, DOC)' ?>";
         }
 
-        
-         
         // Form Submission Logic
-
         document.getElementById('employeeForm').addEventListener('submit', function (e) {
-
+            e.preventDefault(); // ALWAYS stop the form first for SweetAlert
+            const empid = document.getElementById('empid').value.trim();
+            const empName = document.getElementById('empName').value.trim();
             const email = document.getElementById('email').value.trim();
             const phone = document.getElementById('phone').value.trim();
             const aadhar = document.getElementById('aadhar').value.trim();
             const password = document.querySelector('input[name="password"]').value;
             const cvInput = document.getElementById('cvInput').files.length;
-
-            // Check if we are adding new or updating
             const isUpdate = <?= isset($emp) ? 'true' : 'false' ?>;
 
             let errors = [];
+            // Basic Validations 
+            // Employee ID: Required, min 5 chars and max 10 chars, alphanumeric
+            if (empid.length < 5) errors.push("Employee ID is required and must be at least 5 characters.");
+            if (empid.length > 10) errors.push("Employee ID must be no more than 10 characters.");
+            if (!/^[a-zA-Z0-9\-]+$/.test(empid)) errors.push("Employee ID must be alphanumeric (hyphens allowed).");
 
-            // Email Format Validation
+            if (empName.length < 2) errors.push("Employee name is required and must be at least 2 characters.");
+
+
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                errors.push("- Please enter a valid email format.");
-            }
+            if (!emailRegex.test(email)) errors.push("Please enter a valid email format.");
 
-            // Phone Validation (10 digits)
             const phoneRegex = /^\d{10}$/;
-            if (!phoneRegex.test(phone.replace(/\D/g, ''))) {
-                errors.push("- Phone number must be exactly 10 digits.");
-            }
+            if (!phoneRegex.test(phone.replace(/\D/g, ''))) errors.push("Phone number must be exactly 10 digits.");
 
-            // Aadhar Validation (12 digits)
             const aadharRegex = /^\d{12}$/;
-            if (!aadharRegex.test(aadhar.replace(/\s/g, ''))) {
-                errors.push("- Aadhar number must be exactly 12 digits.");
-            }
+            if (!aadharRegex.test(aadhar.replace(/\s/g, ''))) errors.push("Aadhar number must be exactly 12 digits.");
 
-            // Password Check (Required only for new employees)
-            if (!isUpdate && password.length < 6) {
-                errors.push("- Password is required and must be at least 6 characters.");
-            }
+            if (!isUpdate && password.length < 6) errors.push("Password is required and must be at least 6 characters.");
+            if (!isUpdate && cvInput === 0) errors.push("You must upload a CV document for new employees.");
 
-            // CV Check (Required only for new employees)
-            if (!isUpdate && cvInput === 0) {
-                errors.push("- You must upload a CV document for new employees.");
-            }
-
-            // If there are errors, stop submission and show alert
+            // Show Errors OR Show Confirmation
             if (errors.length > 0) {
-                e.preventDefault(); // Prevents form from going to server
-                alert("⚠️ Please fix the following errors before submitting:\n\n" + errors.join("\n"));
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation Error',
+                    html: '<div style="text-align: left;">Please fix the following errors:<br><br>• ' + errors.join("<br>• ") + '</div>',
+                    confirmButtonColor: '#461bb9'
+                });
             } else {
-                // Confirm before sending using standard browser confirm
-                if (!confirm("Proceed with saving this employee profile?")) {
-                    e.preventDefault();
-                }
+                Swal.fire({
+                    title: isUpdate ? 'Update Profile?' : 'Save Employee?',
+                    text: "Proceed with saving this employee profile?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#461bb9',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, Save it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Saving...',
+                            text: 'Please wait',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); }
+                        });
+                        // Submit natively to CodeIgniter
+                        HTMLFormElement.prototype.submit.call(document.getElementById('employeeForm'));
+                    }
+                });
             }
         });
+
         function togglePassword() {
             const passwordField = document.getElementById("passwordField");
             const icon = document.getElementById("toggleIcon");
@@ -333,14 +352,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 icon.classList.add("fa-eye");
             }
         }
-        document.getElementById('photoInput').addEventListener('change', function () {
-            const file = this.files[0];
-
-            if (file && file.size > 5 * 1024 * 1024) {
-                alert(" Please upload an image smaller than 5MB.");
-                this.value = ""; // clear input
-            }
-        });
     </script>
 </body>
 

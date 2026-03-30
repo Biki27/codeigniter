@@ -14,6 +14,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="<?= base_url('css/admin/adminHeaderView.css') ?>" rel="stylesheet">
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body>
@@ -58,7 +61,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <a class="nav-link" href="<?= base_url() ?>Employee/products">
                 <i class="fas fa-box"></i> Product
             </a>
-            <a class="nav-link" href="<?= base_url() ?>Employee/Logout">
+            <a class="nav-link"  onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
         </nav>
@@ -84,4 +87,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 });
             }
         });
+
+         window.logout = function() {
+                Swal.fire({
+                    title: 'Ready to leave?',
+                    text: "You will be logged out of the Admin Dashboard.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#461bb9',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, Logout'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '<?= base_url() ?>Employee/logout';
+                    }
+                });
+            };
     </script>

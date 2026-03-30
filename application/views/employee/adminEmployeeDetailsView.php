@@ -132,13 +132,20 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                 </div>
 
                 <!-- Right: Photo Section -->
-                <div class="photo-section">
+               <div class="photo-section">
                     <?php 
+                        // Generate a beautiful initials avatar matching your theme
+                        $initials_avatar = "https://ui-avatars.com/api/?name=" . urlencode($info->seempd_name) . "&background=461bb9&color=ffffff&size=180&bold=true";
+
                         $profile_pic = (!empty($info->seempd_img)) 
                                        ? base_url('uploads/' . $info->seempd_img) 
-                                       : 'https://via.placeholder.com/180x180/461bb9/ffffff?text=👤';
+                                       : $initials_avatar;
                     ?>
-                    <img src="<?= $profile_pic ?>" alt="Employee Photo" class="emp-photo">
+                    
+                    <img src="<?= $profile_pic ?>" 
+                         alt="Employee Photo" 
+                         class="emp-photo"
+                         onerror="this.onerror=null; this.src='<?= $initials_avatar ?>';">
 
                     <?= form_open('Employee/RegisterEmployee') ?>
                         <input type="hidden" name="empid" value="<?= $info->seemp_id ?>" />

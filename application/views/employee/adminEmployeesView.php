@@ -5,21 +5,25 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard | Supropriyo Enterprise</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="<?= base_url('css/admin/adminEmployeesView.css') ?>" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-  <?php if ($this->session->flashdata('msg')): ?>
+  <?php if ($this->session->flashdata('msg')): 
+        $msg = $this->session->flashdata('msg');
+        $icon = (stripos($msg, 'Success') !== false) ? 'success' : 'info';
+  ?>
     <script>
-      alert("<?= $this->session->flashdata('msg') ?>");
+      document.addEventListener("DOMContentLoaded", function() {
+          const Toast = Swal.mixin({
+              toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
+          });
+          Toast.fire({ icon: '<?= $icon ?>', title: '<?= $msg ?>' });
+      });
     </script>
   <?php endif; ?>
+
   <!-- Main Content -->
   <div class="main-content">
     <!-- Employees Section -->

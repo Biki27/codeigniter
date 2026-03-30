@@ -43,8 +43,9 @@ body {
 }
 
 .table thead th {
-	background-color: #fcfaff;
-	color: #888ea8;
+ background: radial-gradient(circle at 0% 50%, #461bb9 20%, #973ce0 50%, #6b37e4 100%);
+
+	color: #fafafb;
 	text-transform: uppercase;
 	font-size: 0.75rem;
 	font-weight: 700;

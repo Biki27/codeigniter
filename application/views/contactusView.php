@@ -235,7 +235,7 @@ $(document).ready(function() {
                     behavior: "smooth"
                 });
             }
-        }, 300); // Short delay to ensure images/layouts are loaded
+        }, 100); // Short delay to ensure images/layouts are loaded
         
         // Clean the URL without refreshing
         history.replaceState(null, null, window.location.pathname);

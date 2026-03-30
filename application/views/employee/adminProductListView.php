@@ -2,15 +2,13 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Product List | Supropriyo Enterprise</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
     <link href="<?= base_url('css/admin/adminProductListView.css') ?>" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -85,7 +83,7 @@
 
                                                 <a href="<?= base_url('Employee/deleteProduct/' . $p->seprod_id) ?>"
                                                     class="btn btn-sm btn-outline-danger rounded-circle action-btn"
-                                                    onclick="return confirm('Delete this product?')">
+                                                    onclick="confirmDelete(event, this.href)">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
 
@@ -164,6 +162,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        function confirmDelete(event, url) {
+            event.preventDefault(); // Stop the link from opening immediately
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this! The product will be deleted.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444', // Red for delete
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Deleting...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                    window.location.href = url; // Proceed to delete
+                }
+            });
+        }
         // Function to handle the Product Details View Modal
         function viewProductDetails(product) {
             // Set basic text fields
