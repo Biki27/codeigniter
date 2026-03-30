@@ -56,7 +56,7 @@ $config['index_page'] = '';
 |
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
-$config['uri_protocol']	= 'REQUEST_URI';
+$config['uri_protocol'] = 'REQUEST_URI';
 /*
 |--------------------------------------------------------------------------
 | URL suffix
@@ -81,7 +81,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'english';
+$config['language'] = 'english';
 
 /*
 |--------------------------------------------------------------------------
@@ -390,7 +390,7 @@ $config['encryption_key'] = '';
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'se_session';
 $config['sess_samesite'] = 'Lax';
-$config['sess_expiration'] = 1800;
+$config['sess_expiration'] = 60; // 3 hours
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = TRUE;
 $config['sess_time_to_update'] = 300;
@@ -412,12 +412,12 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= '';
-$config['cookie_domain']	= '';
-$config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
-$config['cookie_samesite'] 	= 'Lax';
+$config['cookie_prefix'] = '';
+$config['cookie_domain'] = '';
+$config['cookie_path'] = '/';
+$config['cookie_secure'] = FALSE;
+$config['cookie_httponly'] = FALSE;
+$config['cookie_samesite'] = 'Lax';
 
 /*
 |-------------------------------------------------------a-------------------
@@ -465,7 +465,7 @@ $config['global_xss_filtering'] = FALSE;
 $config['csrf_protection'] = TRUE;
 $config['csrf_token_name'] = 'csrf_token';
 $config['csrf_cookie_name'] = 'csrf_cookie';
-$config['csrf_expire'] = 300;
+$config['csrf_expire'] = 60; // 3 hours
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array();
 
