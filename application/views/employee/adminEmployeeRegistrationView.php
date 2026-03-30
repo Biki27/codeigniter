@@ -47,7 +47,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                     <?php
                     $img_url = (isset($emp) && !empty($emp->seempd_img))
                         ? base_url('uploads/' . $emp->seempd_img)
-                        : 'https://via.placeholder.com/100x80/461bb9/ffffff?text=👤';
+                        :base_url('imgs/placeholder.png');
                     ?>
                     <img src="<?= $img_url ?>" alt="Photo" class="photo-preview" id="photoPreview"
                         onclick="document.getElementById('photoInput').click()">

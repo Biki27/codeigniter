@@ -2,16 +2,12 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 
-
-
+  
 
 
 
 <link rel="stylesheet" href="<?= base_url(); ?>css/About.css">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
-
+ 
 
 
 <div class="container-fluid p-0">
@@ -64,8 +60,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     </p>
 </div>
 
-<div class="product-showcase-wrapper">
-    <section class="container py-5" id="solutions">
+<div class="product-showcase-wrapper" id="solutions">
+    <section class="container py-5"  >
         <h2 class="section-title text-center mb-5">Our Software Solutions</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
 

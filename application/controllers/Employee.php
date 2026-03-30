@@ -1468,7 +1468,7 @@ class Employee extends CI_Controller
         }
 
         // 5. Multiple Office Boundaries (150 meters)
-        $radius_km = 0.15; 
+        $radius_km = 0.05; 
         
         $offices = [
             [
@@ -1513,7 +1513,7 @@ class Employee extends CI_Controller
                 echo json_encode(['status' => 'error', 'message' => $error_msg]);
             }
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Out of range! You must be within 150 meters of an office location.']);
+            echo json_encode(['status' => 'error', 'message' => 'Out of range! You must be within 50 meters of an office location.']);
         }
     }
     // Helper Math function for Geofencing
