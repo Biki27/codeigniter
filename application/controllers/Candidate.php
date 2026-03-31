@@ -1,17 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Candidate extends CI_Controller {
+class Candidate extends CI_Controller
+{
 
     public function __construct()
     {
         parent::__construct();
-        
+
         // Load all necessary models, libraries, and helpers FIRST
         $this->load->model('CandidateModel');
-        $this->load->model('jobApplicationModel'); 
+        $this->load->model('jobApplicationModel');
         $this->load->library('session');
-        $this->load->library('form_validation'); 
+        $this->load->library('form_validation');
         $this->load->helper(array('url', 'form'));
 
         // ==========================================
@@ -19,7 +20,7 @@ class Candidate extends CI_Controller {
         // ==========================================
         // We define the methods that DO NOT require a login
         $allowed_methods = array('login', 'register', 'google_login', 'google_callback');
-        
+
         // Get the current method the user is trying to access
         $current_method = $this->router->fetch_method();
 
@@ -54,7 +55,7 @@ class Candidate extends CI_Controller {
             // Validation failed or first load -> Show the form using the Master Layout
             $data['title'] = "Create an Account | Suropriyo Enterprise";
             $data['content'] = $this->load->view('candidate/candidateRegisterView', '', TRUE);
-            
+
             $this->load->view('candidate/layout', $data);
         } else {
             // Validation passed -> Register the candidate in the database
@@ -66,9 +67,9 @@ class Candidate extends CI_Controller {
             if ($candidate_id) {
                 // Log them in immediately
                 $this->set_candidate_session($candidate_id, $email);
-                
+
                 $this->session->set_flashdata('success', 'Account created successfully! You can now apply for jobs.');
-                $this->handle_redirect(); 
+                $this->handle_redirect();
             } else {
                 $this->session->set_flashdata('error', 'Something went wrong. Please try again.');
                 redirect('Candidate/register');
@@ -76,7 +77,7 @@ class Candidate extends CI_Controller {
         }
     }
 
-      public function login()
+    public function login()
     {
         // Redirect if already logged in
         if ($this->session->userdata('candidate_logged_in')) {
@@ -90,7 +91,7 @@ class Candidate extends CI_Controller {
             // Validation failed or first load -> Show the form using the Master Layout
             $data['title'] = "Candidate Login | Suropriyo Enterprise";
             $data['content'] = $this->load->view('candidate/candidateLoginView', '', TRUE);
-            
+
             $this->load->view('candidate/layout', $data);
         } else {
             // Process the login attempt
@@ -120,7 +121,7 @@ class Candidate extends CI_Controller {
         $this->session->unset_userdata('candidate_id');
         $this->session->unset_userdata('candidate_email');
         $this->session->unset_userdata('candidate_logged_in');
-        
+
         $this->session->set_flashdata('success', 'You have been safely logged out.');
         redirect('Careers');
     }
@@ -148,10 +149,10 @@ class Candidate extends CI_Controller {
 
         // Prepare the Master Layout Data
         $data['title'] = "My Dashboard | Suropriyo Enterprise";
-        
+
         // Load the view into a string variable
         $data['content'] = $this->load->view('candidate/candidateDashboardView', $view_data, TRUE);
-        
+
         // Render the lightweight master layout
         $this->load->view('candidate/layout', $data);
     }
@@ -172,73 +173,92 @@ class Candidate extends CI_Controller {
     }
 
     // Redirects user to dashboard and triggers the job application modal if they clicked "Apply" before logging in
+    // private function handle_redirect()
+    // {
+    //     if ($this->session->userdata('redirect_to_job')) {
+    //         $job_id = $this->session->userdata('redirect_to_job');
+    //         $this->session->unset_userdata('redirect_to_job'); // Clear it so it doesn't get stuck
+
+    //         // Set a temporary flashdata flag to tell the dashboard to open the modal
+    //         $this->session->set_flashdata('auto_open_job_id', $job_id);
+
+    //         redirect('Candidate/dashboard');
+    //     } else {
+    //         redirect('Candidate/dashboard');
+    //     }
+    // }
     private function handle_redirect()
     {
-        if ($this->session->userdata('redirect_to_job')) {
-            $job_id = $this->session->userdata('redirect_to_job');
-            $this->session->unset_userdata('redirect_to_job'); // Clear it so it doesn't get stuck
-            
-            // Set a temporary flashdata flag to tell the dashboard to open the modal
-            $this->session->set_flashdata('auto_open_job_id', $job_id);
-            
-            redirect('Candidate/dashboard');
-        } else {
-            redirect('Candidate/dashboard');
+        $job_id = $this->session->userdata('redirect_to_job');
+        $candidate_id = $this->session->userdata('candidate_id');
+
+        if ($job_id) {
+            $this->session->unset_userdata('redirect_to_job');
+
+            //  Only set the auto-open flag if they are eligible
+            if ($this->jobApplicationModel->is_eligible_to_apply($candidate_id)) {
+                $this->session->set_flashdata('auto_open_job_id', $job_id);
+            } else {
+                // If they have an active application, show an error instead of the pop-up
+                $this->session->set_flashdata('error', 'You currently have an active application. You can only apply for a new role if your current application is rejected.');
+            }
         }
+
+        redirect('Candidate/dashboard');
     }
 
     // ==========================================
     // 6. GOOGLE OAUTH 2.0 INTEGRATION
     // ==========================================
-    
-   public function google_login()
-{
-    require_once FCPATH . 'vendor/autoload.php';
-    $client = new Google_Client();
-    
-     
-    $client->setClientId(getenv('CLIENT_ID'));
-    $client->setClientSecret(getenv('CLIENT_SECRET'));
-    
-    $client->setRedirectUri(base_url('Candidate/google_callback')); 
-    $client->addScope("email");
-    $client->addScope("profile");
 
-    $login_url = $client->createAuthUrl();
-    redirect($login_url);
-}
+    public function google_login()
+    {
+        require_once FCPATH . 'vendor/autoload.php';
+        $client = new Google_Client();
+
+
+        $client->setClientId(getenv('CLIENT_ID'));
+        $client->setClientSecret(getenv('CLIENT_SECRET'));
+
+        $client->setRedirectUri(base_url('Candidate/google_callback'));
+        $client->addScope("email");
+        $client->addScope("profile");
+
+        $login_url = $client->createAuthUrl();
+        redirect($login_url);
+    }
 
     public function google_callback()
     {
-       require_once FCPATH . 'vendor/autoload.php';
+        require_once FCPATH . 'vendor/autoload.php';
 
         $client = new Google_Client();
-         
+
         $client->setClientId(getenv('CLIENT_ID'));
         $client->setClientSecret(getenv('CLIENT_SECRET'));
-        $client->setRedirectUri(base_url('Candidate/google_callback')); 
+        $client->setRedirectUri(base_url('Candidate/google_callback'));
 
         if (isset($_GET['code'])) {
             $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
 
-    // Check if the token is valid before setting it
-    if (isset($token['error'])) {
-        $this->session->set_flashdata('error', 'Google Auth Error: ' . $token['error_description']);
-        redirect('Candidate/login');
-    }
+            // Check if the token is valid before setting it
+            if (isset($token['error'])) {
+                $this->session->set_flashdata('error', 'Google Auth Error: ' . $token['error_description']);
+                redirect('Candidate/login');
+            }
 
-    $client->setAccessToken($token['access_token']);
-             
+            $client->setAccessToken($token['access_token']);
+
 
             // Get the user's Google profile info
             $google_oauth = new Google_Service_Oauth2($client);
             $google_account_info = $google_oauth->userinfo->get();
-            
-            $email =  $google_account_info->email;
+
+            $email = $google_account_info->email;
             $oauth_uid = $google_account_info->id;
-            
+
             // WE ADDED THIS LINE to fetch the Name:
-            $name = $google_account_info->name; 
+            $name = $google_account_info->name;
 
             // Send to our Model (Now passing 3 variables: ID, Email, and Name)
             $user = $this->CandidateModel->authenticate_google_user($oauth_uid, $email, $name);
