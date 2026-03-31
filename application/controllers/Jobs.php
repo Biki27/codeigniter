@@ -65,6 +65,13 @@ class Jobs extends CI_Controller
         if ($job_id == null) {
             redirect('Careers/Jobs');
         }
+        //  Check if the job is actually active before allowing application
+        $job = $this->JobsModel->get_job_by_id($job_id);
+        if (!$job || strtolower($job->sejob_state) !== 'active') {
+            $this->session->set_flashdata('error', 'This job position is no longer accepting applications.');
+            redirect('Jobs');
+            return;
+        }
 
         // 1. If NOT logged in, save the Job ID in session and go to Login
         if (!$this->session->userdata('candidate_logged_in')) {
