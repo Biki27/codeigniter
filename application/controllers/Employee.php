@@ -161,7 +161,7 @@ class Employee extends CI_Controller
 
             if ($access == 'HR') {
                 $this->load->view('hr/hrHeaderView');
-                $this->load->view('hr/hrEmployeeDirectoryView', $data);
+                $this->load->view('employee/adminEmployeesView', $data);
             } else {
                 $this->load->view('employee/adminHeaderView');
                 $this->load->view('employee/adminEmployeesView', $data);

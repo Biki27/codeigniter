@@ -10,6 +10,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url() ?>css/hr/hrHeaderView.css">
+
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -44,7 +47,7 @@
             <a class="nav-link" href="<?= base_url('Employee/viewJobs') ?>">
                 <i class="fas fa-list-alt me-2"></i> Manage Jobs
             </a>
-            <a class="nav-link" href="<?= base_url('Employee/logout') ?>">
+            <a class="nav-link " onclick="logout()">
                 <i class="fas fa-sign-out-alt me-2"></i> Logout
             </a>
         </nav>
@@ -71,4 +74,19 @@
                 };
             }
         });
+         window.logout = function() {
+                Swal.fire({
+                    title: 'Ready to leave?',
+                    text: "You will be logged out of the Admin Dashboard.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#461bb9',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Yes, Logout'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '<?= base_url() ?>Employee/logout';
+                    }
+                });
+            };
     </script>

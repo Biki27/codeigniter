@@ -213,7 +213,6 @@ h2.text-white {
 
     /* Adjust the main content padding for mobile */
     .main-content {
-        padding: 15px;
         margin-bottom: 80px; /* Space for fixed footer if needed */
     }
     

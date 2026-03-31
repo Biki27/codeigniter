@@ -390,7 +390,7 @@ $config['encryption_key'] = '';
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'se_session';
 $config['sess_samesite'] = 'Lax';
-$config['sess_expiration'] = 60; // 3 hours
+$config['sess_expiration'] = 10800; // 3 hours
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = TRUE;
 $config['sess_time_to_update'] = 300;
@@ -465,7 +465,7 @@ $config['global_xss_filtering'] = FALSE;
 $config['csrf_protection'] = TRUE;
 $config['csrf_token_name'] = 'csrf_token';
 $config['csrf_cookie_name'] = 'csrf_cookie';
-$config['csrf_expire'] = 60; // 3 hours
+$config['csrf_expire'] = 10800; // 3 hours
 $config['csrf_regenerate'] = FALSE;
 $config['csrf_exclude_uris'] = array();
 

@@ -46,9 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             <a class="nav-link" href="<?= base_url() ?>Employee/viewAttendance">
                 <i class="fas fa-calendar-alt"></i> Attendance
             </a>
-            <!-- <a class="nav-link" href="<?= base_url() ?>Employee/viewJobApplicants">
-                <i class="fas fa-calendar-alt"></i> JobApplicants
-            </a> -->
+          
             <a class="nav-link" href="<?= base_url() ?>Employee/viewProjects">
                 <i class="fas fa-project-diagram"></i> Projects
             </a>

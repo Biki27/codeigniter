@@ -6,31 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Request Management</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('css/hr/hrLeaveRequestView.css') ?>">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
 
-    <?php if ($this->session->flashdata('msg')): 
-        $msg = $this->session->flashdata('msg');
-        $isError = (stripos($msg, 'Failed') !== false || stripos($msg, 'Error') !== false);
-    ?>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const Toast = Swal.mixin({
-                toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
-            });
-            Toast.fire({ icon: '<?= $isError ? "error" : "success" ?>', title: <?= json_encode($msg) ?> });
-        });
-    </script>
-    <?php endif; ?>
-
     <div class="main-content">
         <div class="container-fluid">
 
+            <!-- HEADER -->
             <div class="page-header d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="text-white fw-bold mb-1">Employee Request Management</h2>
@@ -49,6 +40,7 @@
                 </div>
             </div>
 
+            <!-- TABLE -->
             <div class="table-container">
                 <table class="table align-middle">
                     <thead>
@@ -70,9 +62,12 @@
                             <?php foreach ($requests as $req): ?>
 
                                 <?php
+                                // Status color logic
                                 $statusClass = 'bg-warning text-dark';
-                                if ($req->seemrq_status == 'approved') $statusClass = 'bg-success';
-                                if ($req->seemrq_status == 'rejected') $statusClass = 'bg-danger';
+                                if ($req->seemrq_status == 'approved')
+                                    $statusClass = 'bg-success';
+                                if ($req->seemrq_status == 'rejected')
+                                    $statusClass = 'bg-danger';
                                 ?>
 
                                 <tr data-status="<?= strtolower($req->seemrq_status) ?>">
@@ -140,7 +135,7 @@
                     </tbody>
                 </table>
             </div>
-            
+            <!-- REQUEST VIEW MODAL -->
             <div class="modal fade" id="requestModal" tabindex="-1">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
                     <div class="modal-content">
@@ -151,6 +146,7 @@
                         </div>
 
                         <div class="modal-body">
+
                             <div class="mb-2"><b>Request ID:</b> <span id="modal_id"></span></div>
                             <div class="mb-2"><b>Employee ID:</b> <span id="modal_emp"></span></div>
                             <div class="mb-2"><b>Name:</b> <span id="modal_name"></span></div>
@@ -158,6 +154,7 @@
                             <div class="mb-2"><b>Days:</b> <span id="modal_days"></span></div>
                             <div class="mb-2"><b>Summary:</b> <span id="modal_summary"></span></div>
                             <div class="mb-2"><b>Status:</b> <span id="modal_status"></span></div>
+
                         </div>
 
                     </div>
@@ -168,11 +165,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // Search Filter Logic
             const searchInput = document.getElementById('searchInput');
             const statusFilter = document.getElementById('statusFilter');
             const rows = document.querySelectorAll('tbody tr');
@@ -182,6 +177,7 @@
                 const selectedStatus = statusFilter.value.toLowerCase();
 
                 rows.forEach(row => {
+
                     const rowText = row.innerText.toLowerCase();
                     const rowStatus = row.getAttribute('data-status');
 
@@ -193,58 +189,38 @@
                     } else {
                         row.style.display = 'none';
                     }
+
                 });
             }
 
             searchInput.addEventListener('input', filterTable);
             statusFilter.addEventListener('change', filterTable);
 
-            // Modal Logic
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
             const modal = new bootstrap.Modal(document.getElementById('requestModal'));
 
             document.querySelectorAll('.view-btn').forEach(button => {
                 button.addEventListener('click', function () {
+
                     document.getElementById('modal_id').innerText = "REQ" + this.dataset.id;
                     document.getElementById('modal_emp').innerText = this.dataset.emp;
                     document.getElementById('modal_name').innerText = this.dataset.name;
                     document.getElementById('modal_reason').innerText = this.dataset.reason;
                     document.getElementById('modal_days').innerText = this.dataset.days + " Days";
                     document.getElementById('modal_summary').innerText = this.dataset.summary;
-                    document.getElementById('modal_status').innerText = this.dataset.status.toUpperCase();
+                    document.getElementById('modal_status').innerText = this.dataset.status;
 
                     modal.show();
                 });
             });
 
-            // SweetAlert Status Update Logic
-            document.querySelectorAll('.status-update-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault(); 
-                    
-                    let statusSelect = this.querySelector('.status-select').value;
-                    let color = statusSelect === 'approved' ? '#10b981' : (statusSelect === 'rejected' ? '#ef4444' : '#f59e0b');
-
-                    Swal.fire({
-                        title: 'Update Status?',
-                        text: `Are you sure you want to mark this request as ${statusSelect.toUpperCase()}?`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: color,
-                        cancelButtonColor: '#64748b',
-                        confirmButtonText: 'Yes, Update'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                title: 'Updating...',
-                                allowOutsideClick: false,
-                                didOpen: () => { Swal.showLoading(); }
-                            });
-                            HTMLFormElement.prototype.submit.call(this);
-                        }
-                    });
-                });
-            });
         });
     </script>
 </body>
+
 </html>

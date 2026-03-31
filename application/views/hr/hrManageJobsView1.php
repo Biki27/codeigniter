@@ -10,23 +10,42 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('css/hr/hrManageJobsView.css') ?>">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
-    
-    <?php if ($this->session->flashdata('msg') || $this->session->flashdata('error')): 
-        $msg = $this->session->flashdata('msg') ? $this->session->flashdata('msg') : $this->session->flashdata('error');
-        $isError = $this->session->flashdata('error') ? 'true' : 'false';
-    ?>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const Toast = Swal.mixin({
-                toast: true, position: 'top-end', showConfirmButton: false, timer: 4000, timerProgressBar: true
-            });
-            Toast.fire({ icon: <?= $isError ?> ? 'error' : 'success', title: <?= json_encode($msg) ?> });
-        });
-    </script>
+    <!-- error and sucess message -->
+    <?php if ($this->session->flashdata('msg') || $this->session->flashdata('error')): ?>
+        <div class="toast-container position-fixed top-0 end-0 p-4" style="z-index: 1060; margin-top: 20px;">
+
+            <?php if ($this->session->flashdata('msg')): ?>
+                <div class="toast align-items-center text-white bg-success border-0 shadow-lg" role="alert"
+                    aria-live="assertive" aria-atomic="true" id="liveToast">
+                    <div class="d-flex p-1">
+                        <div class="toast-body fw-medium" style="font-size: 0.95rem;">
+                            <i class="fas fa-check-circle me-2 fs-5 align-middle"></i>
+                            <?= $this->session->flashdata('msg'); ?>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($this->session->flashdata('error')): ?>
+                <div class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert" aria-live="assertive"
+                    aria-atomic="true" id="liveToast">
+                    <div class="d-flex p-1">
+                        <div class="toast-body fw-medium" style="font-size: 0.95rem;">
+                            <i class="fas fa-exclamation-triangle me-2 fs-5 align-middle"></i>
+                            <?= $this->session->flashdata('error'); ?>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+        </div>
     <?php endif; ?>
 
     <div class="main-content">
@@ -96,7 +115,7 @@
 
                                                 <a href="<?= base_url('Employee/deleteJob/' . $job->sejob_id) ?>"
                                                     class="btn btn-sm btn-outline-danger rounded-circle action-btn"
-                                                    onclick="confirmDelete(event, this.href)">
+                                                    onclick="return confirm('Are you sure you want to delete this job posting?')">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -117,7 +136,7 @@
 
         </div>
     </div>
-    
+    <!-- form mo -->
     <div class="modal fade" id="jobModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content shadow-lg">
@@ -201,7 +220,7 @@
             </div>
         </div>
     </div>
-    
+    <!-- "Quick View" Modal -->
     <div class="modal fade" id="viewJobModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
@@ -246,33 +265,11 @@
             </div>
         </div>
     </div>
+     
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // SweetAlert Delete Confirmation
-        function confirmDelete(event, url) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Delete Job Posting?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Deleting...',
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-                    window.location.href = url;
-                }
-            });
-        }
-
         // Function to handle the Edit Button
         function editJob(job) {
             document.getElementById('modalTitle').innerText = "Edit Job Posting";
@@ -296,6 +293,18 @@
             document.getElementById('modalTitle').innerText = "Post New Job Requirement";
             document.querySelector('form').reset();
             document.getElementById('job_id').value = ""; // Clear the hidden ID input
+        });
+
+        // Initialize and show any Bootstrap Toasts on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            var toastList = toastElList.map(function (toastEl) {
+                // 'delay: 4000' means it stays on screen for 4 seconds before fading out
+                return new bootstrap.Toast(toastEl, { delay: 4000 });
+            });
+
+            // Show all toasts
+            toastList.forEach(toast => toast.show());
         });
 
         // Function to handle the Quick View Modal
