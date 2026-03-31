@@ -299,7 +299,6 @@ class Employee extends CI_Controller
 
         } else {
             $this->session->sess_destroy();
-               $this->session->sess_destroy();
             $this->load->view('errors/invalidAccessView');
         }
     }
@@ -1035,7 +1034,8 @@ class Employee extends CI_Controller
             $this->load->view('hr/hrDashboardView', $data);
 
         } else {
-            redirect('Employee/Login');
+            $this->session->sess_destroy();
+            $this->load->view('errors/invalidAccessView');
         }
     }
     /**
@@ -1146,7 +1146,8 @@ class Employee extends CI_Controller
             // Reusing the Admin Attendance View for data consistency
             $this->load->view('employee/adminAttendanceView', $data);
         } else {
-            redirect('Employee/Login');
+            $this->session->sess_destroy();
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
@@ -1391,7 +1392,8 @@ class Employee extends CI_Controller
             $this->load->view($header);
             $this->load->view('hr/hrManageJobsView', $data);
         } else {
-            redirect('Employee/Login');
+            $this->session->sess_destroy();
+            $this->load->view('errors/invalidAccessView');
         }
     }
 
