@@ -140,9 +140,12 @@
                                     <div class="job-company text-primary fw-bold">Suropriyo Enterprise</div>
                                 </div>
                                 <span class="badge rounded-pill <?php
-                                            if ($job->sejob_urgency == 'new') echo "bg-success";
-                                            elseif ($job->sejob_urgency == 'hot') echo "bg-warning text-dark";
-                                            elseif ($job->sejob_urgency == 'urgent') echo "bg-danger";
+                                        if ($job->sejob_urgency == 'new')
+                                            echo "bg-success";
+                                        elseif ($job->sejob_urgency == 'hot')
+                                            echo "bg-warning text-dark";
+                                        elseif ($job->sejob_urgency == 'urgent')
+                                            echo "bg-danger";
                                         ?>"><?= ucfirst($job->sejob_urgency) ?></span>
                             </div>
                         </div>
@@ -167,7 +170,7 @@
                                         $uid = $job->sejob_id;
                                         if (strlen($desc) > 120):
                                             $short_desc = substr($desc, 0, 115);
-                                        ?>
+                                            ?>
                                 <div class="collapse show multi-collapse-<?= $uid ?>" id="shortDesc<?= $uid ?>">
                                     <span><?= $short_desc ?>...</span>
                                     <a data-bs-toggle="collapse" data-bs-target=".multi-collapse-<?= $uid ?>"
@@ -192,10 +195,17 @@
                                     <i class="far fa-calendar-alt me-1"></i>
                                     <small><?= date('M d, Y', strtotime($job->sejob_dateofpost)) ?></small>
                                 </div>
+                                <?php if (strtolower($job->sejob_state) == 'active'): ?>
                                 <a href="<?= base_url() ?>Jobs/Apply/<?= $job->sejob_id ?>"
                                     class="btn btn-primary btn-apply px-4">
                                     Apply Now
                                 </a>
+                                <?php else: ?>
+                                <button class="btn btn-secondary px-4" disabled
+                                    title="This position is currently closed">
+                                    Closed
+                                </button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
